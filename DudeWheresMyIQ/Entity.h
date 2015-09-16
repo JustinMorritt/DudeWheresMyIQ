@@ -10,11 +10,11 @@
 #include "xnacollision.h"
 #include "SpriteAnimation.h"
 
-class Button
+class Entity
 {
 public:
-	Button(ID3D11Device* device, float width, float height, float depth = 0.0f, bool sphere = false, bool upRightSquare= false, bool box = false);
-	~Button();
+	Entity(ID3D11Device* device, float width, float height, float depth = 0.0f, bool sphere = false, bool upRightSquare= false, bool box = false);
+	~Entity();
 	void SetPos(float x, float y, float z);
 	void SetRot(float x, float y, float z);
 	void Update(const Camera& camera, float dt);

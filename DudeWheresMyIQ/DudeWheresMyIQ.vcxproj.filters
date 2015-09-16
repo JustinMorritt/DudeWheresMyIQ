@@ -78,9 +78,6 @@
     <ClCompile Include="StateMachine.cpp">
       <Filter>CPP</Filter>
     </ClCompile>
-    <ClCompile Include="Button.cpp">
-      <Filter>CPP</Filter>
-    </ClCompile>
     <ClCompile Include="BasicModel.cpp">
       <Filter>CPP</Filter>
     </ClCompile>
@@ -94,6 +91,9 @@
       <Filter>CPP</Filter>
     </ClCompile>
     <ClCompile Include="SpriteAnimation.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
       <Filter>CPP</Filter>
     </ClCompile>
   </ItemGroup>
@@ -158,9 +158,6 @@
     <ClInclude Include="StateMachine.h">
       <Filter>HEADER</Filter>
     </ClInclude>
-    <ClInclude Include="Button.h">
-      <Filter>HEADER</Filter>
-    </ClInclude>
     <ClInclude Include="BasicModel.h">
       <Filter>HEADER</Filter>
     </ClInclude>
@@ -174,6 +171,9 @@
       <Filter>HEADER</Filter>
     </ClInclude>
     <ClInclude Include="SpriteAnimation.h">
+      <Filter>HEADER</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
       <Filter>HEADER</Filter>
     </ClInclude>
   </ItemGroup>

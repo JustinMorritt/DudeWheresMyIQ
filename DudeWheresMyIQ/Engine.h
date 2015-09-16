@@ -14,7 +14,7 @@
 #include "Terrain.h"
 #include "ParticleSystem.h"
 #include "StateMachine.h"
-#include "Button.h"
+#include "Entity.h"
 #include "xnacollision.h"
 #include "MathHelper.h"
 #include "TextureMgr.h"
@@ -52,6 +52,12 @@ public:
 
 	//SCENE INITS
 	void InitAll();
+	void InsertAllIndices(std::vector<UINT>& indicies);
+	void InsertAllVertices(std::vector<Vertex::Basic32>& verts, UINT& k);
+	UINT TotalVertexCount();
+	UINT TotalIndiceCount();
+	void SetAllVertexOffsets();
+	void SetAllIndexOffsets();
 
 	//GAME DRAWS
 	void DrawMainMenu();
@@ -83,17 +89,17 @@ public:
 	void BtnsLose(float x, float y, bool clicked);
 	void BtnsBossLose(float x, float y, bool clicked);
 	void BtnsBossWin(float x, float y, bool clicked);
-	bool InButton3D(float sx, float sy, Button* button);
-	bool InButton2D(float sx, float sy, Button* button);
+	bool InButton3D(float sx, float sy, Entity* button);
+	bool InButton2D(float sx, float sy, Entity* button);
 
 	//COLLISION
-	bool CamOnPickUp(Button* pickup);
-	bool ProjectileBounds(Button* proj);
-	bool ProjectileHitBug(Button* proj);
-	bool ProjectileHitBoss(Button* proj);
-	bool ProjectileHitGhost(Button* proj);
-	bool GhostHitCam(Button* ghost);
-	bool BossHitCam(Button* ghost);
+	bool CamOnPickUp(Entity* pickup);
+	bool ProjectileBounds(Entity* proj);
+	bool ProjectileHitBug(Entity* proj);
+	bool ProjectileHitBoss(Entity* proj);
+	bool ProjectileHitGhost(Entity* proj);
+	bool GhostHitCam(Entity* ghost);
+	bool BossHitCam(Entity* ghost);
 
 private:
 	Sky* mSky;
@@ -105,78 +111,40 @@ private:
 	ID3D11Buffer* mShapesIB;
 
 	//Buttons
-	Button* mPlayButt;
-	Button* mTitleButt;
-	Button* mAboutButt;
-	Button* mMusicButt;
-	Button* mSoundButt;
-	Button* mSOnButt;
-	Button* mSOffButt;
-	Button* mMOnButt;
-	Button* mMOffButt;
-	Button* mCompiledButt;
-	Button* mBymeButt;
-	Button* mBugsButt;
-	Button* mQuitButt;
-	Button* mRestartButt;
-	Button* mPausedButt;
-	Button* mBackButt;
-	Button* mAboutMsgButt;
-	Button* mYouWinButt;
-	Button* mYouLoseButt;
-	Button* mRetryButt;
-	Button* mModeButt;
-	Button* mEasyButt;
-	Button* mMedButt;
-	Button* mHardButt;
-	Button* mInsaneButt;
-	Button* mInvader;
-	Button* mHPButt;
-	Button* mBossBattButt;
-	Button* mBSOD;
+	Entity* mPlayButt;
+	Entity* mTitleButt;
+	Entity* mAboutButt;
+	Entity* mMusicButt;
+	Entity* mSoundButt;
+	Entity* mSOnButt;
+	Entity* mSOffButt;
+	Entity* mMOnButt;
+	Entity* mMOffButt;
+	Entity* mBymeButt;
+	Entity* mQuitButt;
+	Entity* mRestartButt;
+	Entity* mPausedButt;
+	Entity* mBackButt;
+	Entity* mAboutMsgButt;
+	Entity* mYouWinButt;
+	Entity* mYouLoseButt;
+	Entity* mRetryButt;
+	Entity* mModeButt;
+	Entity* mEasyButt;
+	Entity* mMedButt;
+	Entity* mHardButt;
+	Entity* mInsaneButt;
 
-
-	Button* mInvader2;
-	Button* mInvader3;
-	Button* mInvader4;
-	Button* mMushroom;
-	Button* mProjectile;
-
-	Button* mBoss;
-	Button* mGhost1;
-	Button* mGhost2;
-	Button* mGhost3;
-	Button* mGhost4;
-	Button* mGhost5;
-
-	std::vector<Button*> mInvaders;
-	std::vector<Button*> mMushrooms;
-	std::vector<Button*> mProjectiles;
-	std::vector<Button*> mGhosts;
+	//TODO:: Vector for Menu UI .. Level Objects .. Inventory ... Pickups... Enemies...
+	std::vector<Entity*> mInvaders;
 
 	//Models
 	std::vector<BasicModelInstance> mModelInstances;
 	BasicModel* testModel;
 
-	//Binary Floors 
-	Button* mNorthF;
-	Button* mSouthF;
-	Button* mWestF;
-	Button* mEastF;
-
-	//Binary Walls
-	Button* mNorthW; 
-	Button* mSouthW; 
-	Button* mWestW;  
-	Button* mEastW;	 
-
 	//Progress Bars 
-	Button* mCompBar;
-	Button* mCompBarOL;
-	Button* mBugBar;
-	Button* mBugBarOL;
-	Button* mHPOL;
-	Button* mHPBAR;
+	//Entity* mCompBar;
+
 
 	//Spawn Timers
 	float tickTimer; // Set this per second ..
@@ -193,9 +161,9 @@ private:
 	int waitToClickTime;
 	int mMoveSpeed;
 
-	ID3D11ShaderResourceView* mFlareTexSRV;
-	ID3D11ShaderResourceView* mRainTexSRV;
-	ID3D11ShaderResourceView* mRandomTexSRV;
+// 	ID3D11ShaderResourceView* mFlareTexSRV;
+// 	ID3D11ShaderResourceView* mRainTexSRV;
+//	ID3D11ShaderResourceView* mRandomTexSRV;
 
 	ParticleSystem mFire;
 	ParticleSystem mRain;
@@ -218,12 +186,12 @@ private:
 	bool mBFCull;
 	bool fullyLoaded;
 	bool exitable;
-	bool inButt;
 
 	POINT mLastMousePos;
 
 	XMMATRIX mOrthoWorld;
 };
+
 
 
 #endif // Engine_h__

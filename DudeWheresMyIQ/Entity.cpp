@@ -1,7 +1,7 @@
-#include "Button.h"
+#include "Entity.h"
 
 //Makes a Square by default 
-Button::Button(ID3D11Device* device, float width, float height, float depth, bool sphere, bool upRightSquare, bool box) :
+Entity::Entity(ID3D11Device* device, float width, float height, float depth, bool sphere, bool upRightSquare, bool box) :
 mPosition(0.0f, 0.0f, 0.0f),
 mRight(1.0f, 0.0f, 0.0f),
 mUp(0.0f, 1.0f, 0.0f),
@@ -72,7 +72,7 @@ mSpriteAnimation(0)
 
 }
 
-Button::~Button()
+Entity::~Entity()
 {
 	//Commented so you have to intentionally release these .. some are sharing textures
 // 	mTexSRV->Release();
@@ -80,12 +80,12 @@ Button::~Button()
 	if (mSpriteAnimation){ delete mSpriteAnimation; mSpriteAnimation = nullptr; }
 }
 
-void Button::SetPos(float x, float y, float z)
+void Entity::SetPos(float x, float y, float z)
 {
 	mPosition = XMFLOAT3(x, y, z);
 }
 
-void Button::SetRot(float x, float y, float z)
+void Entity::SetRot(float x, float y, float z)
 {
 	XMMATRIX rotX = XMMatrixRotationX(XM_PI*x);
 	XMMATRIX rotY = XMMatrixRotationY(XM_PI*y);
@@ -94,7 +94,7 @@ void Button::SetRot(float x, float y, float z)
 }
 
 
-void Button::Update(const Camera& camera, float dt)
+void Entity::Update(const Camera& camera, float dt)
 {
 	
 	XMVECTOR R = XMLoadFloat3(&mRight);
@@ -192,7 +192,7 @@ void Button::Update(const Camera& camera, float dt)
 	mSphereCollider.Center = mPosition;
 }
 
-void Button::Draw(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, float dt)
+void Entity::Draw(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, float dt)
 {
 
 	XMMATRIX world = XMLoadFloat4x4(&mWorld);
@@ -236,7 +236,7 @@ void Button::Draw(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* conte
 	context->DrawIndexed(mIndexCount, mIndexOffset, mVertexOffset);
 }
 
-void Button::Draw2D(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, XMMATRIX& ortho)
+void Entity::Draw2D(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, XMMATRIX& ortho)
 {
 	XMMATRIX world = XMLoadFloat4x4(&mWorld);
 	XMMATRIX worldInvTranspose = MathHelper::InverseTranspose(world);
@@ -253,7 +253,7 @@ void Button::Draw2D(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* con
 	context->DrawIndexed(mIndexCount, mIndexOffset, mVertexOffset);
 }
 
-void Button::DrawShadow(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* context, const XMVECTOR& shadPlane, const XMVECTOR& lightDir, const XMMATRIX& S, float scale, float xOff, float yOff, float zOff, const Camera& camera, const Material& mat)
+void Entity::DrawShadow(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* context, const XMVECTOR& shadPlane, const XMVECTOR& lightDir, const XMMATRIX& S, float scale, float xOff, float yOff, float zOff, const Camera& camera, const Material& mat)
 {
 	D3DX11_TECHNIQUE_DESC techDesc;
 	activeTech->GetDesc(&techDesc);
@@ -281,17 +281,17 @@ void Button::DrawShadow(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext*
 
 
 
-void Button::SetVertexOffset(int offSet)
+void Entity::SetVertexOffset(int offSet)
 {
 	mVertexOffset = offSet;
 }
 
-void Button::SetIndexOffset(int offSet)
+void Entity::SetIndexOffset(int offSet)
 {
 	mIndexOffset = offSet;
 }
 
-void Button::LoadVertData(std::vector<Vertex::Basic32>& verts, UINT& k)
+void Entity::LoadVertData(std::vector<Vertex::Basic32>& verts, UINT& k)
 {
 	XMFLOAT3 vMinf3(+MathHelper::Infinity, +MathHelper::Infinity, +MathHelper::Infinity);
 	XMFLOAT3 vMaxf3(-MathHelper::Infinity, -MathHelper::Infinity, -MathHelper::Infinity);
@@ -321,7 +321,7 @@ void Button::LoadVertData(std::vector<Vertex::Basic32>& verts, UINT& k)
 
 
 
-void Button::LoadTexture(ID3D11Device* device , std::wstring texFilename)
+void Entity::LoadTexture(ID3D11Device* device , std::wstring texFilename)
 {
 	HR(D3DX11CreateShaderResourceViewFromFile(device, texFilename.c_str(), 0, 0, &mTexSRV, 0));
 	
@@ -341,77 +341,77 @@ void Button::LoadTexture(ID3D11Device* device , std::wstring texFilename)
 	ReleaseCOM(texture2D);
 }
 
-void Button::UseTexture(ID3D11ShaderResourceView* tex)
+void Entity::UseTexture(ID3D11ShaderResourceView* tex)
 {
 	mTexSRV = tex;
 }
 
-void Button::SetSphereCollider(float radius)
+void Entity::SetSphereCollider(float radius)
 {
 	mSphereCollider.Center = mPosition;
 	mSphereCollider.Radius = radius;
 }
 
-void Button::ResetLookUpRight()
+void Entity::ResetLookUpRight()
 {
 	mRight	= { 1.0f, 0.0f, 0.0f };
 	mUp		= { 0.0f, 1.0f, 0.0f };
 	mLook	= { 0.0f, 0.0f, 1.0f };
 }
 
-void Button::SetUpAnimation(float cols, float rows, float FPS, float animSpeed /*= 1.0f*/, bool isLooping /*= true*/)
+void Entity::SetUpAnimation(float cols, float rows, float FPS, float animSpeed /*= 1.0f*/, bool isLooping /*= true*/)
 {
 	mSpriteAnimation	= new SpriteAnimation(cols, rows, FPS,animSpeed,isLooping);
 	mUseAnimation		= true;
 	origTexScale		= { 1.0f / cols, 1.0f / rows, 1.0f };
 }
 
-int Button::GetVertOffset()
+int Entity::GetVertOffset()
 {
 	return mVertexOffset;
 }
 
-int Button::GetIndOffset()
+int Entity::GetIndOffset()
 {
 	return mIndexOffset;
 }
 
-GeometryGenerator::MeshData Button::GetMeshData()
+GeometryGenerator::MeshData Entity::GetMeshData()
 {
 	return mGrid;
 }
 
-XMVECTOR Button::GetRightXM()const
+XMVECTOR Entity::GetRightXM()const
 {
 	return XMLoadFloat3(&mRight);
 }
 
-XMFLOAT3 Button::GetRight()const
+XMFLOAT3 Entity::GetRight()const
 {
 	return mRight;
 }
 
-XMVECTOR Button::GetUpXM()const
+XMVECTOR Entity::GetUpXM()const
 {
 	return XMLoadFloat3(&mUp);
 }
 
-XMFLOAT3 Button::GetUp()const
+XMFLOAT3 Entity::GetUp()const
 {
 	return mUp;
 }
 
-XMVECTOR Button::GetLookXM()const
+XMVECTOR Entity::GetLookXM()const
 {
 	return XMLoadFloat3(&mLook);
 }
 
-XMFLOAT3 Button::GetLook()const
+XMFLOAT3 Entity::GetLook()const
 {
 	return mLook;
 }
 
-void Button::Strafe(float d)
+void Entity::Strafe(float d)
 {
 	// mPosition += d*mRight
 	XMVECTOR s = XMVectorReplicate(d);
@@ -420,7 +420,7 @@ void Button::Strafe(float d)
 	XMStoreFloat3(&mPosition, XMVectorMultiplyAdd(s, r, p));
 }
 
-void Button::Walk(float d)
+void Entity::Walk(float d)
 {
 	if (goToPos){ mDistanceLeft -= d; }
 	XMVECTOR s = XMVectorReplicate(d);
@@ -429,7 +429,7 @@ void Button::Walk(float d)
 	XMStoreFloat3(&mPosition, XMVectorMultiplyAdd(s, l, p));
 }
 
-void Button::Pitch(float angle)
+void Entity::Pitch(float angle)
 {
 	prevPitch = angle;
 	// Rotate up and look vector about the right vector.
@@ -440,7 +440,7 @@ void Button::Pitch(float angle)
 	XMStoreFloat3(&mLook, XMVector3TransformNormal(XMLoadFloat3(&mLook), R));
 }
 
-void Button::Yaw(float angle)
+void Entity::Yaw(float angle)
 {
 	// Rotate right and look vector about the up vector.
 
@@ -450,7 +450,7 @@ void Button::Yaw(float angle)
 	XMStoreFloat3(&mLook, XMVector3TransformNormal(XMLoadFloat3(&mLook), R));
 }
 
-void Button::Roll(float angle)
+void Entity::Roll(float angle)
 {
 	//Rotate Up and Right on Look Vector
 	prevRoll = angle;
@@ -461,7 +461,7 @@ void Button::Roll(float angle)
 	XMStoreFloat3(&mRight, XMVector3TransformNormal(XMLoadFloat3(&mRight), R));
 }
 
-void Button::RotateY(float angle)
+void Entity::RotateY(float angle)
 {
 	rotationY = angle;
 	// Rotate the basis vectors about the world y-axis.
@@ -473,7 +473,7 @@ void Button::RotateY(float angle)
 	XMStoreFloat3(&mLook, XMVector3TransformNormal(XMLoadFloat3(&mLook), R));
 }
 
-void Button::RotateX(float angle)
+void Entity::RotateX(float angle)
 {
 	//rotationY = angle;
 	// Rotate the basis vectors about the world y-axis.
@@ -485,7 +485,7 @@ void Button::RotateX(float angle)
 	XMStoreFloat3(&mLook, XMVector3TransformNormal(XMLoadFloat3(&mLook), R));
 }
 
-void Button::RotateZ(float angle)
+void Entity::RotateZ(float angle)
 {
 	XMVECTOR P = XMLoadFloat3(&mPosition);
 	XMMATRIX R = XMMatrixRotationZ(angle);
@@ -498,7 +498,7 @@ void Button::RotateZ(float angle)
 
 }
 
-void Button::Scale(float scale)
+void Entity::Scale(float scale)
 {
 	//SCALING THE WAY I THOUGHT NEEDED DONE
 	XMMATRIX curr = XMLoadFloat4x4(&mWorld);
@@ -508,7 +508,7 @@ void Button::Scale(float scale)
 }
 
 //USED FOR THE PROGRESS BARS
-void Button::ScaleX(float scale)
+void Entity::ScaleX(float scale)
 {
 	//Progress gets offset on the X depending on the currProgress
 	XMMATRIX trans = XMMatrixTranslation(mWorld.m[3][0]-(mWidth/2 - (mWidth/2*currProgress)), mWorld.m[3][1], mWorld.m[3][2]); // ORIGINAL TRANSLATION
@@ -517,12 +517,12 @@ void Button::ScaleX(float scale)
 	XMStoreFloat4x4(&mWorld, scaling * rotX * trans); // Scaled Then sent Back To Original Position;
 }
 
-XMVECTOR Button::GetPositionXM()const
+XMVECTOR Entity::GetPositionXM()const
 {
 	return XMLoadFloat3(&mPosition);
 }
 
-void Button::LookAt(FXMVECTOR pos, FXMVECTOR target, FXMVECTOR worldUp)
+void Entity::LookAt(FXMVECTOR pos, FXMVECTOR target, FXMVECTOR worldUp)
 {
 	XMVECTOR L = XMVector3Normalize(XMVectorSubtract(target, pos));
 	XMVECTOR R = XMVector3Normalize(XMVector3Cross(worldUp, L));
@@ -535,7 +535,7 @@ void Button::LookAt(FXMVECTOR pos, FXMVECTOR target, FXMVECTOR worldUp)
 	XMStoreFloat3(&mUp, U);
 }
 
-void Button::LookAt(const XMFLOAT3& pos, const XMFLOAT3& target, const XMFLOAT3& up)
+void Entity::LookAt(const XMFLOAT3& pos, const XMFLOAT3& target, const XMFLOAT3& up)
 {
 	XMVECTOR P = XMLoadFloat3(&pos);
 	XMVECTOR T = XMLoadFloat3(&target);
@@ -544,7 +544,7 @@ void Button::LookAt(const XMFLOAT3& pos, const XMFLOAT3& target, const XMFLOAT3&
 	LookAt(P, T, U);
 }
 
-void Button::SetGoToPoint(float x, float y, float z)
+void Entity::SetGoToPoint(float x, float y, float z)
 {
 	mGoToPos.x = x; mGoToPos.y = y, mGoToPos.z = z;
 	goToPos = true;
@@ -560,7 +560,7 @@ void Button::SetGoToPoint(float x, float y, float z)
 	XMStoreFloat3(&mRight, XMVector3Cross(XMLoadFloat3(&mUp), XMLoadFloat3(&mLook)));
 }
 
-void Button::SetOrbitPos(float x, float y, float z, float dt)
+void Entity::SetOrbitPos(float x, float y, float z, float dt)
 {
 	rotationY += dt;
 	mPosition.x = x; mPosition.y = y; mPosition.z = z;
