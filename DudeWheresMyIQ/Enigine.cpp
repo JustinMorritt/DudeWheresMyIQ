@@ -1,10 +1,16 @@
 #include "Engine.h"
-//TODO ... MAY as well replace the original grib with a button .. clean up some grose code. 
-//TODO ... Get Some Cool Sound Effects And Intence BOss Music 
 
 
 Engine::Engine(HINSTANCE hInstance)
-	: D3DApp(hInstance), mSky(0), mRandomTexSRV(0), mFlareTexSRV(0), mRainTexSRV(0), mFloorTexSRV(0), mWalkCamMode(false), mWireMode(false), mBFCull(false),
+	: D3DApp(hInstance),
+	mSky(0),
+	mRandomTexSRV(0),
+	mFlareTexSRV(0),
+	mRainTexSRV(0),
+	mFloorTexSRV(0),
+	mWalkCamMode(false),
+	mWireMode(false),
+	mBFCull(false),
 	mPlayButt(0),
 	mPausedButt(0),
 	mTitleButt(0),
@@ -61,7 +67,7 @@ Engine::Engine(HINSTANCE hInstance)
 	mHPOL(0),
 	mHPBAR(0),
 	mMoveSpeed(500),
-	spawnTimer(0.0f),
+	tickTimer(0.0f),
 	bossTimer(0.0f),
 	randBossTime(1.0f),
 	bugsWorth(0.03f),
@@ -74,7 +80,7 @@ Engine::Engine(HINSTANCE hInstance)
 	exitable(false),
 	inButt(false)
 {
-	mMainWndCaption = L"Motherboard Meltdown";
+	mMainWndCaption = L"Dude Wheres My IQ?";
 	mEnable4xMsaa = false;
 
 	mLastMousePos.x = 0;
@@ -165,11 +171,10 @@ bool Engine::Init()
 // 	mModelInstances.push_back(testInstance);
 
 
-	InitMainMenu();
+	InitAll();
 
-	//mSky = new Sky(md3dDevice, L"Textures/MarriottMadisonWest.dds", 5000.0f);
 	mSky = new Sky(md3dDevice, L"Textures/ArstaBridge.dds", 5000.0f);
-	//mSky = new Sky(md3dDevice, L"Textures/DallasW.dds", 5000.0f);
+
 	
 
 //FIRE EMITTER
@@ -185,7 +190,7 @@ bool Engine::Init()
 	*StateMachine::pMusicState	= MusicState::MUSICON;
 	*StateMachine::pGameMode	= GameMode::EASY;
 
-	mCam.SetConstraints(-1200.0f, 1200.0f, -1000.0f, 1000.0f, -1200.0f, 1200.0f);
+	//mCam.SetConstraints(-1200.0f, 1200.0f, -1000.0f, 1000.0f, -1200.0f, 1200.0f);
 
 	return true;
 }
@@ -208,12 +213,9 @@ void Engine::UpdateScene(float dt)
 	case GameState::ABOUT:		
 	case GameState::MAINMENU:	UpdateMainMenu(dt); break;
 	case GameState::GAMEON:
-	case GameState::BOSSFIGHT:
 	case GameState::PAUSED:
 	case GameState::WIN:
 	case GameState::LOSE:		UpdateGame(dt);		break;
-	case GameState::BOSSWIN:	UpdateBossWin(dt);	break;
-	case GameState::BOSSLOSE:	UpdateBossLose(dt);	break;
 	}
 }
 void Engine::UpdateMainMenu(float dt)
@@ -250,8 +252,7 @@ void Engine::UpdateMainMenu(float dt)
 }
 void Engine::UpdateGame(float dt)
 {
-	
-	(*StateMachine::pGameState == GameState::GAMEON || *StateMachine::pGameState == GameState::BOSSFIGHT) ? mCursorOn = false : mCursorOn = true;
+	//(*StateMachine::pGameState == GameState::GAMEON) ? mCursorOn = false : mCursorOn = true;
 
 	mCompiledButt->Update(mCam, dt);
 	mBugsButt->Update(mCam, dt);
@@ -259,7 +260,7 @@ void Engine::UpdateGame(float dt)
 	mRestartButt->Update(mCam, dt);
 	mPausedButt->Update(mCam, dt);
 	mBackButt->Update(mCam, dt);
-	mCompBar->Update(mCam, dt); if (*StateMachine::pGameState == GameState::GAMEON){ IncProgress(dt); }
+	mCompBar->Update(mCam, dt); 
 	mCompBarOL->Update(mCam, dt);
 	mBugBar->Update(mCam, dt);
 	mBugBarOL->Update(mCam, dt);
@@ -270,8 +271,8 @@ void Engine::UpdateGame(float dt)
 
 	
 	//TIMER STUFF / SPAWN RATES   *Spawn Before Update Or Youll Get a Flicker Later On Of it Not Translated Yet*
-	spawnTimer += dt;
-	if (spawnTimer >= difficultyTimer)
+	tickTimer += dt;
+	if (tickTimer >= difficultyTimer)
 	{
 		if (*StateMachine::pGameState == GameState::GAMEON)
 		{
@@ -280,47 +281,29 @@ void Engine::UpdateGame(float dt)
 			if (mSound.MusicPaused(2)){ mSound.PauseMusic(false,2); }}
 
 
-			spawnBugTime++;
-			if (spawnBugTime == 1){ SpawnBug(); IncBugs(bugsWorth); spawnBugTime = 0; }
-
-			spawnMushTime++;
-			if (spawnMushTime == 20){ SpawnMushroom();		spawnMushTime = 0; }
 		}
 
-		if (*StateMachine::pGameState == GameState::BOSSFIGHT)
-		{
-
-			if (*StateMachine::pMusicState == MusicState::MUSICON){ if (!mSound.PlayingMusic(3)){ mSound.StreamMusic(3); }
-			if (mSound.MusicPaused(3)){ mSound.PauseMusic(false, 3); }
-			}
-
-
-			spawnBugTime++;
-			if (spawnBugTime == 1){ SpawnGhost(); spawnBugTime = 0; }
-		}
+// 		if (*StateMachine::pGameState == GameState::BOSSFIGHT)
+// 		{
+// 
+// 			if (*StateMachine::pMusicState == MusicState::MUSICON){ if (!mSound.PlayingMusic(3)){ mSound.StreamMusic(3); }
+// 			if (mSound.MusicPaused(3)){ mSound.PauseMusic(false, 3); }
+// 			}
+// 
+// 
+// 			spawnBugTime++;
+// 			if (spawnBugTime == 1){ SpawnGhost(); spawnBugTime = 0; }
+// 		}
 	
 		if (speedBonusTime > 0){ speedBonusTime--;	mMoveSpeed = 1000;	if (speedBonusTime == 0){ mMoveSpeed = 500; } }
 
 		if (waitToClickTime > 0){ waitToClickTime--; }
 		
 
-		spawnTimer = 0.0f;
+		tickTimer = 0.0f;
 	}
 
-	if (*StateMachine::pGameState == GameState::BOSSFIGHT)
-	{
-		mHPButt->Update(mCam, dt);
-		mHPOL->Update(mCam, dt);
-		mHPBAR->Update(mCam, dt);
-		UpdateGhosts(dt);
-		UpdateBoss(dt);
-	}
-	if (*StateMachine::pGameState == GameState::GAMEON)
-	{
-		UpdateBugs(dt);
-		UpdatePickups(dt);
-	}
-	UpdateProjectiles(dt);
+
 // 	if (GetAsyncKeyState('T') & 0x8000)
 // 		mInvader->Walk(100.0f*dt);
 // 	if (GetAsyncKeyState('H') & 0x8000)
@@ -331,142 +314,7 @@ void Engine::UpdateGame(float dt)
 // 		mInvader->Walk(-100.0f*dt);
 
 }
-void Engine::UpdateBossWin(float dt)
-{
-	UpdateGame(dt);
-}
-void Engine::UpdateBossLose(float dt)
-{
-	mCursorOn = true;
-	mBSOD->Update(mCam, dt);
-	spawnTimer += dt;
-	if (spawnTimer >= 5.0f)
-	{
-		exitable = true;
-	}
-}
-void Engine::UpdateBugs(float dt)
-{
-	for (int i = 0; i < mInvaders.size(); i++)
-	{
-		if (mInvaders[i]->goToPos){ mInvaders[i]->Walk(100 * dt); }
-		else{ mInvaders[i]->mDead = true; }
 
-
-
-		mInvaders[i]->Update(mCam, dt);
-		if (mInvaders[i]->mUseAnimation){ mInvaders[i]->mSpriteAnimation->Update(dt); }
-		if (mInvaders[i]->mDead)
-		{
-			
-			delete mInvaders[i];
-			mInvaders[i] = nullptr;
-			mInvaders.erase(mInvaders.begin() + i);
-		}
-	}
-}
-void Engine::UpdatePickups(float dt)
-{
-	for (int i = 0; i < mMushrooms.size(); i++)
-	{
-		mMushrooms[i]->Yaw(dt);
-
-		mMushrooms[i]->Update(mCam, dt);
-		if (CamOnPickUp(mMushrooms[i])){ mMushrooms[i]->mDead = true; speedBonusTime += 5; 
-		if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(5); }
-		} 
-
-		if (mMushrooms[i]->mDead)
-		{
-			delete mMushrooms[i];
-			mMushrooms[i] = nullptr;
-			mMushrooms.erase(mMushrooms.begin() + i);
-		}
-	}
-}
-void Engine::UpdateProjectiles(float dt)
-{
-	for (int i = 0; i < mProjectiles.size(); i++)
-	{
-		if (mProjectiles[i]->mExplode)
-		{
-			mProjectiles[i]->explosionDist += dt * 80; if (mProjectiles[i]->explosionDist > 200.0f){ mProjectiles[i]->mDead = true; }
-		}
-		else
-		{
-			mProjectiles[i]->Walk(dt * 1000);
-			if (!ProjectileBounds(mProjectiles[i])){	mProjectiles[i]->mDead		= true; }
-			if (ProjectileHitBug(mProjectiles[i])){		mProjectiles[i]->mExplode	= true; }
-			if (*StateMachine::pGameState == GameState::BOSSFIGHT){
-				if (ProjectileHitBoss(mProjectiles[i])){ mProjectiles[i]->mExplode = true; }
-				if (ProjectileHitGhost(mProjectiles[i])){ mProjectiles[i]->mExplode = true; }
-			}
-			mProjectiles[i]->Update(mCam, dt);
-		}
-		
-		
-	
-		if (mProjectiles[i]->mDead)
-		{
-			delete mProjectiles[i];
-			mProjectiles[i] = nullptr;
-			mProjectiles.erase(mProjectiles.begin() + i);
-		}
-	}
-}
-void Engine::UpdateGhosts(float dt)
-{
-	for (int i = 0; i < mGhosts.size(); i++)
-	{
-		 mGhosts[i]->Walk(1000 * dt); 
-		 if (!ProjectileBounds(mGhosts[i])){ mGhosts[i]->mDead = true; }
-		 if (GhostHitCam(mGhosts[i])){ *StateMachine::pGameState = GameState::BOSSLOSE; /*LOSE GAME */ 
-		 if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(3); }
-		 mSound.PauseMusic(true, 3);
-		 }
-		mGhosts[i]->Update(mCam, dt);
-		if (mGhosts[i]->mDead)
-		{
-			delete mGhosts[i];
-			mGhosts[i] = nullptr;
-			mGhosts.erase(mGhosts.begin() + i);
-		}
-	}
-}
-void Engine::UpdateBoss(float dt)
-{
-	bossTimer += dt;
-	if (bossTimer > randBossTime)
-	{
-		toRandSpot = false; toCam = false;
-		MathHelper::RandF() > 0.5 ? toRandSpot = true : toCam = true;
-
-		if (toRandSpot){ mBoss->SetGoToPoint(MathHelper::RandF(-1000.0f, 1000.0f), mBoss->mPosition.y, MathHelper::RandF(-1000.0f, 1000.0f)); }
-		randBossTime = MathHelper::RandF(1.0f, 2.0f);
-		bossTimer = 0.0f;
-	}
-	
-	if (toRandSpot)
-	{
-		mBoss->Walk(dt * 500);
-		if (!mBoss->goToPos)
-		{
-			toCam = true;
-			toRandSpot = false;
-		}
-	}
-
-	if (toCam)
-	{
-		mBoss->SetGoToPoint(mCam.GetPosition().x, mBoss->mPosition.y, mCam.GetPosition().z);
-		mBoss->Walk(dt * 200);
-	}
-	
-	mBoss->Update(mCam, dt);
-	if (BossHitCam(mBoss)){ *StateMachine::pGameState = GameState::BOSSLOSE;/*LOSE GAME */ 
-	if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(3); }mSound.PauseMusic(true, 3);
-	}
-}
 
 
 
@@ -514,11 +362,14 @@ void Engine::ResetCamInGame()
 void Engine::IncProgress(float dt)
 {
 	(mCompBar->currProgress < 1.0) ? mCompBar->currProgress += dt / 100 : mCompBar->currProgress = 1.0;
-	if (mCompBar->currProgress == 1.0){ *StateMachine::pGameState = GameState::WIN; waitToClickTime = 2; 
-	if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(4); 
-	mSound.PauseMusic(true, 2);
-	}
-	
+	if (mCompBar->currProgress == 1.0)
+	{ 
+		*StateMachine::pGameState = GameState::WIN; waitToClickTime = 2;
+		if (*StateMachine::pSoundState == SoundState::SOUNDON)
+		{
+			mSound.PlaySound(4);
+			mSound.PauseMusic(true, 2);
+		}
 	}
 } 
 void Engine::IncBugs(float bug)
@@ -542,36 +393,36 @@ void Engine::DecBugs(float bug)
 void Engine::DecHP(float hp)
 {
 	if (mHPBAR->currProgress > 0)mHPBAR->currProgress -= hp;
-	if (mHPBAR->currProgress < 0){ mHPBAR->currProgress = 0.0f; *StateMachine::pGameState = GameState::BOSSWIN; waitToClickTime = 2;
+	if (mHPBAR->currProgress < 0){ mHPBAR->currProgress = 0.0f; waitToClickTime = 2;
 	if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(4); }
 	mSound.PauseMusic(true, 3);
 	}
 }
 void Engine::ClearVectors()
 {
-	for (int i = 0; i < mInvaders.size(); i++)
-	{
-		delete mInvaders[i];
-		mInvaders[i] = nullptr;
-	}mInvaders.clear();
-
-	for (int i = 0; i < mMushrooms.size(); i++)
-	{
-		delete mMushrooms[i];
-		mMushrooms[i] = nullptr;
-	}mMushrooms.clear();
-
-	for (int i = 0; i < mProjectiles.size(); i++)
-	{
-		delete mProjectiles[i];
-		mProjectiles[i] = nullptr;
-	}mProjectiles.clear();
-
-	for (int i = 0; i < mGhosts.size(); i++)
-	{
-		delete mGhosts[i];
-		mGhosts[i] = nullptr;
-	}mGhosts.clear();
+// 	for (int i = 0; i < mInvaders.size(); i++)
+// 	{
+// 		delete mInvaders[i];
+// 		mInvaders[i] = nullptr;
+// 	}mInvaders.clear();
+// 
+// 	for (int i = 0; i < mMushrooms.size(); i++)
+// 	{
+// 		delete mMushrooms[i];
+// 		mMushrooms[i] = nullptr;
+// 	}mMushrooms.clear();
+// 
+// 	for (int i = 0; i < mProjectiles.size(); i++)
+// 	{
+// 		delete mProjectiles[i];
+// 		mProjectiles[i] = nullptr;
+// 	}mProjectiles.clear();
+// 
+// 	for (int i = 0; i < mGhosts.size(); i++)
+// 	{
+// 		delete mGhosts[i];
+// 		mGhosts[i] = nullptr;
+// 	}mGhosts.clear();
 }
 
 
@@ -648,11 +499,10 @@ bool Engine::BossHitCam(Button* boss)
 
 
 //GAME INITS
-void Engine::InitMainMenu()
+void Engine::InitAll()
 {
 	HR(D3DX11CreateShaderResourceViewFromFile(md3dDevice, L"Textures/motherboard.dds", 0, 0, &mFloorTexSRV, 0));
 	
-
 	//MAKE BUTTONS
 	mPlayButt		= new Button(md3dDevice, 80.0f, 40.0f);
 	mSoundButt		= new Button(md3dDevice, 40.0f, 20.0f);
@@ -1314,22 +1164,7 @@ void Engine::InitMainMenu()
 	HR(md3dDevice->CreateBuffer(&ibd, &iinitData, &mShapesIB));
 	mSound.StreamMusic(1);
 }
-void Engine::InitPaused()
-{
 
-}
-void Engine::InitGameOn()
-{
-
-}
-void Engine::InitWin()
-{
-
-}
-void Engine::InitLose()
-{
-
-}
 
 
 
@@ -1352,10 +1187,7 @@ void Engine::DrawScene()
 	case GameState::PAUSED:		DrawPaused();	break;
 	case GameState::WIN:		DrawWin();		break;
 	case GameState::LOSE:		DrawLose();		break;
-	case GameState::BOSSFIGHT:		
 	case GameState::GAMEON:		DrawGameOn();	break;
-	case GameState::BOSSWIN:	DrawBossWin();	break;
-	case GameState::BOSSLOSE:	DrawBossLose();	break;
 	}
 
 	RestoreStates();
@@ -1669,36 +1501,6 @@ void Engine::DrawGameOn()
 		mWestW->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
 		mEastW->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
 
-
-		if (*StateMachine::pGameState != GameState::BOSSFIGHT)
-		{
-			for (int i = 0; i < mInvaders.size(); i++)
-			{
-				mInvaders[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
-			}
-
-			for (int i = 0; i < mMushrooms.size(); i++)
-			{
-				mMushrooms[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
-			}
-		}
-		else
-		{
-			mBoss->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
-			for (int i = 0; i < mGhosts.size(); i++)
-			{
-				mGhosts[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
-			}
-		}
-
-
-
-
-		for (int i = 0; i < mProjectiles.size(); i++)
-		{
-			mProjectiles[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
-		}
-
 		//DRAW BUTTS
 		Effects::BasicFX->SetDirLights(mDirLights2);
 		activeTexTech = Effects::BasicFX->Light2TexAlphaClipTech;
@@ -1856,14 +1658,9 @@ void Engine::OnMouseDown(WPARAM btnState, int x, int y)
 			case GameState::PAUSED:		BtnsPaused(x, y, true);			break;
 			case GameState::WIN:		BtnsWin(x, y, true);			break;
 			case GameState::LOSE:		BtnsLose(x, y, true);			break;
-			case GameState::GAMEON:					
-			case GameState::BOSSFIGHT:	BtnsGameOn(x, y, true);			break;
-			case GameState::BOSSWIN:	BtnsBossWin(x, y, true);		break;
-			case GameState::BOSSLOSE:	BtnsBossLose(x, y, true);		break;
+			case GameState::GAMEON:		BtnsGameOn(x, y, true);			break;
 			}
 		}
-
-		//SetCapture(mhMainWnd);
 	}
 }
 void Engine::OnMouseUp(WPARAM btnState, int x, int y)
@@ -1882,32 +1679,26 @@ void Engine::OnMouseMove(WPARAM btnState, int x, int y)
 		case GameState::WIN:		BtnsWin(x, y, false);			break;
 		case GameState::LOSE:		BtnsLose(x, y, false);			break;
 		case GameState::GAMEON:		BtnsGameOn(x, y, false);		break;
-		case GameState::BOSSWIN:	BtnsBossWin(x, y, false);		break;
-		case GameState::BOSSLOSE:	BtnsBossLose(x, y, false);		break;
 		}
 	}
-	if (*StateMachine::pGameState == GameState::GAMEON || *StateMachine::pGameState == GameState::BOSSFIGHT)
+	if (*StateMachine::pGameState == GameState::GAMEON)
 	{
-// 		if ((btnState & MK_LBUTTON) != 0)
-// 		{
-			// Make each pixel correspond to a quarter of a degree.
-			float dx = XMConvertToRadians(0.25f*static_cast<float>(x - mLastMousePos.x));
-			float dy = XMConvertToRadians(0.25f*static_cast<float>(y - mLastMousePos.y));
+		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - mLastMousePos.x));
+		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - mLastMousePos.y));
 	
-			mCam.mPitch += dy; //Increment internal pitch 
+		mCam.mPitch += dy; //Increment internal pitch 
 	
-			if (mCam.mPitch > -XM_PI/2 && mCam.mPitch < XM_PI/4){ mCam.Pitch(dy); } //LIMITS UP AND DOWN
-			mCam.mPitch = MathHelper::Clamp(mCam.mPitch, -XM_PI / 2, XM_PI/4);
+		if (mCam.mPitch > -XM_PI/2 && mCam.mPitch < XM_PI/4){ mCam.Pitch(dy); } //LIMITS UP AND DOWN
+		mCam.mPitch = MathHelper::Clamp(mCam.mPitch, -XM_PI / 2, XM_PI/4);
 			
-			mCam.RotateY(dx);
-/*		}*/
+		mCam.RotateY(dx);
 	}
 
 	mLastMousePos.x = x;
 	mLastMousePos.y = y;
 
 	//Mouse Wrap around
-	if (*StateMachine::pGameState == GameState::GAMEON || *StateMachine::pGameState == GameState::BOSSFIGHT)
+	if (*StateMachine::pGameState == GameState::GAMEON)
 	{
 		if (x <= 3)
 		{
@@ -1923,9 +1714,7 @@ void Engine::OnMouseMove(WPARAM btnState, int x, int y)
 			mLastMousePos.y = y;
 			return;
 		}
-	} 
-
-
+	}
 }
 void Engine::OnKeyUP(WPARAM btnState)
 {
@@ -1942,7 +1731,7 @@ void Engine::KeyboardHandler(float dt)
 	//
 	// Control the camera.
 	//
-	if (*StateMachine::pGameState == GameState::GAMEON || *StateMachine::pGameState == GameState::BOSSFIGHT)
+	if (*StateMachine::pGameState == GameState::GAMEON)
 	{
 		mCam.mUseConstraints = true;
 
@@ -1989,9 +1778,6 @@ void Engine::BtnsMainMenu(float x, float y, bool clicked)
 {
 	if (InButton3D(x, y, mPlayButt))
 	{	
-		
-		
-		
 		mPlayButt->hovering = true;
 		if (clicked)
 		{
@@ -2120,7 +1906,7 @@ void Engine::BtnsPaused(float x, float y, bool clicked)
 }
 void Engine::BtnsGameOn(float x, float y, bool clicked)
 {
-	if (clicked){ SpawnProjectile(); }
+	//if (clicked){ SpawnProjectile(); }
 }
 void Engine::BtnsWin(float x, float y, bool clicked)
 {
@@ -2160,7 +1946,7 @@ void Engine::BtnsWin(float x, float y, bool clicked)
 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(2); }
 			mCompBar->currProgress = 0.0f;
 			mBugBar->currProgress  = 0.0f;
-			*StateMachine::pGameState = GameState::BOSSFIGHT; ClearVectors(); ResetCamInGame();
+		   ClearVectors(); ResetCamInGame();
 		}
 	}
 	else{ mBossBattButt->hovering = false; }

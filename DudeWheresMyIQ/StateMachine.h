@@ -8,10 +8,7 @@ enum class GameState
 	PAUSED,
 	WIN,
 	LOSE,
-	GAMEON,
-	BOSSFIGHT,
-	BOSSWIN,
-	BOSSLOSE
+	GAMEON
 };
 
 enum class GameMode

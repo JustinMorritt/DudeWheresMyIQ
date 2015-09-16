@@ -51,11 +51,7 @@ public:
 	void ClearVectors();
 
 	//SCENE INITS
-	void InitMainMenu();
-	void InitPaused();
-	void InitGameOn();
-	void InitWin();
-	void InitLose();
+	void InitAll();
 
 	//GAME DRAWS
 	void DrawMainMenu();
@@ -70,13 +66,6 @@ public:
 	//UPDATES
 	void UpdateMainMenu(float dt);
 	void UpdateGame(float dt);
-	void UpdateBugs(float dt);
-	void UpdatePickups(float dt);
-	void UpdateProjectiles(float dt);
-	void UpdateGhosts(float dt);
-	void UpdateBoss(float dt);
-	void UpdateBossWin(float dt);
-	void UpdateBossLose(float dt);
 
 	//SPAWNERS
 	void SpawnBug();
@@ -190,7 +179,7 @@ private:
 	Button* mHPBAR;
 
 	//Spawn Timers
-	float spawnTimer; // Set this per second ..
+	float tickTimer; // Set this per second ..
 	float bossTimer;
 	float randBossTime;
 	bool toRandSpot;
