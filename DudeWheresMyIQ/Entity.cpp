@@ -1,7 +1,7 @@
 #include "Entity.h"
 
 //Makes a Square by default 
-Entity::Entity(ID3D11Device* device, float width, float height, float depth, bool sphere, bool upRightSquare, bool box) :
+Entity::Entity(std::string label, ID3D11Device* device, float width, float height, float depth, bool sphere, bool upRightSquare, bool box) :
 mPosition(0.0f, 0.0f, 0.0f),
 mRight(1.0f, 0.0f, 0.0f),
 mUp(0.0f, 1.0f, 0.0f),
@@ -33,7 +33,8 @@ mBasicTexTrans(false),
 mUseAnimation(false),
 turnAngle(0.0f),
 explosionDist(0.0f),
-mSpriteAnimation(0)
+mSpriteAnimation(0),
+mLabel(label)
 {
 	//CREATE TEXTURE
 

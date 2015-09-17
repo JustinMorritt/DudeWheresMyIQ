@@ -1,5 +1,5 @@
 #include "Engine.h"
-
+// Smart ItemS: newtons Cradle
 
 Engine::Engine(HINSTANCE hInstance)
 	: D3DApp(hInstance),
@@ -8,30 +8,10 @@ Engine::Engine(HINSTANCE hInstance)
 	mWalkCamMode(false),
 	mWireMode(false),
 	mBFCull(false),
-	mPlayButt(0),
-	mPausedButt(0),
-	mTitleButt(0),
-	mAboutButt(0),
-	mBymeButt(0),
-	mMusicButt(0),
-	mSoundButt(0),
-	mSOnButt(0),
-	mMOffButt(0),
-	mMOnButt(0),
-	mSOffButt(0),
-	mQuitButt(0),
-	mRestartButt(0),
-	mBackButt(0),
-	mAboutMsgButt(0),
 	testModel(0),
 	spawnBugTime(0),
 	spawnMushTime(0),
 	speedBonusTime(0),
-	mModeButt(0),
-	mEasyButt(0),
-	mMedButt(0),
-	mHardButt(0),
-	mInsaneButt(0),
 	mMoveSpeed(500),
 	tickTimer(0.0f),
 	bossTimer(0.0f),
@@ -185,23 +165,10 @@ void Engine::UpdateScene(float dt)
 }
 void Engine::UpdateMainMenu(float dt)
 {
-	mPlayButt->Update(mCam, dt);
-	mSoundButt->Update(mCam, dt);
-	mMusicButt->Update(mCam, dt);
-	mSOnButt->Update(mCam, dt);
-	mSOffButt->Update(mCam, dt);
-	mMOnButt->Update(mCam, dt);
-	mMOffButt->Update(mCam, dt);
-	mTitleButt->Update(mCam, dt);
-	mAboutButt->Update(mCam, dt);
-	mBackButt->Update(mCam, dt);
-	mAboutMsgButt->Update(mCam, dt);
-	mBymeButt->Update(mCam, dt);
-	mModeButt->Update(mCam, dt);
-	mEasyButt->Update(mCam, dt);
-	mMedButt->Update(mCam, dt);
-	mHardButt->Update(mCam, dt);
-	mInsaneButt->Update(mCam, dt);
+	for (int i = 0; i < mMain.size(); i++)
+	{
+		mMain[i]->Update(mCam, dt);
+	}
 
 	if (*StateMachine::pMusicState == MusicState::MUSICON){ if  ( mSound.MusicPaused(1)){ mSound.PauseMusic(false,1); } }
 	if (*StateMachine::pMusicState == MusicState::MUSICOFF){ if (!mSound.MusicPaused(1)){ mSound.PauseMusic(true,1); }}
@@ -210,13 +177,7 @@ void Engine::UpdateGame(float dt)
 {
 	//(*StateMachine::pGameState == GameState::GAMEON) ? mCursorOn = false : mCursorOn = true;
 
-	mQuitButt->Update(mCam, dt);
-	mRestartButt->Update(mCam, dt);
-	mPausedButt->Update(mCam, dt);
-	mBackButt->Update(mCam, dt);
-	mYouWinButt->Update(mCam, dt);
-	mYouLoseButt->Update(mCam, dt);
-	mRetryButt->Update(mCam, dt);
+
 
 	
 	//TIMER STUFF / SPAWN RATES   *Spawn Before Update Or Youll Get a Flicker Later On Of it Not Translated Yet*
@@ -458,26 +419,26 @@ bool Engine::BossHitCam(Entity* boss)
 void Engine::InitAll()
 {
 	//MAKE BUTTONS
-	mPlayButt		= new Entity(md3dDevice, 80.0f, 40.0f);
-	mSoundButt		= new Entity(md3dDevice, 40.0f, 20.0f);
-	mMusicButt		= new Entity(md3dDevice, 40.0f, 20.0f);
-	mSOnButt		= new Entity(md3dDevice, 40.0f, 20.0f);
-	mSOffButt		= new Entity(md3dDevice, 40.0f, 20.0f);
-	mMOnButt		= new Entity(md3dDevice, 40.0f, 20.0f);
-	mModeButt		= new Entity(md3dDevice, 40.0f, 20.0f);
-	mEasyButt		= new Entity(md3dDevice, 40.0f, 20.0f);
-	mMedButt		= new Entity(md3dDevice, 40.0f, 20.0f);
-	mHardButt		= new Entity(md3dDevice, 40.0f, 20.0f);
-	mInsaneButt		= new Entity(md3dDevice, 40.0f, 20.0f);
-	mMOffButt		= new Entity(md3dDevice, 40.0f, 20.0f);
-	mTitleButt		= new Entity(md3dDevice, 200.0f, 50.0f);
-	mAboutButt		= new Entity(md3dDevice, 80.0f, 40.0f);
-	mBymeButt		= new Entity(md3dDevice, 110.0f, 30.0f);
-	mQuitButt		= new Entity(md3dDevice, 350.0f, 200.0f);
-	mRestartButt	= new Entity(md3dDevice, 350.0f, 200.0f);
-	mPausedButt		= new Entity(md3dDevice, 600.0f, 300.0f);
-	mBackButt		= new Entity(md3dDevice, 80.0f, 40.0f);
-	mAboutMsgButt	= new Entity(md3dDevice, 110.0f, 110.0f);
+	Entity* mPlayButt		= new Entity("play", md3dDevice, 80.0f, 40.0f);				mMain.push_back(mPlayButt);			mMainBtns.push_back(mPlayButt);
+	Entity* mSoundButt		= new Entity("sound", md3dDevice, 40.0f, 20.0f);			mMain.push_back(mSoundButt);		mMainBtns.push_back(mSoundButt);
+	Entity* mMusicButt		= new Entity("music", md3dDevice, 40.0f, 20.0f);			mMain.push_back(mMusicButt);		mMainBtns.push_back(mMusicButt);
+	Entity* mSOnButt		= new Entity("Son", md3dDevice, 40.0f, 20.0f);				mMain.push_back(mSOnButt	);
+	Entity* mSOffButt		= new Entity("Soff", md3dDevice, 40.0f, 20.0f);				mMain.push_back(mSOffButt	);
+	Entity* mMOnButt		= new Entity("Mon", md3dDevice, 40.0f, 20.0f);				mMain.push_back(mMOnButt	);
+	Entity* mModeButt		= new Entity("mode", md3dDevice, 40.0f, 20.0f);				mMain.push_back(mModeButt	);		mMainBtns.push_back(mModeButt);
+	Entity* mEasyButt		= new Entity("easy", md3dDevice, 40.0f, 20.0f);				mMain.push_back(mEasyButt	);
+	Entity* mMedButt		= new Entity("med", md3dDevice, 40.0f, 20.0f);				mMain.push_back(mMedButt	);
+	Entity* mHardButt		= new Entity("hard", md3dDevice, 40.0f, 20.0f);				mMain.push_back(mHardButt	);
+	Entity* mInsaneButt		= new Entity("insane", md3dDevice, 40.0f, 20.0f);			mMain.push_back(mInsaneButt	);
+	Entity* mMOffButt		= new Entity("Moff", md3dDevice, 40.0f, 20.0f);				mMain.push_back(mMOffButt	);
+	Entity* mTitleButt		= new Entity("title", md3dDevice, 200.0f, 50.0f);			mMain.push_back(mTitleButt	);
+	Entity* mAboutButt		= new Entity("about", md3dDevice, 80.0f, 40.0f);			mMain.push_back(mAboutButt	);		mMainBtns.push_back(mAboutButt);
+	Entity* mBymeButt		= new Entity("byme", md3dDevice, 110.0f, 30.0f);			mAbout.push_back(mBymeButt	);
+	Entity* mQuitButt		= new Entity("quit", md3dDevice, 350.0f, 200.0f);			
+	Entity* mRestartButt	= new Entity("restart", md3dDevice, 350.0f, 200.0f);		
+	Entity* mPausedButt		= new Entity("paused", md3dDevice, 600.0f, 300.0f);			
+	Entity* mBackButt		= new Entity("back", md3dDevice, 80.0f, 40.0f);				mAbout.push_back(mBackButt);		mAboutBtns.push_back(mBackButt);
+	Entity* mAboutMsgButt	= new Entity("aboutmsg", md3dDevice, 110.0f, 110.0f);		mAbout.push_back(mAboutMsgButt);
 
 	mPlayButt->LoadTexture(			md3dDevice, L"Textures/play.dds");
 	mSoundButt->LoadTexture(		md3dDevice, L"Textures/sound.dds");
@@ -494,15 +455,11 @@ void Engine::InitAll()
 	mPausedButt->LoadTexture(		md3dDevice, L"Textures/paused.dds");
 	mBackButt->LoadTexture(			md3dDevice, L"Textures/back.dds");
 	mAboutMsgButt->LoadTexture(		md3dDevice, L"Textures/aboutmsg.dds");
-	mYouWinButt->LoadTexture(		md3dDevice, L"Textures/youwin.dds");
-	mYouLoseButt->LoadTexture(		md3dDevice, L"Textures/youlose.dds");
-	mRetryButt->LoadTexture(		md3dDevice, L"Textures/retry.dds");
-	mModeButt->LoadTexture(			md3dDevice, L"Textures/mode.dds");
-	mEasyButt->LoadTexture(			md3dDevice, L"Textures/easy.dds");
-	mMedButt->LoadTexture(			md3dDevice, L"Textures/med.dds");
-	mHardButt->LoadTexture(			md3dDevice, L"Textures/hard.dds");
-	mInsaneButt->LoadTexture(		md3dDevice, L"Textures/insane.dds");
-
+	mModeButt->LoadTexture(md3dDevice, L"Textures/mode.dds");
+	mMedButt->LoadTexture(md3dDevice, L"Textures/med.dds");
+	mEasyButt->LoadTexture(md3dDevice, L"Textures/easy.dds");
+	mHardButt->LoadTexture(md3dDevice, L"Textures/hard.dds");
+	mInsaneButt->LoadTexture(md3dDevice, L"Textures/insane.dds");
 
 	//3D UI STUFF
 	mPlayButt->SetPos(0.0f, 50.0f, -200.0f);
@@ -562,6 +519,7 @@ void Engine::InitAll()
 	mQuitButt->SetPos(700.0f, 100.0f, -90.0f);
 	mQuitButt->Pitch(XM_PI / 4);
 
+	BuildVertexAndIndexBuffer(&mShapesVB, &mShapesIB, mMain);
 
 
 
@@ -569,19 +527,84 @@ void Engine::InitAll()
 
 
 
-	SetAllVertexOffsets(); // EVENTUALLY PASS THE VECTOR TO IT 
-	SetAllIndexOffsets();  // EVENTUALLY PASS THE VECTOR TO IT 
 
-	UINT totalVertexCount = TotalVertexCount();
-	UINT totalIndexCount  = TotalIndiceCount();
-			 
+	mSound.StreamMusic(1);
+}
+void Engine::InsertAllIndices(std::vector<UINT>& indices, std::vector<Entity*>& entitys)
+{
+	for (int i = 0; i < entitys.size(); i++)
+	{
+		indices.insert(indices.end(), entitys[i]->mGrid.Indices.begin(), entitys[i]->mGrid.Indices.end());
+	}
+}
+void Engine::InsertAllVertices(std::vector<Vertex::Basic32>& vertices, UINT& k, std::vector<Entity*>& entitys)
+{
+	for (int i = 0; i < entitys.size(); i++)
+	{
+		entitys[i]->LoadVertData(vertices, k);
+	}
+}
+UINT Engine::TotalVertexCount(std::vector<Entity*>& entitys)
+{
+	UINT ret = 0;
+	for (int i = 0; i < entitys.size(); i++)
+	{
+		ret += entitys[i]->mGrid.Vertices.size();
+	}
+	return ret;
+}
+UINT Engine::TotalIndiceCount(std::vector<Entity*>& entitys)
+{
+	UINT ret = 0;
+	for (int i = 0; i < entitys.size(); i++)
+	{
+		ret += entitys[i]->mIndexCount;
+	}
+	return ret;
+}
+void Engine::SetAllVertexOffsets(std::vector<Entity*>& entitys)
+{
+	for (int i = 0; i < entitys.size(); i++)
+	{
+		if (i != 0)
+		{
+			entitys[i]->SetVertexOffset(entitys[i - 1]->GetVertOffset() + entitys[i - 1]->mGrid.Vertices.size());
+		}
+		else
+		{
+			entitys[i]->SetVertexOffset(0);
+		}
+	}
+}
+void Engine::SetAllIndexOffsets(std::vector<Entity*>& entitys)
+{
+		// Cache the index count of each object.
+	for (int i = 0; i < entitys.size(); i++)
+	{
+		if (i != 0)
+		{
+			entitys[i]->SetIndexOffset(entitys[i - 1]->GetIndOffset() + entitys[i - 1]->mGrid.Indices.size());
+		}
+		else
+		{
+			entitys[i]->SetIndexOffset(0);
+		}
+	}
+}
+void Engine::BuildVertexAndIndexBuffer(ID3D11Buffer** VB, ID3D11Buffer** IB, std::vector<Entity*>& entities)
+{
+	SetAllVertexOffsets(entities);
+	SetAllIndexOffsets(entities);
+
+	UINT totalVertexCount = TotalVertexCount(entities);
+	UINT totalIndexCount = TotalIndiceCount(entities);
+
 	// pack vertices of all the meshes into one vertex buffer.
 	std::vector<Vertex::Basic32> vertices(totalVertexCount);
 	UINT k = 0;
+	InsertAllVertices(vertices, k, entities); // EVENTUALLY PASS THE VECTOR TO IT 
 
-	InsertAllVertices(vertices, k); // EVENTUALLY PASS THE VECTOR TO IT 
-
-
+	//CREATE VERTEX BUFFER
 	D3D11_BUFFER_DESC vbd;
 	vbd.Usage = D3D11_USAGE_IMMUTABLE;
 	vbd.ByteWidth = sizeof(Vertex::Basic32) * totalVertexCount;
@@ -590,13 +613,12 @@ void Engine::InitAll()
 	vbd.MiscFlags = 0;
 	D3D11_SUBRESOURCE_DATA vinitData;
 	vinitData.pSysMem = &vertices[0];
-	HR(md3dDevice->CreateBuffer(&vbd, &vinitData, &mShapesVB));
+	HR(md3dDevice->CreateBuffer(&vbd, &vinitData, VB));
 
 
 	// Pack the indices of all the meshes into one index buffer.
 	std::vector<UINT> indices;
-
-	InsertAllIndices(indices); // EVENTUALLY PASS THE VECTOR TO IT 
+	InsertAllIndices(indices, entities); // EVENTUALLY PASS THE VECTOR TO IT 
 
 	//CREATE INDEX BUFFER
 	D3D11_BUFFER_DESC ibd;
@@ -607,202 +629,9 @@ void Engine::InitAll()
 	ibd.MiscFlags = 0;
 	D3D11_SUBRESOURCE_DATA iinitData;
 	iinitData.pSysMem = &indices[0];
-	HR(md3dDevice->CreateBuffer(&ibd, &iinitData, &mShapesIB));
-
-
-
-
-	mSound.StreamMusic(1);
+	HR(md3dDevice->CreateBuffer(&ibd, &iinitData, IB));
 }
-void Engine::InsertAllIndices(std::vector<UINT>& indices)
-{
-	//indices.insert(indices.end(), m.Indices.begin(), grid.Indices.end());
-	indices.insert(indices.end(), mPlayButt->mGrid.Indices.begin(), mPlayButt->mGrid.Indices.end());
-	indices.insert(indices.end(), mSoundButt->mGrid.Indices.begin(), mSoundButt->mGrid.Indices.end());
-	indices.insert(indices.end(), mMusicButt->mGrid.Indices.begin(), mMusicButt->mGrid.Indices.end());
-	indices.insert(indices.end(), mSOnButt->mGrid.Indices.begin(), mSOnButt->mGrid.Indices.end());
-	indices.insert(indices.end(), mSOffButt->mGrid.Indices.begin(), mSOffButt->mGrid.Indices.end());
-	indices.insert(indices.end(), mMOnButt->mGrid.Indices.begin(), mMOnButt->mGrid.Indices.end());
-	indices.insert(indices.end(), mMOffButt->mGrid.Indices.begin(), mMOffButt->mGrid.Indices.end());
-	indices.insert(indices.end(), mTitleButt->mGrid.Indices.begin(), mTitleButt->mGrid.Indices.end());
-	indices.insert(indices.end(), mAboutButt->mGrid.Indices.begin(), mAboutButt->mGrid.Indices.end());
 
-	indices.insert(indices.end(), mBymeButt->mGrid.Indices.begin(), mBymeButt->mGrid.Indices.end());
-
-	indices.insert(indices.end(), mQuitButt->mGrid.Indices.begin(), mQuitButt->mGrid.Indices.end());
-	indices.insert(indices.end(), mRestartButt->mGrid.Indices.begin(), mRestartButt->mGrid.Indices.end());
-	indices.insert(indices.end(), mPausedButt->mGrid.Indices.begin(), mPausedButt->mGrid.Indices.end());
-	indices.insert(indices.end(), mBackButt->mGrid.Indices.begin(), mBackButt->mGrid.Indices.end());
-	indices.insert(indices.end(), mAboutMsgButt->mGrid.Indices.begin(), mAboutMsgButt->mGrid.Indices.end());
-
-	indices.insert(indices.end(), mYouWinButt->mGrid.Indices.begin(), mYouWinButt->mGrid.Indices.end());
-	indices.insert(indices.end(), mYouLoseButt->mGrid.Indices.begin(), mYouLoseButt->mGrid.Indices.end());
-	indices.insert(indices.end(), mRetryButt->mGrid.Indices.begin(), mRetryButt->mGrid.Indices.end());
-
-	indices.insert(indices.end(), mModeButt->mGrid.Indices.begin(), mModeButt->mGrid.Indices.end());
-	indices.insert(indices.end(), mEasyButt->mGrid.Indices.begin(), mEasyButt->mGrid.Indices.end());
-	indices.insert(indices.end(), mMedButt->mGrid.Indices.begin(), mMedButt->mGrid.Indices.end());
-	indices.insert(indices.end(), mHardButt->mGrid.Indices.begin(), mHardButt->mGrid.Indices.end());
-	indices.insert(indices.end(), mInsaneButt->mGrid.Indices.begin(), mInsaneButt->mGrid.Indices.end());
-
-}
-void Engine::InsertAllVertices(std::vector<Vertex::Basic32>& vertices, UINT& k)
-{
-	mPlayButt->LoadVertData(vertices, k);
-	mSoundButt->LoadVertData(vertices, k);
-	mMusicButt->LoadVertData(vertices, k);
-	mSOnButt->LoadVertData(vertices, k);
-	mSOffButt->LoadVertData(vertices, k);
-	mMOnButt->LoadVertData(vertices, k);
-	mMOffButt->LoadVertData(vertices, k);
-	mTitleButt->LoadVertData(vertices, k);
-	mAboutButt->LoadVertData(vertices, k);
-
-	mBymeButt->LoadVertData(vertices, k);
-
-	mQuitButt->LoadVertData(vertices, k);
-	mRestartButt->LoadVertData(vertices, k);
-	mPausedButt->LoadVertData(vertices, k);
-	mBackButt->LoadVertData(vertices, k);
-	mAboutMsgButt->LoadVertData(vertices, k);
-
-	mYouWinButt->LoadVertData(vertices, k);
-	mYouLoseButt->LoadVertData(vertices, k);
-	mRetryButt->LoadVertData(vertices, k);
-
-	mModeButt->LoadVertData(vertices, k);
-	mEasyButt->LoadVertData(vertices, k);
-	mMedButt->LoadVertData(vertices, k);
-	mHardButt->LoadVertData(vertices, k);
-	mInsaneButt->LoadVertData(vertices, k);
-}
-UINT Engine::TotalVertexCount()
-{
-	return 	mPlayButt->mGrid.Vertices.size()
-		+ mSoundButt->mGrid.Vertices.size()
-		+ mMusicButt->mGrid.Vertices.size()
-		+ mSOnButt->mGrid.Vertices.size()
-		+ mSOffButt->mGrid.Vertices.size()
-		+ mMOnButt->mGrid.Vertices.size()
-		+ mMOffButt->mGrid.Vertices.size()
-		+ mTitleButt->mGrid.Vertices.size()
-		+ mAboutButt->mGrid.Vertices.size()
-
-		+ mBymeButt->mGrid.Vertices.size()
-
-		+ mQuitButt->mGrid.Vertices.size()
-		+ mRestartButt->mGrid.Vertices.size()
-		+ mPausedButt->mGrid.Vertices.size()
-		+ mBackButt->mGrid.Vertices.size()
-		+ mAboutMsgButt->mGrid.Vertices.size()
-
-		+ mYouWinButt->mGrid.Vertices.size()
-		+ mYouLoseButt->mGrid.Vertices.size()
-		+ mRetryButt->mGrid.Vertices.size()
-
-		+ mModeButt->mGrid.Vertices.size()
-		+ mEasyButt->mGrid.Vertices.size()
-		+ mMedButt->mGrid.Vertices.size()
-		+ mHardButt->mGrid.Vertices.size()
-		+ mInsaneButt->mGrid.Vertices.size();
-}
-UINT Engine::TotalIndiceCount()
-{
-	return mPlayButt->mIndexCount
-		+ mSoundButt->mIndexCount
-		+ mMusicButt->mIndexCount
-		+ mSOnButt->mIndexCount
-		+ mSOffButt->mIndexCount
-		+ mMOnButt->mIndexCount
-		+ mMOffButt->mIndexCount
-		+ mTitleButt->mIndexCount
-		+ mAboutButt->mIndexCount
-
-		+ mBymeButt->mIndexCount
-
-		+ mQuitButt->mIndexCount
-		+ mRestartButt->mIndexCount
-		+ mPausedButt->mIndexCount
-		+ mBackButt->mIndexCount
-		+ mAboutMsgButt->mIndexCount
-
-		+ mYouWinButt->mIndexCount
-		+ mYouLoseButt->mIndexCount
-		+ mRetryButt->mIndexCount
-
-		+ mModeButt->mIndexCount
-		+ mEasyButt->mIndexCount
-		+ mMedButt->mIndexCount
-		+ mHardButt->mIndexCount
-		+ mInsaneButt->mIndexCount;
-}
-void Engine::SetAllVertexOffsets()
-{
-	mPlayButt->SetVertexOffset(0);
-	mSoundButt->SetVertexOffset(mPlayButt->GetVertOffset() + mPlayButt->mGrid.Vertices.size());
-	mMusicButt->SetVertexOffset(mSoundButt->GetVertOffset() + mSoundButt->mGrid.Vertices.size());
-	mSOnButt->SetVertexOffset(mMusicButt->GetVertOffset() + mMusicButt->mGrid.Vertices.size());
-	mSOffButt->SetVertexOffset(mSOnButt->GetVertOffset() + mSOnButt->mGrid.Vertices.size());
-	mMOnButt->SetVertexOffset(mSOffButt->GetVertOffset() + mSOffButt->mGrid.Vertices.size());
-	mMOffButt->SetVertexOffset(mMOnButt->GetVertOffset() + mMOnButt->mGrid.Vertices.size());
-	mTitleButt->SetVertexOffset(mMOffButt->GetVertOffset() + mMOffButt->mGrid.Vertices.size());
-	mAboutButt->SetVertexOffset(mTitleButt->GetVertOffset() + mTitleButt->mGrid.Vertices.size());
-
-	mBymeButt->SetVertexOffset(mAboutButt->GetVertOffset() + mAboutButt->mGrid.Vertices.size());
-
-	mQuitButt->SetVertexOffset(mBymeButt->GetVertOffset() + mBymeButt->mGrid.Vertices.size());
-	mRestartButt->SetVertexOffset(mQuitButt->GetVertOffset() + mQuitButt->mGrid.Vertices.size());
-	mPausedButt->SetVertexOffset(mRestartButt->GetVertOffset() + mRestartButt->mGrid.Vertices.size());
-	mBackButt->SetVertexOffset(mPausedButt->GetVertOffset() + mPausedButt->mGrid.Vertices.size());
-	mAboutMsgButt->SetVertexOffset(mBackButt->GetVertOffset() + mBackButt->mGrid.Vertices.size());
-
-
-	mYouWinButt->SetVertexOffset(mAboutMsgButt->GetVertOffset() + mAboutMsgButt->mGrid.Vertices.size());
-	mYouLoseButt->SetVertexOffset(mYouWinButt->GetVertOffset() + mYouWinButt->mGrid.Vertices.size());
-	mRetryButt->SetVertexOffset(mYouLoseButt->GetVertOffset() + mYouLoseButt->mGrid.Vertices.size());
-
-
-	mModeButt->SetVertexOffset(mRetryButt->GetVertOffset() + mRetryButt->mGrid.Vertices.size());
-	mEasyButt->SetVertexOffset(mModeButt->GetVertOffset() + mModeButt->mGrid.Vertices.size());
-	mMedButt->SetVertexOffset(mEasyButt->GetVertOffset() + mEasyButt->mGrid.Vertices.size());
-	mHardButt->SetVertexOffset(mMedButt->GetVertOffset() + mMedButt->mGrid.Vertices.size());
-	mInsaneButt->SetVertexOffset(mHardButt->GetVertOffset() + mHardButt->mGrid.Vertices.size());
-
-}
-void Engine::SetAllIndexOffsets()
-{
-		// Cache the index count of each object.
-	mPlayButt->SetIndexOffset(0);
-	mSoundButt->SetIndexOffset(		mPlayButt->GetIndOffset()		+ mPlayButt->mGrid.Indices.size());
-	mMusicButt->SetIndexOffset(		mSoundButt->GetIndOffset()		+ mSoundButt->mGrid.Indices.size());
-	mSOnButt->SetIndexOffset(		mMusicButt->GetIndOffset()		+ mMusicButt->mGrid.Indices.size());
-	mSOffButt->SetIndexOffset(		mSOnButt->GetIndOffset()		+ mSOnButt->mGrid.Indices.size());
-	mMOnButt->SetIndexOffset(		mSOffButt->GetIndOffset()		+ mSOffButt->mGrid.Indices.size());
-	mMOffButt->SetIndexOffset(		mMOnButt->GetIndOffset()		+ mMOnButt->mGrid.Indices.size());
-	mTitleButt->SetIndexOffset(		mMOffButt->GetIndOffset()		+ mMOffButt->mGrid.Indices.size());
-	mAboutButt->SetIndexOffset(		mTitleButt->GetIndOffset()		+ mTitleButt->mGrid.Indices.size());
-
-	mBymeButt->SetIndexOffset(mAboutButt->GetIndOffset() + mAboutButt->mGrid.Indices.size());
-
-	mQuitButt->SetIndexOffset(mBymeButt->GetIndOffset() + mBymeButt->mGrid.Indices.size());
-	mRestartButt->SetIndexOffset(	mQuitButt->GetIndOffset()		+ mQuitButt->mGrid.Indices.size());
-	mPausedButt->SetIndexOffset(	mRestartButt->GetIndOffset()	+ mRestartButt->mGrid.Indices.size());
-	mBackButt->SetIndexOffset(		mPausedButt->GetIndOffset()		+ mPausedButt->mGrid.Indices.size());
-	mAboutMsgButt->SetIndexOffset(	mBackButt->GetIndOffset()		+ mBackButt->mGrid.Indices.size());
-
-
-	mYouWinButt->SetIndexOffset(mAboutMsgButt->GetIndOffset() + mAboutMsgButt->mGrid.Indices.size());
-	mYouLoseButt->SetIndexOffset(	mYouWinButt->GetIndOffset()		+ mYouWinButt->mGrid.Indices.size());
-	mRetryButt->SetIndexOffset(		mYouLoseButt->GetIndOffset()	+ mYouLoseButt->mGrid.Indices.size());
-
-
-	mModeButt->SetIndexOffset(mRetryButt->GetIndOffset() + mRetryButt->mGrid.Indices.size());
-	mEasyButt->SetIndexOffset(		mModeButt->GetIndOffset()		+ mModeButt->mGrid.Indices.size());
-	mMedButt->SetIndexOffset(		mEasyButt->GetIndOffset()		+ mEasyButt->mGrid.Indices.size());
-	mHardButt->SetIndexOffset(		mMedButt->GetIndOffset()		+ mMedButt->mGrid.Indices.size());
-	mInsaneButt->SetIndexOffset(	mHardButt->GetIndOffset()		+ mHardButt->mGrid.Indices.size());
-
-}
 
 
 //GAME DRAWS
@@ -851,26 +680,36 @@ void Engine::DrawMainMenu()
 		md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
 
 
-		mPlayButt->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
-		mSoundButt->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
-		mMusicButt->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
-		mTitleButt->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
-		mAboutButt->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
-
-		mModeButt->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
-		switch (*StateMachine::pGameMode)
+		for (int i = 0; i < mMain.size(); i++)
 		{
-		case GameMode::EASY:mEasyButt->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());		difficultyTimer = 1.0f;	break;
-		case GameMode::MED:mMedButt->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());		difficultyTimer = 0.8f;	break;
-		case GameMode::HARD:mHardButt->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());		difficultyTimer = 0.5f;	break;
-		case GameMode::INSANE:mInsaneButt->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());	difficultyTimer = 0.2f;	break;
+			if (mMain[i]->mLabel == "easy"){
+				if (*StateMachine::pGameMode == GameMode::EASY){ mMain[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime()); }			continue;
+			}
+			if (mMain[i]->mLabel == "med"){
+				if (*StateMachine::pGameMode == GameMode::MED){ mMain[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime()); }				continue;
+			}
+			if (mMain[i]->mLabel == "hard"){
+				if (*StateMachine::pGameMode == GameMode::HARD){ mMain[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime()); }			continue;
+			}
+			if (mMain[i]->mLabel == "insane"){
+				if (*StateMachine::pGameMode == GameMode::INSANE){ mMain[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime()); }			continue;
+			}
+			if (mMain[i]->mLabel == "Son"){
+				if (*StateMachine::pSoundState == SoundState::SOUNDON){ mMain[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime()); }		continue;
+			}
+			if (mMain[i]->mLabel == "Soff"){
+				if (*StateMachine::pSoundState == SoundState::SOUNDOFF){ mMain[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime()); }	continue;
+			}
+			if (mMain[i]->mLabel == "Mon"){
+				if (*StateMachine::pMusicState == MusicState::MUSICON){ mMain[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime()); }		continue;
+			}
+			if (mMain[i]->mLabel == "Moff"){
+				if (*StateMachine::pMusicState == MusicState::MUSICOFF){mMain[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());}		continue;
+			}
+
+			mMain[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
+		
 		}
-
-
-		if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSOnButt->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime()); }
-		else{ mSOffButt->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime()); }
-		if (*StateMachine::pMusicState == MusicState::MUSICON){ mMOnButt->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime()); }
-		else { mMOffButt->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime()); }
 	}
 
 	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
@@ -907,34 +746,34 @@ void Engine::DrawMainMenu()
 // 			}
 // 		}
 // 	}
-	RestoreStates();
+
 
 	//SHADOWS *******************************************************************************************************
 
-	//set shadow states
-	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	md3dImmediateContext->OMSetBlendState(RenderStates::TransparentBS, blendFactor, 0xffffffff);
-	md3dImmediateContext->OMSetDepthStencilState(RenderStates::NoDoubleBlendDSS, 0); // changing 0 means overlaping draws
-	md3dImmediateContext->IASetVertexBuffers(0, 1, &mShapesVB, &stride, &offset);
-	md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
-
-	//Set Shadow Constants
-	XMVECTOR shadowPlane = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // xz plane
-	XMVECTOR toMainLight = -XMLoadFloat3(&mDirLights[0].Direction);
-	XMMATRIX S = XMMatrixShadow(shadowPlane, toMainLight);
-	float xOffSet = 43.0f; float zOffSet = 90.0f; float yOffSet = 0.1f; float sScale = 0.15f;
-
-	mPlayButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-	mSoundButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-	mMusicButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-	mSOnButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-	mSOffButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-	mMOnButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-	mMOffButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-	mTitleButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet + 100.0f, mCam, mShadowMat);
-	mAboutButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-	mModeButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale/2, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-	mEasyButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale/2, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
+// 	//set shadow states
+// 	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+// 	md3dImmediateContext->OMSetBlendState(RenderStates::TransparentBS, blendFactor, 0xffffffff);
+// 	md3dImmediateContext->OMSetDepthStencilState(RenderStates::NoDoubleBlendDSS, 0); // changing 0 means overlaping draws
+// 	md3dImmediateContext->IASetVertexBuffers(0, 1, &mShapesVB, &stride, &offset);
+// 	md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
+// 
+// 	//Set Shadow Constants
+// 	XMVECTOR shadowPlane = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // xz plane
+// 	XMVECTOR toMainLight = -XMLoadFloat3(&mDirLights[0].Direction);
+// 	XMMATRIX S = XMMatrixShadow(shadowPlane, toMainLight);
+// 	float xOffSet = 43.0f; float zOffSet = 90.0f; float yOffSet = 0.1f; float sScale = 0.15f;
+// 
+// 	mPlayButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
+// 	mSoundButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
+// 	mMusicButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
+// 	mSOnButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
+// 	mSOffButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
+// 	mMOnButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
+// 	mMOffButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
+// 	mTitleButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet + 100.0f, mCam, mShadowMat);
+// 	mAboutButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
+// 	mModeButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale/2, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
+// 	mEasyButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale/2, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
 	// Restore default states.
 	RestoreStates();
 
@@ -981,35 +820,36 @@ void Engine::DrawAbout()
 		md3dImmediateContext->DrawIndexed(mGridIndexCount, mGridIndexOffset, mGridVertexOffset);
 
 		//DRAW BUTTS
-
-		mAboutMsgButt->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
-		mTitleButt->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
-		mBackButt->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
-		mBymeButt->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
-
+		for (int i = 0; i < mMain.size(); i++)
+		{
+			if (mMain[i]->mLabel == "aboutmsg" || mMain[i]->mLabel == "title" || mMain[i]->mLabel == "back" || mMain[i]->mLabel == "byme")
+			{
+				mMain[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
+			}
+		}
 	}
 
 	//SHADOWS *******************************************************************************************************
 
-	//set shadow states
-	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	md3dImmediateContext->OMSetBlendState(RenderStates::TransparentBS, blendFactor, 0xffffffff);
-	md3dImmediateContext->OMSetDepthStencilState(RenderStates::NoDoubleBlendDSS, 0); // changing 0 means overlaping draws
-	md3dImmediateContext->IASetVertexBuffers(0, 1, &mShapesVB, &stride, &offset);
-	md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
-
-	//Set Shadow Constants
-	XMVECTOR shadowPlane = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // xz plane
-	XMVECTOR toMainLight = -XMLoadFloat3(&mDirLights[0].Direction);
-	XMMATRIX S = XMMatrixShadow(shadowPlane, toMainLight);
-	float xOffSet = 43.0f; float zOffSet = 90.0f; float yOffSet = 0.1f; float sScale = 0.1f;
-
-	mAboutMsgButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-	mTitleButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet+100.0f, mCam, mShadowMat);
-	mBackButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-	mBymeButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-
-	// Restore default states.
+// 	//set shadow states
+// 	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+// 	md3dImmediateContext->OMSetBlendState(RenderStates::TransparentBS, blendFactor, 0xffffffff);
+// 	md3dImmediateContext->OMSetDepthStencilState(RenderStates::NoDoubleBlendDSS, 0); // changing 0 means overlaping draws
+// 	md3dImmediateContext->IASetVertexBuffers(0, 1, &mShapesVB, &stride, &offset);
+// 	md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
+// 
+// 	//Set Shadow Constants
+// 	XMVECTOR shadowPlane = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // xz plane
+// 	XMVECTOR toMainLight = -XMLoadFloat3(&mDirLights[0].Direction);
+// 	XMMATRIX S = XMMatrixShadow(shadowPlane, toMainLight);
+// 	float xOffSet = 43.0f; float zOffSet = 90.0f; float yOffSet = 0.1f; float sScale = 0.1f;
+// 
+// 	mAboutMsgButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
+// 	mTitleButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet+100.0f, mCam, mShadowMat);
+// 	mBackButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
+// 	mBymeButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
+// 
+// 	// Restore default states.
 	RestoreStates();
 }
 void Engine::DrawPaused()
@@ -1034,9 +874,13 @@ void Engine::DrawPaused()
 	md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{
-		mPausedButt->Draw2D(activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
-		mQuitButt->Draw2D(activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
-		mRestartButt->Draw2D(activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
+		for (int i = 0; i < mMain.size(); i++)
+		{
+			if (mMain[i]->mLabel == "paused" || mMain[i]->mLabel == "quit" || mMain[i]->mLabel == "restart")
+			{
+				mMain[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
+			}
+		}
 	}
 
 	RestoreStates();
@@ -1123,8 +967,13 @@ void Engine::DrawWin()
 	md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{
-		mQuitButt->Draw2D(activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
-		mRestartButt->Draw2D(activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
+		for (int i = 0; i < mMain.size(); i++)
+		{
+			if (mMain[i]->mLabel == "quit" || mMain[i]->mLabel == "restart")
+			{
+				mMain[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
+			}
+		}
 	}
 
 	RestoreStates();
@@ -1152,9 +1001,9 @@ void Engine::DrawLose()
 	md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{
-		mYouLoseButt->Draw2D(activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
-		mQuitButt->Draw2D(activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
-		mRetryButt->Draw2D(activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
+		
+
+
 	}
 
 	RestoreStates();
@@ -1182,9 +1031,7 @@ void Engine::DrawBossWin()
 	md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{
-		mYouWinButt->Draw2D(activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
-		mQuitButt->Draw2D(activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
-		mRestartButt->Draw2D(activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
+		
 	}
 
 	RestoreStates();
@@ -1212,7 +1059,9 @@ void Engine::DrawBossLose()
 	md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{
-/*		mBSOD->Draw2D(activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);*/
+
+
+
 	}
 }
 
@@ -1352,129 +1201,129 @@ void Engine::KeyboardHandler(float dt)
 //BUTTON HANDLERS
 void Engine::BtnsMainMenu(float x, float y, bool clicked)
 {
-	if (InButton3D(x, y, mPlayButt))
-	{	
-		mPlayButt->hovering = true;
-		if (clicked)
-		{
-			ClearVectors();
-			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-			*StateMachine::pGameState = GameState::GAMEON;
-			if (!mSound.MusicPaused(1)){ mSound.PauseMusic(true, 1); }
-			ResetCamInGame();
-		}
-	}
-	else{ mPlayButt->hovering = false;  }
-
-	if (InButton3D(x, y, mAboutButt))
-	{
-	
-	
-		mAboutButt->hovering = true;
-		if (clicked)
-		{
-			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-			*StateMachine::pGameState = GameState::ABOUT;
-		}
-	}
-	else{ mAboutButt->hovering = false; }
-
-	if (InButton3D(x, y, mSoundButt))
-	{
-		mSoundButt->hovering = true;
-		if (clicked)
-		{
-			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-			if (*StateMachine::pSoundState == SoundState::SOUNDON)
-			{ 
-				*StateMachine::pSoundState = SoundState::SOUNDOFF; 
-			}
-			else
-			{
-				*StateMachine::pSoundState = SoundState::SOUNDON;
-			}
-		}
-	}
-	else{ mSoundButt->hovering = false; }
-
-	if (InButton3D(x, y, mMusicButt))
-	{
-		mMusicButt->hovering = true;
-		if (clicked)
-		{
-			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-			if (*StateMachine::pMusicState == MusicState::MUSICON)
-			{
-				*StateMachine::pMusicState = MusicState::MUSICOFF;
-			} 
-			else
-			{
-				*StateMachine::pMusicState = MusicState::MUSICON;
-			}
-		}
-	}
-	else{ mMusicButt->hovering = false; }
-
-	if (InButton3D(x, y, mModeButt))
-	{
-		mModeButt->hovering = true;
-		if (clicked)
-		{
-			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-			switch (*StateMachine::pGameMode)
-			{
-			case GameMode::EASY: *StateMachine::pGameMode	= GameMode::MED;	break;
-			case GameMode::MED:*StateMachine::pGameMode		= GameMode::HARD;	break;
-			case GameMode::HARD:*StateMachine::pGameMode	= GameMode::INSANE; break;
-			case GameMode::INSANE:*StateMachine::pGameMode	= GameMode::EASY;	break;
-			}
-		}
-	}
-	else{ mModeButt->hovering = false; }
+// 	if (InButton3D(x, y, mPlayButt))
+// 	{	
+// 		mPlayButt->hovering = true;
+// 		if (clicked)
+// 		{
+// 			ClearVectors();
+// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+// 			*StateMachine::pGameState = GameState::GAMEON;
+// 			if (!mSound.MusicPaused(1)){ mSound.PauseMusic(true, 1); }
+// 			ResetCamInGame();
+// 		}
+// 	}
+// 	else{ mPlayButt->hovering = false;  }
+// 
+// 	if (InButton3D(x, y, mAboutButt))
+// 	{
+// 	
+// 	
+// 		mAboutButt->hovering = true;
+// 		if (clicked)
+// 		{
+// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+// 			*StateMachine::pGameState = GameState::ABOUT;
+// 		}
+// 	}
+// 	else{ mAboutButt->hovering = false; }
+// 
+// 	if (InButton3D(x, y, mSoundButt))
+// 	{
+// 		mSoundButt->hovering = true;
+// 		if (clicked)
+// 		{
+// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+// 			if (*StateMachine::pSoundState == SoundState::SOUNDON)
+// 			{ 
+// 				*StateMachine::pSoundState = SoundState::SOUNDOFF; 
+// 			}
+// 			else
+// 			{
+// 				*StateMachine::pSoundState = SoundState::SOUNDON;
+// 			}
+// 		}
+// 	}
+// 	else{ mSoundButt->hovering = false; }
+// 
+// 	if (InButton3D(x, y, mMusicButt))
+// 	{
+// 		mMusicButt->hovering = true;
+// 		if (clicked)
+// 		{
+// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+// 			if (*StateMachine::pMusicState == MusicState::MUSICON)
+// 			{
+// 				*StateMachine::pMusicState = MusicState::MUSICOFF;
+// 			} 
+// 			else
+// 			{
+// 				*StateMachine::pMusicState = MusicState::MUSICON;
+// 			}
+// 		}
+// 	}
+// 	else{ mMusicButt->hovering = false; }
+// 
+// 	if (InButton3D(x, y, mModeButt))
+// 	{
+// 		mModeButt->hovering = true;
+// 		if (clicked)
+// 		{
+// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+// 			switch (*StateMachine::pGameMode)
+// 			{
+// 			case GameMode::EASY: *StateMachine::pGameMode	= GameMode::MED;	break;
+// 			case GameMode::MED:*StateMachine::pGameMode		= GameMode::HARD;	break;
+// 			case GameMode::HARD:*StateMachine::pGameMode	= GameMode::INSANE; break;
+// 			case GameMode::INSANE:*StateMachine::pGameMode	= GameMode::EASY;	break;
+// 			}
+// 		}
+// 	}
+// 	else{ mModeButt->hovering = false; }
 
 }
 void Engine::BtnsAbout(float x, float y, bool clicked)
 {
-	if (InButton3D(x, y, mBackButt))
-	{
-		mBackButt->hovering = true;
-		if (clicked)
-		{
-			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-			*StateMachine::pGameState = GameState::MAINMENU;
-		}
-	}
-	else{ mBackButt->hovering = false; }
+// 	if (InButton3D(x, y, mBackButt))
+// 	{
+// 		mBackButt->hovering = true;
+// 		if (clicked)
+// 		{
+// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+// 			*StateMachine::pGameState = GameState::MAINMENU;
+// 		}
+// 	}
+// 	else{ mBackButt->hovering = false; }
 }
 void Engine::BtnsPaused(float x, float y, bool clicked)
 {
-	if (!mSound.MusicPaused(2)){ mSound.PauseMusic(true, 2); }
-	if (InButton2D(x, y, mQuitButt))
-	{
-		mQuitButt->hovering = true;
-		if (clicked)
-		{
-			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-			*StateMachine::pGameState = GameState::MAINMENU;
-			mWalkCamMode = false;
-			ResetCamMainMenu();
-			ClearVectors();
-		}
-	}
-	else{ mQuitButt->hovering = false; }
-
-	if (InButton2D(x, y, mRestartButt))
-	{
-		mRestartButt->hovering = true;
-		if (clicked)
-		{
-			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-			*StateMachine::pGameState = GameState::GAMEON;
-			ClearVectors();
-			ResetCamInGame();
-		}
-	}
-	else{ mRestartButt->hovering = false; }
+// 	if (!mSound.MusicPaused(2)){ mSound.PauseMusic(true, 2); }
+// 	if (InButton2D(x, y, mQuitButt))
+// 	{
+// 		mQuitButt->hovering = true;
+// 		if (clicked)
+// 		{
+// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+// 			*StateMachine::pGameState = GameState::MAINMENU;
+// 			mWalkCamMode = false;
+// 			ResetCamMainMenu();
+// 			ClearVectors();
+// 		}
+// 	}
+// 	else{ mQuitButt->hovering = false; }
+// 
+// 	if (InButton2D(x, y, mRestartButt))
+// 	{
+// 		mRestartButt->hovering = true;
+// 		if (clicked)
+// 		{
+// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+// 			*StateMachine::pGameState = GameState::GAMEON;
+// 			ClearVectors();
+// 			ResetCamInGame();
+// 		}
+// 	}
+// 	else{ mRestartButt->hovering = false; }
 }
 void Engine::BtnsGameOn(float x, float y, bool clicked)
 {
@@ -1482,56 +1331,56 @@ void Engine::BtnsGameOn(float x, float y, bool clicked)
 }
 void Engine::BtnsWin(float x, float y, bool clicked)
 {
-	if (InButton2D(x, y, mQuitButt))
-	{
-		mQuitButt->hovering = true;
-		if (clicked)
-		{
-			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-			mWalkCamMode = false;
-			*StateMachine::pGameState = GameState::MAINMENU;
-			ResetCamMainMenu(); ClearVectors();
-		}
-	}
-	else{ mQuitButt->hovering = false; }
-
-	if (InButton2D(x, y, mRestartButt))
-	{
-		mRestartButt->hovering = true;
-		if (clicked)
-		{
-			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-			*StateMachine::pGameState = GameState::GAMEON; ClearVectors(); ResetCamInGame();
-		}
-	}
-	else{ mRestartButt->hovering = false; }
+// 	if (InButton2D(x, y, mQuitButt))
+// 	{
+// 		mQuitButt->hovering = true;
+// 		if (clicked)
+// 		{
+// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+// 			mWalkCamMode = false;
+// 			*StateMachine::pGameState = GameState::MAINMENU;
+// 			ResetCamMainMenu(); ClearVectors();
+// 		}
+// 	}
+// 	else{ mQuitButt->hovering = false; }
+// 
+// 	if (InButton2D(x, y, mRestartButt))
+// 	{
+// 		mRestartButt->hovering = true;
+// 		if (clicked)
+// 		{
+// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+// 			*StateMachine::pGameState = GameState::GAMEON; ClearVectors(); ResetCamInGame();
+// 		}
+// 	}
+// 	else{ mRestartButt->hovering = false; }
 
 }
 void Engine::BtnsLose(float x, float y, bool clicked)
 {
-	if (InButton2D(x, y, mQuitButt))
-	{
-		mQuitButt->hovering = true;
-		if (clicked)
-		{
-			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-			mWalkCamMode = false;
-			*StateMachine::pGameState = GameState::MAINMENU;
-			ResetCamMainMenu(); ClearVectors();
-		}
-	}
-	else{ mQuitButt->hovering = false; }
+// 	if (InButton2D(x, y, mQuitButt))
+// 	{
+// 		mQuitButt->hovering = true;
+// 		if (clicked)
+// 		{
+// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+// 			mWalkCamMode = false;
+// 			*StateMachine::pGameState = GameState::MAINMENU;
+// 			ResetCamMainMenu(); ClearVectors();
+// 		}
+// 	}
+// 	else{ mQuitButt->hovering = false; }
 
-	if (InButton2D(x, y, mRetryButt))
-	{
-		mRetryButt->hovering = true;
-		if (clicked)
-		{
-			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-			*StateMachine::pGameState = GameState::GAMEON; ClearVectors(); ResetCamInGame();
-		}
-	}
-	else{ mRetryButt->hovering = false; }
+// 	if (InButton2D(x, y, mRetryButt))
+// 	{
+// 		mRetryButt->hovering = true;
+// 		if (clicked)
+// 		{
+// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+// 			*StateMachine::pGameState = GameState::GAMEON; ClearVectors(); ResetCamInGame();
+// 		}
+// 	}
+// 	else{ mRetryButt->hovering = false; }
 }
 void Engine::BtnsBossLose(float x, float y, bool clicked)
 {
@@ -1551,29 +1400,29 @@ void Engine::BtnsBossLose(float x, float y, bool clicked)
 }
 void Engine::BtnsBossWin(float x, float y, bool clicked)
 {
-	if (InButton2D(x, y, mQuitButt))
-	{
-		mQuitButt->hovering = true;
-		if (clicked)
-		{
-			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-			mWalkCamMode = false;
-			*StateMachine::pGameState = GameState::MAINMENU;
-			ResetCamMainMenu(); ClearVectors();
-		}
-	}
-	else{ mQuitButt->hovering = false; }
-
-	if (InButton2D(x, y, mRestartButt))
-	{
-		mRestartButt->hovering = true;
-		if (clicked)
-		{
-			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-			*StateMachine::pGameState = GameState::GAMEON; ClearVectors(); ResetCamInGame();
-		}
-	}
-	else{ mRestartButt->hovering = false; }
+// 	if (InButton2D(x, y, mQuitButt))
+// 	{
+// 		mQuitButt->hovering = true;
+// 		if (clicked)
+// 		{
+// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+// 			mWalkCamMode = false;
+// 			*StateMachine::pGameState = GameState::MAINMENU;
+// 			ResetCamMainMenu(); ClearVectors();
+// 		}
+// 	}
+// 	else{ mQuitButt->hovering = false; }
+// 
+// 	if (InButton2D(x, y, mRestartButt))
+// 	{
+// 		mRestartButt->hovering = true;
+// 		if (clicked)
+// 		{
+// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+// 			*StateMachine::pGameState = GameState::GAMEON; ClearVectors(); ResetCamInGame();
+// 		}
+// 	}
+// 	else{ mRestartButt->hovering = false; }
 }
 bool Engine::InButton3D(float x, float y, Entity* button)
 {

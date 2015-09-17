@@ -20,6 +20,7 @@
 #include "TextureMgr.h"
 #include "BasicModel.h"
 #include "Sound.h"
+#include <iostream>
 #include <vector>
 
 
@@ -52,12 +53,13 @@ public:
 
 	//SCENE INITS
 	void InitAll();
-	void InsertAllIndices(std::vector<UINT>& indicies);
-	void InsertAllVertices(std::vector<Vertex::Basic32>& verts, UINT& k);
-	UINT TotalVertexCount();
-	UINT TotalIndiceCount();
-	void SetAllVertexOffsets();
-	void SetAllIndexOffsets();
+	void InsertAllIndices(std::vector<UINT>& indicies, std::vector<Entity*>& entitys);
+	void InsertAllVertices(std::vector<Vertex::Basic32>& verts, UINT& k, std::vector<Entity*>& entitys);
+	UINT TotalVertexCount(std::vector<Entity*>& entitys);
+	UINT TotalIndiceCount(std::vector<Entity*>& entitys);
+	void SetAllVertexOffsets(std::vector<Entity*>& entitys);
+	void SetAllIndexOffsets(std::vector<Entity*>& entitys);
+	void BuildVertexAndIndexBuffer(ID3D11Buffer** VB, ID3D11Buffer** IB, std::vector<Entity*>& entities);
 
 	//GAME DRAWS
 	void DrawMainMenu();
@@ -110,34 +112,11 @@ private:
 	ID3D11Buffer* mShapesVB;
 	ID3D11Buffer* mShapesIB;
 
-	//Buttons
-	Entity* mPlayButt;
-	Entity* mTitleButt;
-	Entity* mAboutButt;
-	Entity* mMusicButt;
-	Entity* mSoundButt;
-	Entity* mSOnButt;
-	Entity* mSOffButt;
-	Entity* mMOnButt;
-	Entity* mMOffButt;
-	Entity* mBymeButt;
-	Entity* mQuitButt;
-	Entity* mRestartButt;
-	Entity* mPausedButt;
-	Entity* mBackButt;
-	Entity* mAboutMsgButt;
-	Entity* mYouWinButt;
-	Entity* mYouLoseButt;
-	Entity* mRetryButt;
-	Entity* mModeButt;
-	Entity* mEasyButt;
-	Entity* mMedButt;
-	Entity* mHardButt;
-	Entity* mInsaneButt;
+
 
 	//TODO:: Vector for Menu UI .. Level Objects .. Inventory ... Pickups... Enemies...
-	std::vector<Entity*> mInvaders;
-
+	std::vector<Entity*> mMain; std::vector<Entity*> mMainBtns;
+	std::vector<Entity*> mAbout; std::vector<Entity*> mAboutBtns;
 	//Models
 	std::vector<BasicModelInstance> mModelInstances;
 	BasicModel* testModel;

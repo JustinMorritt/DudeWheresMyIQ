@@ -9,11 +9,12 @@
 #include "Effects.h"
 #include "xnacollision.h"
 #include "SpriteAnimation.h"
+#include <iostream>
 
 class Entity
 {
 public:
-	Entity(ID3D11Device* device, float width, float height, float depth = 0.0f, bool sphere = false, bool upRightSquare= false, bool box = false);
+	Entity(std::string label, ID3D11Device* device, float width, float height, float depth = 0.0f, bool sphere = false, bool upRightSquare= false, bool box = false);
 	~Entity();
 	void SetPos(float x, float y, float z);
 	void SetRot(float x, float y, float z);
@@ -114,6 +115,7 @@ public:
 	bool mBasicTexTrans;
 	bool mUseAnimation;
 	
+	std::string mLabel;
 
 	//SYSTEM COPIES OF MESH FOR PICKING
 	std::vector<Vertex::Basic32> mMeshVertices;
