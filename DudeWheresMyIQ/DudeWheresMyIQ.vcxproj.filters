@@ -96,6 +96,9 @@
     <ClCompile Include="Entity.cpp">
       <Filter>CPP</Filter>
     </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Effects.h">
@@ -174,6 +177,9 @@
       <Filter>HEADER</Filter>
     </ClInclude>
     <ClInclude Include="Entity.h">
+      <Filter>HEADER</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
       <Filter>HEADER</Filter>
     </ClInclude>
   </ItemGroup>

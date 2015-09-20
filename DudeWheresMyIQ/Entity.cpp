@@ -1,7 +1,7 @@
 #include "Entity.h"
 
 //Makes a Square by default 
-Entity::Entity(std::string label, ID3D11Device* device, float width, float height, float depth, bool sphere, bool upRightSquare, bool box) :
+Entity::Entity(int type, std::string label, ID3D11Device* device, float width, float height, float depth) :
 mPosition(0.0f, 0.0f, 0.0f),
 mRight(1.0f, 0.0f, 0.0f),
 mUp(0.0f, 1.0f, 0.0f),
@@ -36,41 +36,27 @@ explosionDist(0.0f),
 mSpriteAnimation(0),
 mLabel(label)
 {
-	//CREATE TEXTURE
-
-
 	//SET MATERIAL
-	mMat.Ambient = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	mMat.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	mMat.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 48.0f);
-
+	mMat.Ambient	= XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	mMat.Diffuse	= XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	mMat.Specular	= XMFLOAT4(1.0f, 1.0f, 1.0f, 48.0f);
 
 	GeometryGenerator geoGen;
 
 	//FLOOR PLANE
 	XMMATRIX I = XMMatrixIdentity();
 	XMStoreFloat4x4(&mWorld, I);
-	if (sphere)
-	{		
-		geoGen.CreateSphere(width, height, height, mGrid);  //height is slice count .. width for radius
-	}
-	if (upRightSquare)
+
+	switch (type)
 	{
-		geoGen.CreateUprightSquare(width, height, mGrid); 
+	case 0: geoGen.CreateGrid(width, height, 2, 2, mGrid);	  break;
+	case 1: geoGen.CreateSphere(width, height, height, mGrid);/*height is slice count .. width for radius*/ break;
+	case 2: geoGen.CreateUprightSquare(width, height, mGrid); break;
+	case 3: geoGen.CreateBox(width, height, depth, mGrid);    break;
 	}
-	if (box)
-	{
-		geoGen.CreateBox(width, height, depth, mGrid);
-	}
-	if (!sphere && !upRightSquare && !box)
-	{
-		geoGen.CreateGrid(width, height, 2 ,2, mGrid);
-	}
-	
 
 	mIndexCount = mGrid.Indices.size();
 	mMeshVertices.resize(mGrid.Vertices.size());
-
 }
 
 Entity::~Entity()
@@ -246,7 +232,14 @@ void Entity::Draw2D(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* con
 	Effects::BasicFX->SetWorld(world);
 	Effects::BasicFX->SetWorldInvTranspose(worldInvTranspose);
 	Effects::BasicFX->SetWorldViewProj(worldViewProj);
-	Effects::BasicFX->SetTexTransform(XMMatrixScaling(origTexScale.x, origTexScale.y, origTexScale.z));
+	if (mBasicTexTrans)
+	{
+		Effects::BasicFX->SetTexTransform(XMMatrixTranslation(texTrans.x, texTrans.y, texTrans.z)*XMMatrixScaling(origTexScale.x, origTexScale.y, origTexScale.z));
+	}
+	else
+	{
+		Effects::BasicFX->SetTexTransform(XMMatrixScaling(origTexScale.x, origTexScale.y, origTexScale.z));
+	}
 	Effects::BasicFX->SetMaterial(mMat);
 	Effects::BasicFX->SetDiffuseMap(mTexSRV);
 

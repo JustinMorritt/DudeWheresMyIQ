@@ -1,5 +1,5 @@
-#ifndef Button_h__
-#define Button_h__
+#ifndef Entity_h__
+#define Entity_h__
 
 
 #include "Sky.h"
@@ -14,7 +14,8 @@
 class Entity
 {
 public:
-	Entity(std::string label, ID3D11Device* device, float width, float height, float depth = 0.0f, bool sphere = false, bool upRightSquare= false, bool box = false);
+	//TYPES 1: 2: 3: 
+	Entity(int type, std::string label, ID3D11Device* device, float width, float height, float depth = 0.0f);
 	~Entity();
 	void SetPos(float x, float y, float z);
 	void SetRot(float x, float y, float z);

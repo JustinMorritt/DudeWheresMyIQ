@@ -22,6 +22,7 @@
 #include "Sound.h"
 #include <iostream>
 #include <vector>
+#include "Text.h"
 
 
 class Engine : public D3DApp
@@ -94,6 +95,15 @@ public:
 	bool InButton3D(float sx, float sy, Entity* button);
 	bool InButton2D(float sx, float sy, Entity* button);
 
+	//BUTTON FUNCITONS
+	void Play();
+	void About();
+	void Music();
+	void SoundFX();
+	void AboutBack();
+	void Quit();
+	void Restart();
+
 	//COLLISION
 	bool CamOnPickUp(Entity* pickup);
 	bool ProjectileBounds(Entity* proj);
@@ -115,8 +125,14 @@ private:
 
 
 	//TODO:: Vector for Menu UI .. Level Objects .. Inventory ... Pickups... Enemies...
-	std::vector<Entity*> mMain; std::vector<Entity*> mMainBtns;
-	std::vector<Entity*> mAbout; std::vector<Entity*> mAboutBtns;
+	std::vector<Entity*> mUI;
+	std::vector<Entity*> mMain;		std::vector<Entity*> mMainBtns;
+	std::vector<Entity*> mAbout;	std::vector<Entity*> mAboutBtns;
+	std::vector<Entity*> mPaused;	std::vector<Entity*> mPausedBtns;
+
+
+	std::vector<Text*> mTexts;
+
 	//Models
 	std::vector<BasicModelInstance> mModelInstances;
 	BasicModel* testModel;
@@ -149,6 +165,7 @@ private:
 
 	DirectionalLight mDirLights[3];
 	DirectionalLight mDirLights2[3];
+	DirectionalLight mDirLights3[3];
 
 	ID3D11ShaderResourceView* mFloorTexSRV;
 

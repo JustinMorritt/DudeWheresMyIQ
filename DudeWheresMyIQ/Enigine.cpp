@@ -67,6 +67,25 @@ Engine::Engine(HINSTANCE hInstance)
 	mDirLights2[2].Specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 	mDirLights2[2].Direction = XMFLOAT3(-0.57735f, -0.57735f, -0.57735f);
 
+
+
+	mDirLights3[0].Ambient = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
+	mDirLights3[0].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	mDirLights3[0].Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	mDirLights3[0].Direction = XMFLOAT3(0.707f, -0.707f, 0.707f);
+			  
+	mDirLights3[1].Ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+	mDirLights3[1].Diffuse = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+	mDirLights3[1].Specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+	mDirLights3[1].Direction = XMFLOAT3(0.0f, 0.0f, 0.0f);
+			
+	mDirLights3[2].Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	mDirLights3[2].Diffuse = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+	mDirLights3[2].Specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+	mDirLights3[2].Direction = XMFLOAT3(-0.57735f, -0.57735f, -0.57735f);
+
+
+
 	mShadowMat.Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	mShadowMat.Diffuse = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.5f);
 	mShadowMat.Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 16.0f);
@@ -115,11 +134,14 @@ bool Engine::Init()
 // 
 // 	mModelInstances.push_back(testInstance);
 
+	Text::Init(&md3dDevice);
 
 	InitAll();
 
 	mSky = new Sky(md3dDevice, L"Textures/ArstaBridge.dds", 5000.0f);
 
+
+	
 	
 
 //FIRE EMITTER
@@ -165,9 +187,14 @@ void Engine::UpdateScene(float dt)
 }
 void Engine::UpdateMainMenu(float dt)
 {
-	for (int i = 0; i < mMain.size(); i++)
+	for (int i = 0; i < mUI.size(); i++)
 	{
-		mMain[i]->Update(mCam, dt);
+		mUI[i]->Update(mCam, dt);
+	}
+
+	for (int i = 0; i < mTexts.size(); i++)
+	{
+		mTexts[i]->Update(mCam, dt);
 	}
 
 	if (*StateMachine::pMusicState == MusicState::MUSICON){ if  ( mSound.MusicPaused(1)){ mSound.PauseMusic(false,1); } }
@@ -175,6 +202,10 @@ void Engine::UpdateMainMenu(float dt)
 }
 void Engine::UpdateGame(float dt)
 {
+	for (int i = 0; i < mPaused.size(); i++)
+	{
+		mPaused[i]->Update(mCam, dt);
+	}
 	//(*StateMachine::pGameState == GameState::GAMEON) ? mCursorOn = false : mCursorOn = true;
 
 
@@ -281,7 +312,7 @@ void Engine::IncProgress(float dt)
 // 			mSound.PauseMusic(true, 2);
 // 		}
 // 	}
-} 
+}
 void Engine::IncBugs(float bug)
 {
 // 	if (mBugBar->currProgress < 1.0) 
@@ -419,26 +450,26 @@ bool Engine::BossHitCam(Entity* boss)
 void Engine::InitAll()
 {
 	//MAKE BUTTONS
-	Entity* mPlayButt		= new Entity("play", md3dDevice, 80.0f, 40.0f);				mMain.push_back(mPlayButt);			mMainBtns.push_back(mPlayButt);
-	Entity* mSoundButt		= new Entity("sound", md3dDevice, 40.0f, 20.0f);			mMain.push_back(mSoundButt);		mMainBtns.push_back(mSoundButt);
-	Entity* mMusicButt		= new Entity("music", md3dDevice, 40.0f, 20.0f);			mMain.push_back(mMusicButt);		mMainBtns.push_back(mMusicButt);
-	Entity* mSOnButt		= new Entity("Son", md3dDevice, 40.0f, 20.0f);				mMain.push_back(mSOnButt	);
-	Entity* mSOffButt		= new Entity("Soff", md3dDevice, 40.0f, 20.0f);				mMain.push_back(mSOffButt	);
-	Entity* mMOnButt		= new Entity("Mon", md3dDevice, 40.0f, 20.0f);				mMain.push_back(mMOnButt	);
-	Entity* mModeButt		= new Entity("mode", md3dDevice, 40.0f, 20.0f);				mMain.push_back(mModeButt	);		mMainBtns.push_back(mModeButt);
-	Entity* mEasyButt		= new Entity("easy", md3dDevice, 40.0f, 20.0f);				mMain.push_back(mEasyButt	);
-	Entity* mMedButt		= new Entity("med", md3dDevice, 40.0f, 20.0f);				mMain.push_back(mMedButt	);
-	Entity* mHardButt		= new Entity("hard", md3dDevice, 40.0f, 20.0f);				mMain.push_back(mHardButt	);
-	Entity* mInsaneButt		= new Entity("insane", md3dDevice, 40.0f, 20.0f);			mMain.push_back(mInsaneButt	);
-	Entity* mMOffButt		= new Entity("Moff", md3dDevice, 40.0f, 20.0f);				mMain.push_back(mMOffButt	);
-	Entity* mTitleButt		= new Entity("title", md3dDevice, 200.0f, 50.0f);			mMain.push_back(mTitleButt	);
-	Entity* mAboutButt		= new Entity("about", md3dDevice, 80.0f, 40.0f);			mMain.push_back(mAboutButt	);		mMainBtns.push_back(mAboutButt);
-	Entity* mBymeButt		= new Entity("byme", md3dDevice, 110.0f, 30.0f);			mAbout.push_back(mBymeButt	);
-	Entity* mQuitButt		= new Entity("quit", md3dDevice, 350.0f, 200.0f);			
-	Entity* mRestartButt	= new Entity("restart", md3dDevice, 350.0f, 200.0f);		
-	Entity* mPausedButt		= new Entity("paused", md3dDevice, 600.0f, 300.0f);			
-	Entity* mBackButt		= new Entity("back", md3dDevice, 80.0f, 40.0f);				mAbout.push_back(mBackButt);		mAboutBtns.push_back(mBackButt);
-	Entity* mAboutMsgButt	= new Entity("aboutmsg", md3dDevice, 110.0f, 110.0f);		mAbout.push_back(mAboutMsgButt);
+	Entity* mPlayButt		= new Entity(0,"play", md3dDevice, 80.0f, 40.0f);		mUI.push_back(mPlayButt	); 		mMain.push_back(mPlayButt);			mMainBtns.push_back(mPlayButt);
+	Entity* mSoundButt		= new Entity(0,"sound", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mSoundButt); 		mMain.push_back(mSoundButt);		mMainBtns.push_back(mSoundButt);
+	Entity* mMusicButt		= new Entity(0,"music", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mMusicButt); 		mMain.push_back(mMusicButt);		mMainBtns.push_back(mMusicButt);
+	Entity* mSOnButt		= new Entity(0,"Son", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mSOnButt	);		mMain.push_back(mSOnButt	);
+	Entity* mSOffButt		= new Entity(0,"Soff", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mSOffButt	); 		mMain.push_back(mSOffButt	);
+	Entity* mMOnButt		= new Entity(0,"Mon", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mMOnButt	); 		mMain.push_back(mMOnButt	);
+	Entity* mModeButt		= new Entity(0,"mode", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mModeButt); 											
+	Entity* mEasyButt		= new Entity(0,"easy", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mEasyButt);
+	Entity* mMedButt		= new Entity(0,"med", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mMedButt);
+	Entity* mHardButt		= new Entity(0,"hard", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mHardButt);
+	Entity* mInsaneButt		= new Entity(0,"insane", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mInsaneButt);
+	Entity* mMOffButt		= new Entity(0, "Moff", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mMOffButt); 		mMain.push_back(mMOffButt);
+	Entity* mTitleButt		= new Entity(0, "title", md3dDevice, 200.0f, 50.0f);	mUI.push_back(mTitleButt); 		mMain.push_back(mTitleButt);		mAbout.push_back(mTitleButt);
+	Entity* mAboutButt		= new Entity(0,"about", md3dDevice, 80.0f, 40.0f);		mUI.push_back(mAboutButt);		mMain.push_back(mAboutButt	);		mMainBtns.push_back(mAboutButt);
+	Entity* mBymeButt		= new Entity(0,"byme", md3dDevice, 110.0f, 30.0f);		mUI.push_back(mBymeButt); 		mAbout.push_back(mBymeButt	);
+	Entity* mQuitButt		= new Entity(0,"quit", md3dDevice, 350.0f, 200.0f);		mUI.push_back(mQuitButt); 		mPaused.push_back(mQuitButt);		mPausedBtns.push_back(mQuitButt);
+	Entity* mRestartButt	= new Entity(0,"restart", md3dDevice, 350.0f, 200.0f);	mUI.push_back(mRestartButt); 	mPaused.push_back(mRestartButt);	mPausedBtns.push_back(mRestartButt);
+	Entity* mPausedButt		= new Entity(0,"paused", md3dDevice, 600.0f, 300.0f);	mUI.push_back(mPausedButt); 	mPaused.push_back(mPausedButt);
+	Entity* mBackButt		= new Entity(0,"back", md3dDevice, 80.0f, 40.0f);		mUI.push_back(mBackButt);		mAbout.push_back(mBackButt);		mAboutBtns.push_back(mBackButt);
+	Entity* mAboutMsgButt	= new Entity(0,"aboutmsg", md3dDevice, 110.0f, 110.0f);	mUI.push_back(mAboutMsgButt); 	mAbout.push_back(mAboutMsgButt);
 
 	mPlayButt->LoadTexture(			md3dDevice, L"Textures/play.dds");
 	mSoundButt->LoadTexture(		md3dDevice, L"Textures/sound.dds");
@@ -455,11 +486,11 @@ void Engine::InitAll()
 	mPausedButt->LoadTexture(		md3dDevice, L"Textures/paused.dds");
 	mBackButt->LoadTexture(			md3dDevice, L"Textures/back.dds");
 	mAboutMsgButt->LoadTexture(		md3dDevice, L"Textures/aboutmsg.dds");
-	mModeButt->LoadTexture(md3dDevice, L"Textures/mode.dds");
-	mMedButt->LoadTexture(md3dDevice, L"Textures/med.dds");
-	mEasyButt->LoadTexture(md3dDevice, L"Textures/easy.dds");
-	mHardButt->LoadTexture(md3dDevice, L"Textures/hard.dds");
-	mInsaneButt->LoadTexture(md3dDevice, L"Textures/insane.dds");
+	mModeButt->LoadTexture(			md3dDevice, L"Textures/mode.dds");
+	mMedButt->LoadTexture(			md3dDevice, L"Textures/med.dds");
+	mEasyButt->LoadTexture(			md3dDevice, L"Textures/easy.dds");
+	mHardButt->LoadTexture(			md3dDevice, L"Textures/hard.dds");
+	mInsaneButt->LoadTexture(		md3dDevice, L"Textures/insane.dds");
 
 	//3D UI STUFF
 	mPlayButt->SetPos(0.0f, 50.0f, -200.0f);
@@ -519,7 +550,17 @@ void Engine::InitAll()
 	mQuitButt->SetPos(700.0f, 100.0f, -90.0f);
 	mQuitButt->Pitch(XM_PI / 4);
 
-	BuildVertexAndIndexBuffer(&mShapesVB, &mShapesIB, mMain);
+
+
+
+
+
+	Text* t = new Text("Hello?! There Thats Alot Better .../Testing/1/2", -700.0f,-200.0f, 50.0f,0);
+	BuildVertexAndIndexBuffer(&t->mVB, &t->mIB, t->mText);
+	mTexts.push_back(t);
+
+
+	BuildVertexAndIndexBuffer(&mShapesVB, &mShapesIB, mUI);
 
 
 
@@ -706,9 +747,19 @@ void Engine::DrawMainMenu()
 			if (mMain[i]->mLabel == "Moff"){
 				if (*StateMachine::pMusicState == MusicState::MUSICOFF){mMain[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());}		continue;
 			}
-
 			mMain[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
-		
+		}
+	}
+
+	//DRAW 2D STUFF
+	Effects::BasicFX->SetDirLights(mDirLights3);
+	activeTexTech = Effects::BasicFX->Light2TexAlphaClipTech;
+	md3dImmediateContext->OMSetDepthStencilState(RenderStates::ZBufferDisabled, 0); // changing 0 means overlaping draws
+	for (UINT p = 0; p < techDesc.Passes; ++p)
+	{
+		for (int i = 0; i < mTexts.size(); i++)
+		{
+			mTexts[i]->DrawText2D(&activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
 		}
 	}
 
@@ -786,16 +837,9 @@ void Engine::DrawAbout()
 
 	mCam.UpdateViewMatrix();
 
-	XMMATRIX view = mCam.View();
-	XMMATRIX proj = mCam.Proj();
-	XMMATRIX viewProj = mCam.ViewProj();
-
-	// Set per frame constants.
 	Effects::BasicFX->SetDirLights(mDirLights);
 	Effects::BasicFX->SetEyePosW(mCam.GetPosition());
 
-	// Figure out which technique to use.  Skull does not have texture coordinates,
-	// so we need a separate technique for it.
 	ID3DX11EffectTechnique* activeTexTech = Effects::BasicFX->Light2TexAlphaClipTech;
 	D3DX11_TECHNIQUE_DESC techDesc;
 	activeTexTech->GetDesc(&techDesc);
@@ -804,27 +848,12 @@ void Engine::DrawAbout()
 		md3dImmediateContext->IASetVertexBuffers(0, 1, &mShapesVB, &stride, &offset);
 		md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
 
-		// Draw the grid.
-		XMMATRIX world = XMLoadFloat4x4(&mGridWorld);
-		XMMATRIX worldInvTranspose = MathHelper::InverseTranspose(world);
-		XMMATRIX worldViewProj = world*view*proj;
-
-		Effects::BasicFX->SetWorld(world);
-		Effects::BasicFX->SetWorldInvTranspose(worldInvTranspose);
-		Effects::BasicFX->SetWorldViewProj(worldViewProj);
-		Effects::BasicFX->SetTexTransform(XMMatrixScaling(1.0f, 1.0f, 1.0f));
-		Effects::BasicFX->SetMaterial(mGridMat);
-		Effects::BasicFX->SetDiffuseMap(mFloorTexSRV);
-
-		activeTexTech->GetPassByIndex(p)->Apply(0, md3dImmediateContext);
-		md3dImmediateContext->DrawIndexed(mGridIndexCount, mGridIndexOffset, mGridVertexOffset);
-
 		//DRAW BUTTS
-		for (int i = 0; i < mMain.size(); i++)
+		for (int i = 0; i < mAbout.size(); i++)
 		{
-			if (mMain[i]->mLabel == "aboutmsg" || mMain[i]->mLabel == "title" || mMain[i]->mLabel == "back" || mMain[i]->mLabel == "byme")
+			if (mAbout[i]->mLabel == "aboutmsg" || mAbout[i]->mLabel == "title" || mAbout[i]->mLabel == "back" || mAbout[i]->mLabel == "byme")
 			{
-				mMain[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
+				mAbout[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
 			}
 		}
 	}
@@ -859,27 +888,23 @@ void Engine::DrawPaused()
 
 	mCam.UpdateViewMatrix();
 
-	XMMATRIX view = mCam.View();
-	XMMATRIX proj = mCam.Proj();
-	XMMATRIX viewProj = mCam.ViewProj();
-
-	// Set per frame constants.
-	Effects::BasicFX->SetDirLights(mDirLights2);
-	Effects::BasicFX->SetEyePosW(mCam.GetPosition());
-
 	ID3DX11EffectTechnique* activeTexTech = Effects::BasicFX->Light1TexAlphaClipTech;
 	D3DX11_TECHNIQUE_DESC techDesc;
 	activeTexTech->GetDesc(&techDesc);
+
 	md3dImmediateContext->IASetVertexBuffers(0, 1, &mShapesVB, &stride, &offset);
 	md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
+
+
+	//DRAW 2D STUFF
+	Effects::BasicFX->SetDirLights(mDirLights2);
+	activeTexTech = Effects::BasicFX->Light2TexAlphaClipTech;
+	md3dImmediateContext->OMSetDepthStencilState(RenderStates::ZBufferDisabled, 0); // changing 0 means overlaping draws
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{
-		for (int i = 0; i < mMain.size(); i++)
+		for (int i = 0; i < mPaused.size(); i++)
 		{
-			if (mMain[i]->mLabel == "paused" || mMain[i]->mLabel == "quit" || mMain[i]->mLabel == "restart")
-			{
-				mMain[i]->Draw(activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
-			}
+			mPaused[i]->Draw2D(activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
 		}
 	}
 
@@ -893,38 +918,17 @@ void Engine::DrawGameOn()
 
 	mCam.UpdateViewMatrix();
 
-	XMMATRIX view = mCam.View();
-	XMMATRIX proj = mCam.Proj();
-	XMMATRIX viewProj = mCam.ViewProj();
-
-	// Set per frame constants.
 	Effects::BasicFX->SetDirLights(mDirLights);
 	Effects::BasicFX->SetEyePosW(mCam.GetPosition());
-
 
 	ID3DX11EffectTechnique* activeTexTech = Effects::BasicFX->Light1TexAlphaClipTech;
 	D3DX11_TECHNIQUE_DESC techDesc;
 	activeTexTech->GetDesc(&techDesc);
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{
-
 		md3dImmediateContext->IASetVertexBuffers(0, 1, &mShapesVB, &stride, &offset);
 		md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
 
-		// Draw the grid.
-		XMMATRIX world = XMLoadFloat4x4(&mGridWorld);
-		XMMATRIX worldInvTranspose = MathHelper::InverseTranspose(world);
-		XMMATRIX worldViewProj = world*view*proj;
-
-		Effects::BasicFX->SetWorld(world);
-		Effects::BasicFX->SetWorldInvTranspose(worldInvTranspose);
-		Effects::BasicFX->SetWorldViewProj(worldViewProj);
-		Effects::BasicFX->SetTexTransform(XMMatrixScaling(1.0f, 1.0f, 1.0f));
-		Effects::BasicFX->SetMaterial(mGridMat);
-		Effects::BasicFX->SetDiffuseMap(mFloorTexSRV);
-
-		activeTexTech->GetPassByIndex(p)->Apply(0, md3dImmediateContext);
-		md3dImmediateContext->DrawIndexed(mGridIndexCount, mGridIndexOffset, mGridVertexOffset);
 
 
 		//DRAW BUTTS
@@ -1201,129 +1205,25 @@ void Engine::KeyboardHandler(float dt)
 //BUTTON HANDLERS
 void Engine::BtnsMainMenu(float x, float y, bool clicked)
 {
-// 	if (InButton3D(x, y, mPlayButt))
-// 	{	
-// 		mPlayButt->hovering = true;
-// 		if (clicked)
-// 		{
-// 			ClearVectors();
-// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-// 			*StateMachine::pGameState = GameState::GAMEON;
-// 			if (!mSound.MusicPaused(1)){ mSound.PauseMusic(true, 1); }
-// 			ResetCamInGame();
-// 		}
-// 	}
-// 	else{ mPlayButt->hovering = false;  }
-// 
-// 	if (InButton3D(x, y, mAboutButt))
-// 	{
-// 	
-// 	
-// 		mAboutButt->hovering = true;
-// 		if (clicked)
-// 		{
-// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-// 			*StateMachine::pGameState = GameState::ABOUT;
-// 		}
-// 	}
-// 	else{ mAboutButt->hovering = false; }
-// 
-// 	if (InButton3D(x, y, mSoundButt))
-// 	{
-// 		mSoundButt->hovering = true;
-// 		if (clicked)
-// 		{
-// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-// 			if (*StateMachine::pSoundState == SoundState::SOUNDON)
-// 			{ 
-// 				*StateMachine::pSoundState = SoundState::SOUNDOFF; 
-// 			}
-// 			else
-// 			{
-// 				*StateMachine::pSoundState = SoundState::SOUNDON;
-// 			}
-// 		}
-// 	}
-// 	else{ mSoundButt->hovering = false; }
-// 
-// 	if (InButton3D(x, y, mMusicButt))
-// 	{
-// 		mMusicButt->hovering = true;
-// 		if (clicked)
-// 		{
-// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-// 			if (*StateMachine::pMusicState == MusicState::MUSICON)
-// 			{
-// 				*StateMachine::pMusicState = MusicState::MUSICOFF;
-// 			} 
-// 			else
-// 			{
-// 				*StateMachine::pMusicState = MusicState::MUSICON;
-// 			}
-// 		}
-// 	}
-// 	else{ mMusicButt->hovering = false; }
-// 
-// 	if (InButton3D(x, y, mModeButt))
-// 	{
-// 		mModeButt->hovering = true;
-// 		if (clicked)
-// 		{
-// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-// 			switch (*StateMachine::pGameMode)
-// 			{
-// 			case GameMode::EASY: *StateMachine::pGameMode	= GameMode::MED;	break;
-// 			case GameMode::MED:*StateMachine::pGameMode		= GameMode::HARD;	break;
-// 			case GameMode::HARD:*StateMachine::pGameMode	= GameMode::INSANE; break;
-// 			case GameMode::INSANE:*StateMachine::pGameMode	= GameMode::EASY;	break;
-// 			}
-// 		}
-// 	}
-// 	else{ mModeButt->hovering = false; }
-
+	for (int i = 0; i < mMainBtns.size(); i++)
+	{
+		if (mMainBtns[i]->mLabel == "play"){ if (InButton3D(x, y, mMainBtns[i])){ mMainBtns[i]->hovering = true;  if (clicked){  Play(); } } else{ mMainBtns[i]->hovering = false; }  continue; }
+		if (mMainBtns[i]->mLabel == "about"){ if (InButton3D(x, y, mMainBtns[i])){ mMainBtns[i]->hovering = true; if (clicked){ About(); } } else{ mMainBtns[i]->hovering = false; } continue; }
+		if (mMainBtns[i]->mLabel == "music"){ if (InButton3D(x, y, mMainBtns[i])){ mMainBtns[i]->hovering = true; if (clicked){ Music(); } } else{ mMainBtns[i]->hovering = false; } continue; }
+		if (mMainBtns[i]->mLabel == "sound"){ if (InButton3D(x, y, mMainBtns[i])){ mMainBtns[i]->hovering = true; if (clicked){ SoundFX(); } } else{ mMainBtns[i]->hovering = false; } continue; }
+	}
 }
 void Engine::BtnsAbout(float x, float y, bool clicked)
 {
-// 	if (InButton3D(x, y, mBackButt))
-// 	{
-// 		mBackButt->hovering = true;
-// 		if (clicked)
-// 		{
-// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-// 			*StateMachine::pGameState = GameState::MAINMENU;
-// 		}
-// 	}
-// 	else{ mBackButt->hovering = false; }
+	if (InButton3D(x, y, mAboutBtns[0])){ mAboutBtns[0]->hovering = true;  if (clicked){  AboutBack(); } } else{ mAboutBtns[0]->hovering = false; }
 }
 void Engine::BtnsPaused(float x, float y, bool clicked)
 {
-// 	if (!mSound.MusicPaused(2)){ mSound.PauseMusic(true, 2); }
-// 	if (InButton2D(x, y, mQuitButt))
-// 	{
-// 		mQuitButt->hovering = true;
-// 		if (clicked)
-// 		{
-// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-// 			*StateMachine::pGameState = GameState::MAINMENU;
-// 			mWalkCamMode = false;
-// 			ResetCamMainMenu();
-// 			ClearVectors();
-// 		}
-// 	}
-// 	else{ mQuitButt->hovering = false; }
-// 
-// 	if (InButton2D(x, y, mRestartButt))
-// 	{
-// 		mRestartButt->hovering = true;
-// 		if (clicked)
-// 		{
-// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-// 			*StateMachine::pGameState = GameState::GAMEON;
-// 			ClearVectors();
-// 			ResetCamInGame();
-// 		}
-// 	}
-// 	else{ mRestartButt->hovering = false; }
+	for (int i = 0; i < mPausedBtns.size(); i++)
+	{
+		if (mPausedBtns[i]->mLabel == "quit")		{ if (InButton2D(x, y, mPausedBtns[i])){ mPausedBtns[i]->hovering = true;  if (clicked){ Quit(); } }	else{ mPausedBtns[i]->hovering = false; } continue; }
+		if (mPausedBtns[i]->mLabel == "restart")	{ if (InButton2D(x, y, mPausedBtns[i])){ mPausedBtns[i]->hovering = true;  if (clicked){ Restart(); } } else{ mPausedBtns[i]->hovering = false; } continue; }
+	}
 }
 void Engine::BtnsGameOn(float x, float y, bool clicked)
 {
@@ -1488,7 +1388,64 @@ bool Engine::InButton2D(float sx, float sy, Entity* button)
 	return(inX && inY);
 }
 
-
+//BUTOON FUNCTIONS
+void Engine::Play()
+{
+	ClearVectors();
+	if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+	*StateMachine::pGameState = GameState::GAMEON;
+	if (!mSound.MusicPaused(1)){ mSound.PauseMusic(true, 1); }
+	ResetCamInGame();
+}
+void Engine::About()
+{
+	if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+	*StateMachine::pGameState = GameState::ABOUT;
+}
+void Engine::Music()
+{
+	if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+	if (*StateMachine::pMusicState == MusicState::MUSICON)
+	{
+		*StateMachine::pMusicState = MusicState::MUSICOFF;
+	} 
+	else
+	{
+		*StateMachine::pMusicState = MusicState::MUSICON;
+	}
+}
+void Engine::SoundFX()
+{
+	if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+	if (*StateMachine::pSoundState == SoundState::SOUNDON)
+	{
+		*StateMachine::pSoundState = SoundState::SOUNDOFF;
+	}
+	else
+	{
+		*StateMachine::pSoundState = SoundState::SOUNDON;
+	}
+}
+void Engine::AboutBack()
+{
+	if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+	*StateMachine::pGameState = GameState::MAINMENU;
+}
+void Engine::Quit()
+{
+	if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+	*StateMachine::pGameState = GameState::MAINMENU;
+	mWalkCamMode = false;
+	ResetCamMainMenu();
+	ClearVectors();
+}
+void Engine::Restart()
+{
+	if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
+	*StateMachine::pGameState = GameState::GAMEON;
+	ClearVectors();
+	ResetCamInGame();
+}
 
 //SPAWNERS 
 void Engine::SpawnBug()
