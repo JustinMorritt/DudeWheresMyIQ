@@ -99,6 +99,12 @@
     <ClCompile Include="Text.cpp">
       <Filter>CPP</Filter>
     </ClCompile>
+    <ClCompile Include="LevelSection.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Effects.h">
@@ -180,6 +186,12 @@
       <Filter>HEADER</Filter>
     </ClInclude>
     <ClInclude Include="Text.h">
+      <Filter>HEADER</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelSection.h">
+      <Filter>HEADER</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
       <Filter>HEADER</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,7 +1,7 @@
 #include "Entity.h"
 
 //Makes a Square by default 
-Entity::Entity(int type, std::string label, ID3D11Device* device, float width, float height, float depth) :
+Entity::Entity(int type, std::string label, float width, float height, float depth) :
 mPosition(0.0f, 0.0f, 0.0f),
 mRight(1.0f, 0.0f, 0.0f),
 mUp(0.0f, 1.0f, 0.0f),
@@ -181,7 +181,6 @@ void Entity::Update(const Camera& camera, float dt)
 
 void Entity::Draw(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, float dt)
 {
-
 	XMMATRIX world = XMLoadFloat4x4(&mWorld);
 	XMMATRIX worldInvTranspose = MathHelper::InverseTranspose(world);
 	XMMATRIX worldViewProj = world*camera.View()*camera.Proj();

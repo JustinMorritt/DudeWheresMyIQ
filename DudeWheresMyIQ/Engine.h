@@ -23,6 +23,8 @@
 #include <iostream>
 #include <vector>
 #include "Text.h"
+#include "LevelSection.h"
+#include "Player.h"
 
 
 class Engine : public D3DApp
@@ -118,6 +120,7 @@ private:
 	TextureMgr mTexMgr;
 	Camera mCam;
 	Sound mSound;
+	Player* mPlayer;
 
 	ID3D11Buffer* mShapesVB;
 	ID3D11Buffer* mShapesIB;
@@ -132,6 +135,7 @@ private:
 
 
 	std::vector<Text*> mTexts;
+	std::vector<LevelSection*> mLevel;
 
 	//Models
 	std::vector<BasicModelInstance> mModelInstances;
@@ -150,6 +154,7 @@ private:
 	float bugsWorth;
 	float dmgAmount;
 	float difficultyTimer;
+	float farPlane;
 	int spawnBugTime;
 	int spawnMushTime;
 	int speedBonusTime;

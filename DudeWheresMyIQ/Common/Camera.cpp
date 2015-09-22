@@ -130,10 +130,10 @@ float Camera::GetFarWindowHeight()const
 void Camera::SetLens(float fovY, float aspect, float zn, float zf)
 {
 	// cache properties
-	mFovY = fovY;
+	mFovY   = fovY;
 	mAspect = aspect;
-	mNearZ = zn;
-	mFarZ = zf;
+	mNearZ  = zn;
+	mFarZ   = zf;
 
 	mNearWindowHeight = 2.0f * mNearZ * tanf( 0.5f*mFovY );
 	mFarWindowHeight  = 2.0f * mFarZ * tanf( 0.5f*mFovY );

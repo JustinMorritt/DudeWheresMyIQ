@@ -14,8 +14,8 @@
 class Entity
 {
 public:
-	//TYPES 1: 2: 3: 
-	Entity(int type, std::string label, ID3D11Device* device, float width, float height, float depth = 0.0f);
+	//TYPES 0:grid 1:sphere 2:URSquare 3:Box 
+	Entity(int type, std::string label, float width, float height, float depth = 0.0f);
 	~Entity();
 	void SetPos(float x, float y, float z);
 	void SetRot(float x, float y, float z);

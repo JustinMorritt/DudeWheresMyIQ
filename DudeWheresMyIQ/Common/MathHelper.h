@@ -25,6 +25,11 @@ public:
 		return a + RandF()*(b-a);
 	}
 
+	static int RandI(float a, float b)
+	{
+		return (int)(a + RandF()*(b - a));
+	}
+
 	template<typename T>
 	static T Min(const T& a, const T& b)
 	{

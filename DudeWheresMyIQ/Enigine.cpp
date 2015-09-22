@@ -20,6 +20,7 @@ Engine::Engine(HINSTANCE hInstance)
 	dmgAmount(0.01f),
 	difficultyTimer(1.0f),
 	waitToClickTime(0),
+	farPlane(30000.0f),
 	fullyLoaded(false),
 	toRandSpot(false),
 	toCam(false),
@@ -119,7 +120,7 @@ bool Engine::Init()
 	InputLayouts::InitAll(md3dDevice);
 	RenderStates::InitAll(md3dDevice);
 
-
+	MathHelper::RandF();
 //TODO:: CLEAN UP THE MODEL CLASS WITH FUNCTIONALITY
 // 	//Load Models
 // 	testModel = new BasicModel(md3dDevice, mTexMgr, "Models\\Motherboard.obj", L"Textures\\");
@@ -135,14 +136,16 @@ bool Engine::Init()
 // 	mModelInstances.push_back(testInstance);
 
 	Text::Init(&md3dDevice);
+	LevelSection::Init(&md3dDevice);
 
 	InitAll();
 
 	mSky = new Sky(md3dDevice, L"Textures/ArstaBridge.dds", 5000.0f);
 
 
-	
-	
+	mPlayer = new Player(&md3dDevice);
+	std::vector<Entity*> tempVec; tempVec.push_back(mPlayer->mSelf);
+	BuildVertexAndIndexBuffer(&mPlayer->mVB, &mPlayer->mIB, tempVec);
 
 //FIRE EMITTER
 //mRandomTexSRV = d3dHelper::CreateRandomTexture1DSRV(md3dDevice);
@@ -166,7 +169,7 @@ void Engine::OnResize()
 {
 	D3DApp::OnResize();
 	mOrthoWorld = XMMatrixOrthographicLH(mClientWidth, mClientHeight, -1000.0f, 1000.0f);
-	mCam.SetLens(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, 3000.0f);
+	mCam.SetLens(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, farPlane);
 }
 
 void Engine::UpdateScene(float dt)
@@ -208,8 +211,12 @@ void Engine::UpdateGame(float dt)
 	}
 	//(*StateMachine::pGameState == GameState::GAMEON) ? mCursorOn = false : mCursorOn = true;
 
+	for (int i = 0; i < mLevel.size(); i++)
+	{
+		mLevel[i]->Update(mCam, dt);
+	}
 
-
+	mPlayer->Update(mCam, dt);
 	
 	//TIMER STUFF / SPAWN RATES   *Spawn Before Update Or Youll Get a Flicker Later On Of it Not Translated Yet*
 	tickTimer += dt;
@@ -296,7 +303,7 @@ void Engine::ResetCamMainMenu()
 void Engine::ResetCamInGame()
 {
 	mCam.ResetCam();
-	mCam.SetPosition(0.0f, 50.0f, 0.0f);
+	mCam.SetPosition(0.0f, 20.0f, -100.0f);
 	//mCam.Pitch(XM_PI / 2);
 	mWalkCamMode = true;
 }
@@ -450,26 +457,26 @@ bool Engine::BossHitCam(Entity* boss)
 void Engine::InitAll()
 {
 	//MAKE BUTTONS
-	Entity* mPlayButt		= new Entity(0,"play", md3dDevice, 80.0f, 40.0f);		mUI.push_back(mPlayButt	); 		mMain.push_back(mPlayButt);			mMainBtns.push_back(mPlayButt);
-	Entity* mSoundButt		= new Entity(0,"sound", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mSoundButt); 		mMain.push_back(mSoundButt);		mMainBtns.push_back(mSoundButt);
-	Entity* mMusicButt		= new Entity(0,"music", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mMusicButt); 		mMain.push_back(mMusicButt);		mMainBtns.push_back(mMusicButt);
-	Entity* mSOnButt		= new Entity(0,"Son", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mSOnButt	);		mMain.push_back(mSOnButt	);
-	Entity* mSOffButt		= new Entity(0,"Soff", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mSOffButt	); 		mMain.push_back(mSOffButt	);
-	Entity* mMOnButt		= new Entity(0,"Mon", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mMOnButt	); 		mMain.push_back(mMOnButt	);
-	Entity* mModeButt		= new Entity(0,"mode", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mModeButt); 											
-	Entity* mEasyButt		= new Entity(0,"easy", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mEasyButt);
-	Entity* mMedButt		= new Entity(0,"med", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mMedButt);
-	Entity* mHardButt		= new Entity(0,"hard", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mHardButt);
-	Entity* mInsaneButt		= new Entity(0,"insane", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mInsaneButt);
-	Entity* mMOffButt		= new Entity(0, "Moff", md3dDevice, 40.0f, 20.0f);		mUI.push_back(mMOffButt); 		mMain.push_back(mMOffButt);
-	Entity* mTitleButt		= new Entity(0, "title", md3dDevice, 200.0f, 50.0f);	mUI.push_back(mTitleButt); 		mMain.push_back(mTitleButt);		mAbout.push_back(mTitleButt);
-	Entity* mAboutButt		= new Entity(0,"about", md3dDevice, 80.0f, 40.0f);		mUI.push_back(mAboutButt);		mMain.push_back(mAboutButt	);		mMainBtns.push_back(mAboutButt);
-	Entity* mBymeButt		= new Entity(0,"byme", md3dDevice, 110.0f, 30.0f);		mUI.push_back(mBymeButt); 		mAbout.push_back(mBymeButt	);
-	Entity* mQuitButt		= new Entity(0,"quit", md3dDevice, 350.0f, 200.0f);		mUI.push_back(mQuitButt); 		mPaused.push_back(mQuitButt);		mPausedBtns.push_back(mQuitButt);
-	Entity* mRestartButt	= new Entity(0,"restart", md3dDevice, 350.0f, 200.0f);	mUI.push_back(mRestartButt); 	mPaused.push_back(mRestartButt);	mPausedBtns.push_back(mRestartButt);
-	Entity* mPausedButt		= new Entity(0,"paused", md3dDevice, 600.0f, 300.0f);	mUI.push_back(mPausedButt); 	mPaused.push_back(mPausedButt);
-	Entity* mBackButt		= new Entity(0,"back", md3dDevice, 80.0f, 40.0f);		mUI.push_back(mBackButt);		mAbout.push_back(mBackButt);		mAboutBtns.push_back(mBackButt);
-	Entity* mAboutMsgButt	= new Entity(0,"aboutmsg", md3dDevice, 110.0f, 110.0f);	mUI.push_back(mAboutMsgButt); 	mAbout.push_back(mAboutMsgButt);
+	Entity* mPlayButt		= new Entity(0,"play",	 80.0f, 40.0f);		mUI.push_back(mPlayButt	); 		mMain.push_back(mPlayButt);			mMainBtns.push_back(mPlayButt);
+	Entity* mSoundButt		= new Entity(0,"sound",  40.0f, 20.0f);		mUI.push_back(mSoundButt); 		mMain.push_back(mSoundButt);		mMainBtns.push_back(mSoundButt);
+	Entity* mMusicButt		= new Entity(0,"music",  40.0f, 20.0f);		mUI.push_back(mMusicButt); 		mMain.push_back(mMusicButt);		mMainBtns.push_back(mMusicButt);
+	Entity* mSOnButt		= new Entity(0,"Son",	 40.0f, 20.0f);		mUI.push_back(mSOnButt	);		mMain.push_back(mSOnButt	);
+	Entity* mSOffButt		= new Entity(0,"Soff",	 40.0f, 20.0f);		mUI.push_back(mSOffButt	); 		mMain.push_back(mSOffButt	);
+	Entity* mMOnButt		= new Entity(0,"Mon",	 40.0f, 20.0f);		mUI.push_back(mMOnButt	); 		mMain.push_back(mMOnButt	);
+	Entity* mModeButt		= new Entity(0,"mode",	 40.0f, 20.0f);		mUI.push_back(mModeButt); 											
+	Entity* mEasyButt		= new Entity(0,"easy",	 40.0f, 20.0f);		mUI.push_back(mEasyButt);
+	Entity* mMedButt		= new Entity(0,"med",	 40.0f, 20.0f);		mUI.push_back(mMedButt);
+	Entity* mHardButt		= new Entity(0,"hard",	 40.0f, 20.0f);		mUI.push_back(mHardButt);
+	Entity* mInsaneButt		= new Entity(0,"insane", 40.0f, 20.0f);		mUI.push_back(mInsaneButt);
+	Entity* mMOffButt		= new Entity(0, "Moff",  40.0f, 20.0f);		mUI.push_back(mMOffButt); 		mMain.push_back(mMOffButt);
+	Entity* mTitleButt		= new Entity(0, "title", 200.0f, 50.0f);	mUI.push_back(mTitleButt); 		mMain.push_back(mTitleButt);		mAbout.push_back(mTitleButt);
+	Entity* mAboutButt		= new Entity(0,"about",  80.0f, 40.0f);		mUI.push_back(mAboutButt);		mMain.push_back(mAboutButt	);		mMainBtns.push_back(mAboutButt);
+	Entity* mBymeButt		= new Entity(0,"byme",	 110.0f, 30.0f);		mUI.push_back(mBymeButt); 		mAbout.push_back(mBymeButt	);
+	Entity* mQuitButt		= new Entity(0,"quit",	 350.0f, 200.0f);		mUI.push_back(mQuitButt); 		mPaused.push_back(mQuitButt);		mPausedBtns.push_back(mQuitButt);
+	Entity* mRestartButt	= new Entity(0,"restart", 350.0f, 200.0f);	mUI.push_back(mRestartButt); 	mPaused.push_back(mRestartButt);	mPausedBtns.push_back(mRestartButt);
+	Entity* mPausedButt		= new Entity(0,"paused", 600.0f, 300.0f);	mUI.push_back(mPausedButt); 	mPaused.push_back(mPausedButt);
+	Entity* mBackButt		= new Entity(0,"back",	 80.0f, 40.0f);		mUI.push_back(mBackButt);		mAbout.push_back(mBackButt);		mAboutBtns.push_back(mBackButt);
+	Entity* mAboutMsgButt	= new Entity(0,"aboutmsg", 110.0f, 110.0f);	mUI.push_back(mAboutMsgButt); 	mAbout.push_back(mAboutMsgButt);
 
 	mPlayButt->LoadTexture(			md3dDevice, L"Textures/play.dds");
 	mSoundButt->LoadTexture(		md3dDevice, L"Textures/sound.dds");
@@ -555,9 +562,15 @@ void Engine::InitAll()
 
 
 
-	Text* t = new Text("Hello?! There Thats Alot Better .../Testing/1/2", -700.0f,-200.0f, 50.0f,0);
+	Text* t = new Text("Wassup? / hey new line kcdkdcmdck!? ", 0.0f, 0.0f, 0.0f, 20.0f, 0, true); mTexts.push_back(t);
 	BuildVertexAndIndexBuffer(&t->mVB, &t->mIB, t->mText);
-	mTexts.push_back(t);
+	
+
+	LevelSection* L = new LevelSection("1234 9fkfm kf k k k df", 0.0f, 0.0f, 0.0f, 20.0f); mLevel.push_back(L);
+	BuildVertexAndIndexBuffer(&L->mVB, &L->mIB, L->mEntities);
+
+
+
 
 
 	BuildVertexAndIndexBuffer(&mShapesVB, &mShapesIB, mUI);
@@ -930,6 +943,25 @@ void Engine::DrawGameOn()
 		md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
 
 
+		Effects::BasicFX->SetDirLights(mDirLights2);
+		activeTexTech = Effects::BasicFX->Light1TexAlphaClipTech;
+
+		for (UINT p = 0; p < techDesc.Passes; ++p)
+		{
+// 			for (int i = 0; i < mTexts.size(); i++)
+// 			{
+// 				mTexts[i]->DrawText3D(&activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
+// 			}
+
+			for (int i = 0; i < mLevel.size(); i++)
+			{
+				mLevel[i]->Draw(&activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
+			}
+
+			mPlayer->Draw(&activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
+		}
+
+
 
 		//DRAW BUTTS
 		Effects::BasicFX->SetDirLights(mDirLights2);
@@ -1162,19 +1194,35 @@ void Engine::KeyboardHandler(float dt)
 	//
 	if (*StateMachine::pGameState == GameState::GAMEON)
 	{
-		mCam.mUseConstraints = true;
+		//mCam.mUseConstraints = true;
 
 		if (GetAsyncKeyState('W') & 0x8000)
-			mCam.Walk(mMoveSpeed*dt);
+		{
+			//mCam.Walk(mMoveSpeed*dt);
+			mPlayer->WalkTW(dt);
+		}
+		
 	
 		if (GetAsyncKeyState('S') & 0x8000)
-			mCam.Walk(-mMoveSpeed*dt);
+		
+		{
+		//	mCam.Walk(-mMoveSpeed*dt);
+			mPlayer->WalkAW(dt);
+		}
 	
 		if (GetAsyncKeyState('A') & 0x8000)
-			mCam.Strafe(-mMoveSpeed*dt);
+		{
+			//mCam.Strafe(-mMoveSpeed*dt);
+			mPlayer->WalkBW(dt);
+		}
+			
 	
 		if (GetAsyncKeyState('D') & 0x8000)
-			mCam.Strafe(mMoveSpeed*dt);
+		{
+		//	mCam.Strafe(mMoveSpeed*dt);
+			mPlayer->WalkFW(dt);
+		}
+			
 	
 
 	//
