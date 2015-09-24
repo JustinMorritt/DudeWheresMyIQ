@@ -354,6 +354,9 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			return 0;
 		}
 		break;
+	case WM_KEYDOWN:
+		OnKeyDOWN(wParam); break;
+	
 	}
 
 	return DefWindowProc(hwnd, msg, wParam, lParam);

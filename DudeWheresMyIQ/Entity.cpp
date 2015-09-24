@@ -31,6 +31,8 @@ mDead(false),
 mExplode(false),
 mBasicTexTrans(false),
 mUseAnimation(false),
+mUseAAB(false),
+mUseAABOnce(false),
 turnAngle(0.0f),
 explosionDist(0.0f),
 mSpriteAnimation(0),
@@ -80,10 +82,8 @@ void Entity::SetRot(float x, float y, float z)
 	XMStoreFloat4x4(&mWorld, rotX * rotY * rotZ);
 }
 
-
 void Entity::Update(const Camera& camera, float dt)
 {
-	
 	XMVECTOR R = XMLoadFloat3(&mRight);
 	XMVECTOR U = XMLoadFloat3(&mUp);
 	XMVECTOR L = XMLoadFloat3(&mLook);
@@ -176,7 +176,9 @@ void Entity::Update(const Camera& camera, float dt)
 	if (mUseAnimation){ mSpriteAnimation->Update(dt);}
 
 	//update sphere collider
-	mSphereCollider.Center = mPosition;
+	mSphereCollider.Center	= mPosition;
+	if (mUseAAB){ UpdateAAB(); }
+	if (mUseAABOnce){ UpdateAAB(); mUseAABOnce = false; }
 }
 
 void Entity::Draw(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, float dt)
@@ -271,9 +273,6 @@ void Entity::DrawShadow(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext*
 	}
 }
 
-
-
-
 void Entity::SetVertexOffset(int offSet)
 {
 	mVertexOffset = offSet;
@@ -309,10 +308,8 @@ void Entity::LoadVertData(std::vector<Vertex::Basic32>& verts, UINT& k)
 	}
 	XMStoreFloat3(&mMeshBox.Center, 0.5f*(vMin + vMax));
 	XMStoreFloat3(&mMeshBox.Extents, 0.5f*(vMax - vMin));
+
 }
-
-
-
 
 void Entity::LoadTexture(ID3D11Device* device , std::wstring texFilename)
 {
@@ -357,6 +354,24 @@ void Entity::SetUpAnimation(float cols, float rows, float FPS, float animSpeed /
 	mSpriteAnimation	= new SpriteAnimation(cols, rows, FPS,animSpeed,isLooping);
 	mUseAnimation		= true;
 	origTexScale		= { 1.0f / cols, 1.0f / rows, 1.0f };
+}
+
+void Entity::UpdateAAB()
+{
+	XMFLOAT3 vMinf3(+MathHelper::Infinity, +MathHelper::Infinity, +MathHelper::Infinity);
+	XMFLOAT3 vMaxf3(-MathHelper::Infinity, -MathHelper::Infinity, -MathHelper::Infinity);
+	XMVECTOR vMin = XMLoadFloat3(&vMinf3);
+	XMVECTOR vMax = XMLoadFloat3(&vMaxf3);
+
+	for (size_t i = 0; i < mGrid.Vertices.size(); ++i)
+	{
+		XMVECTOR P = XMLoadFloat3(&mMeshVertices[i].Pos);
+		P = XMVector3TransformCoord(P, XMLoadFloat4x4(&mWorld));
+		vMin = XMVectorMin(vMin, P);
+		vMax = XMVectorMax(vMax, P);
+	}
+	XMStoreFloat3(&mMeshBox.Center, 0.5f*(vMin + vMax));
+	XMStoreFloat3(&mMeshBox.Extents, 0.5f*(vMax - vMin));
 }
 
 int Entity::GetVertOffset()
@@ -411,6 +426,14 @@ void Entity::Strafe(float d)
 	XMVECTOR r = XMLoadFloat3(&mRight);
 	XMVECTOR p = XMLoadFloat3(&mPosition);
 	XMStoreFloat3(&mPosition, XMVectorMultiplyAdd(s, r, p));
+}
+
+void Entity::Jump(float d)
+{
+	XMVECTOR s = XMVectorReplicate(d);
+	XMVECTOR u = XMLoadFloat3(&mUp);
+	XMVECTOR p = XMLoadFloat3(&mPosition);
+	XMStoreFloat3(&mPosition, XMVectorMultiplyAdd(s, u, p));
 }
 
 void Entity::Walk(float d)

@@ -43,6 +43,7 @@ public:
 	virtual void OnMouseUp(WPARAM btnState, int x, int y)  { }
 	virtual void OnMouseMove(WPARAM btnState, int x, int y){ }
 	virtual void OnKeyUP(WPARAM btnState){ }
+	virtual void OnKeyDOWN(WPARAM btnState){ }
 
 	int		  m_ScreenWidth;
 	int		  m_ScreenHeight;

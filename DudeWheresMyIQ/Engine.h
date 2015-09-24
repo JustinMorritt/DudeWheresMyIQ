@@ -41,7 +41,9 @@ public:
 	void OnMouseDown(WPARAM btnState, int x, int y);
 	void OnMouseUp(WPARAM btnState, int x, int y);
 	void OnMouseMove(WPARAM btnState, int x, int y);
+	void CamFollowPlayer();
 	void OnKeyUP(WPARAM btnState);
+	void OnKeyDOWN(WPARAM btnState);
 	void KeyboardHandler(float dt);
 	void CameraHandler();
 	void ClearScene();
@@ -63,6 +65,7 @@ public:
 	void SetAllVertexOffsets(std::vector<Entity*>& entitys);
 	void SetAllIndexOffsets(std::vector<Entity*>& entitys);
 	void BuildVertexAndIndexBuffer(ID3D11Buffer** VB, ID3D11Buffer** IB, std::vector<Entity*>& entities);
+
 
 	//GAME DRAWS
 	void DrawMainMenu();
@@ -192,6 +195,7 @@ private:
 
 	XMMATRIX mOrthoWorld;
 };
+
 
 
 

@@ -120,20 +120,7 @@ bool Engine::Init()
 	InputLayouts::InitAll(md3dDevice);
 	RenderStates::InitAll(md3dDevice);
 
-	MathHelper::RandF();
-//TODO:: CLEAN UP THE MODEL CLASS WITH FUNCTIONALITY
-// 	//Load Models
-// 	testModel = new BasicModel(md3dDevice, mTexMgr, "Models\\Motherboard.obj", L"Textures\\");
-// 	BasicModelInstance testInstance;
-// 	testInstance.Model = testModel;
-// 
-// 	XMMATRIX modelScale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
-// 	XMMATRIX modelRot = XMMatrixRotationY(0.0f);
-// 	XMMATRIX modelOffset = XMMatrixTranslation(0.0f, 10.0f, 0.0f);
-// 
-// 	XMStoreFloat4x4(&testInstance.World, modelScale*modelRot*modelOffset);
-// 
-// 	mModelInstances.push_back(testInstance);
+	MathHelper::RandF(); //SEEDING RANDGEN
 
 	Text::Init(&md3dDevice);
 	LevelSection::Init(&md3dDevice);
@@ -142,18 +129,12 @@ bool Engine::Init()
 
 	mSky = new Sky(md3dDevice, L"Textures/ArstaBridge.dds", 5000.0f);
 
-
+	//BUILD PLAYER
 	mPlayer = new Player(&md3dDevice);
 	std::vector<Entity*> tempVec; tempVec.push_back(mPlayer->mSelf);
 	BuildVertexAndIndexBuffer(&mPlayer->mVB, &mPlayer->mIB, tempVec);
-
-//FIRE EMITTER
-//mRandomTexSRV = d3dHelper::CreateRandomTexture1DSRV(md3dDevice);
-// 	std::vector<std::wstring> flares;
-// 	flares.push_back(L"Textures\\flare0.dds");
-// 	mFlareTexSRV = d3dHelper::CreateTexture2DArraySRV(md3dDevice, md3dImmediateContext, flares);
-// 	mFire.Init(md3dDevice, Effects::FireFX, mFlareTexSRV, mRandomTexSRV, 500); 
-// 	mFire.SetEmitPos(XMFLOAT3(0.0f, 1.0f, 120.0f));
+	mPlayer->mSelf->mUseAAB = true;
+	mPlayer->InsertCollisionItems(mLevel[0]->mEntities); //INSERT LEVEL
 
 	*StateMachine::pGameState	= GameState::MAINMENU;
 	*StateMachine::pSoundState	= SoundState::SOUNDON;
@@ -205,18 +186,24 @@ void Engine::UpdateMainMenu(float dt)
 }
 void Engine::UpdateGame(float dt)
 {
+	//(*StateMachine::pGameState == GameState::GAMEON) ? mCursorOn = false : mCursorOn = true;
+
+
 	for (int i = 0; i < mPaused.size(); i++)
 	{
 		mPaused[i]->Update(mCam, dt);
 	}
-	//(*StateMachine::pGameState == GameState::GAMEON) ? mCursorOn = false : mCursorOn = true;
+
 
 	for (int i = 0; i < mLevel.size(); i++)
 	{
 		mLevel[i]->Update(mCam, dt);
+		
 	}
 
 	mPlayer->Update(mCam, dt);
+	CamFollowPlayer();
+
 	
 	//TIMER STUFF / SPAWN RATES   *Spawn Before Update Or Youll Get a Flicker Later On Of it Not Translated Yet*
 	tickTimer += dt;
@@ -303,7 +290,7 @@ void Engine::ResetCamMainMenu()
 void Engine::ResetCamInGame()
 {
 	mCam.ResetCam();
-	mCam.SetPosition(0.0f, 20.0f, -100.0f);
+	mCam.SetPosition(0.0f, 20.0f, -400.0f);
 	//mCam.Pitch(XM_PI / 2);
 	mWalkCamMode = true;
 }
@@ -375,6 +362,10 @@ void Engine::ClearVectors()
 // 		delete mGhosts[i];
 // 		mGhosts[i] = nullptr;
 // 	}mGhosts.clear();
+}
+void Engine::CamFollowPlayer()
+{
+	mCam.SetPosition(mPlayer->mSelf->mPosition.x, mPlayer->mSelf->mPosition.y + 100.0f, mCam.GetPosition().z);
 }
 
 
@@ -560,6 +551,8 @@ void Engine::InitAll()
 
 
 
+	BuildVertexAndIndexBuffer(&mShapesVB, &mShapesIB, mUI);
+
 
 
 	Text* t = new Text("Wassup? / hey new line kcdkdcmdck!? ", 0.0f, 0.0f, 0.0f, 20.0f, 0, true); mTexts.push_back(t);
@@ -573,7 +566,7 @@ void Engine::InitAll()
 
 
 
-	BuildVertexAndIndexBuffer(&mShapesVB, &mShapesIB, mUI);
+
 
 
 
@@ -1185,6 +1178,17 @@ void Engine::OnKeyUP(WPARAM btnState)
 	case 0x32:(mBFCull)		? mBFCull	= false	: mBFCull	= true; break;	// 2 KEY
 	case 0x50:if (*StateMachine::pGameState == GameState::GAMEON || *StateMachine::pGameState == GameState::PAUSED)
 		{(*StateMachine::pGameState == GameState::PAUSED) ? *StateMachine::pGameState = GameState::GAMEON : *StateMachine::pGameState = GameState::PAUSED;}break;
+	case 0x57: mPlayer->GoOut = false; mPlayer->SlOut = true; break; // W
+	case 0x41: mPlayer->GoBW  = false; mPlayer->SlBW  = true; break; // A
+	case 0x53: mPlayer->GoIn  = false; mPlayer->SlIn  = true; break; // S
+	case 0x44: mPlayer->GoFW  = false; mPlayer->SlFW  = true; break; // D
+	}
+}
+void Engine::OnKeyDOWN(WPARAM btnState)
+{
+	switch (btnState)
+	{
+	case 0x20: mPlayer->Jump(); break; //SPACE
 	}
 }
 void Engine::KeyboardHandler(float dt)
@@ -1199,7 +1203,7 @@ void Engine::KeyboardHandler(float dt)
 		if (GetAsyncKeyState('W') & 0x8000)
 		{
 			//mCam.Walk(mMoveSpeed*dt);
-			mPlayer->WalkTW(dt);
+			mPlayer->GoOut = true;
 		}
 		
 	
@@ -1207,23 +1211,45 @@ void Engine::KeyboardHandler(float dt)
 		
 		{
 		//	mCam.Walk(-mMoveSpeed*dt);
-			mPlayer->WalkAW(dt);
+			mPlayer->GoIn = true;
 		}
 	
 		if (GetAsyncKeyState('A') & 0x8000)
 		{
 			//mCam.Strafe(-mMoveSpeed*dt);
-			mPlayer->WalkBW(dt);
+			mPlayer->GoBW = true;
 		}
 			
 	
 		if (GetAsyncKeyState('D') & 0x8000)
 		{
 		//	mCam.Strafe(mMoveSpeed*dt);
-			mPlayer->WalkFW(dt);
+			mPlayer->GoFW = true;
 		}
 			
-	
+
+
+
+
+
+
+		if (GetAsyncKeyState('I') & 0x8000)
+		{
+			mCam.Walk(mMoveSpeed*dt);
+		}
+		if (GetAsyncKeyState('K') & 0x8000)
+		{
+			mCam.Walk(-mMoveSpeed*dt);
+		}
+		if (GetAsyncKeyState('J') & 0x8000)
+		{
+			mCam.Strafe(-mMoveSpeed*dt);
+		}
+		if (GetAsyncKeyState('L') & 0x8000)
+		{
+			mCam.Strafe(mMoveSpeed*dt);
+		}
+
 
 	//
 	// Walk/fly mode

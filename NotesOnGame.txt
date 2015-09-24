@@ -22,3 +22,17 @@
  - Battles will consist of you defending yourself with smart things you know .
  - Now for a name ... 
  -
+ 
+ 
+ 
+ - Create ...
+ Inhabited Land Areas... 
+ Obsticle Joining Areas.. 
+ 
+ 
+ Player Needs
+ XMFLOAT3 CurrSpeed, Velocity
+ Maxspeed,  
+ 
+ On Update  Walk(Velocity.x * dt) Strafe(Velocity.z * dt)
+ 

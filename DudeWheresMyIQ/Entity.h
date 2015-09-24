@@ -31,9 +31,11 @@ public:
 	void SetSphereCollider(float radius);
 	void ResetLookUpRight();
 	void SetUpAnimation(float cols, float rows, float FPS, float animSpeed = 1.0f, bool isLooping = true);
+	void UpdateAAB();
 
 	// Strafe/Walk
 	void Strafe(float d);
+	void Jump(float d);
 	void Roll(float d);
 	void Walk(float d);
 
@@ -115,6 +117,8 @@ public:
 	bool mExplode;
 	bool mBasicTexTrans;
 	bool mUseAnimation;
+	bool mUseAAB;
+	bool mUseAABOnce;
 	
 	std::string mLabel;
 

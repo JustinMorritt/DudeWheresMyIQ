@@ -13,7 +13,7 @@ LevelSection::LevelSection(std::string seed, float x, float y, float z, float si
 	float textHeight = size;
 	float finalWidth = 0.0f;
 
-	int num = MathHelper::RandI(100.0f, 200.0f);
+	int num = MathHelper::RandI(10.0f, 10.0f);
 	for (int i = 0; i < num; i++)
 	{
 		float rand = MathHelper::RandF();
@@ -56,7 +56,7 @@ void LevelSection::MakeChunk(char letter, float x, float y, float z, float w, fl
 
 	switch (letter)
 	{
-	default: E = new Entity(3, "level", w, h, d); E->UseTexture(mGrass); E->SetPos(x, y, z); mEntities.push_back(E); break;
+	default: E = new Entity(3, "ground", w, h, d); E->UseTexture(mGrass); E->mUseAABOnce = true; E->SetPos(x, y, z); E->mUseAAB = true; mEntities.push_back(E); break;
 	}
 }
 

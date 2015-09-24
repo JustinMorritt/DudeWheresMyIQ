@@ -9,6 +9,7 @@
 
 #include <Windows.h>
 #include <xnamath.h>
+#include "xnacollision.h"
 
 class MathHelper
 {
@@ -75,7 +76,72 @@ public:
 	static const float Infinity;
 	static const float Pi;
 
+	static XMFLOAT3 AABBCollision(XNA::AxisAlignedBox& E1, XNA::AxisAlignedBox& E2)
+	{
+		XMFLOAT3 Correction = { 0.0f, 0.0f, 0.0f };
+		//HALF WIDTHS
+		XMFLOAT3 e1 = E1.Extents, e2 = E2.Extents;
+		XMFLOAT3 c1 = E1.Center,  c2 = E2.Center;
 
+		//DISTANCE
+		float distX = abs(c1.x - c2.x);
+		float distY = abs(c1.y - c2.y);
+		float distZ = abs(c1.z - c2.z);
+
+		//OVERLAP
+		float olX = (e1.x + e2.x) - distX;
+		float olY = (e1.y + e2.y) - distY;
+		float olZ = (e1.z + e2.z) - distZ;
+
+		//CHECK LEAST OVERLAP
+		if (abs(olX) < abs(olY) && abs(olX) < abs(olZ))
+		{
+			if (c1.x > c2.x)
+			{
+				Correction.x = olX;
+				return Correction;
+				//OutputDebugString(L"Hit on Right of Block");
+			}
+			else
+			{
+				Correction.x = -olX;
+				return Correction;
+				//OutputDebugString(L"Hit on Left of Block");
+			}
+		}
+		else if (abs(olY) < abs(olX) && abs(olY) < abs(olZ))
+		{
+			if (c1.y > c2.y)
+			{
+				Correction.y = olY;
+				return Correction;
+				//OutputDebugString(L"Hit on Top of Block");
+			}
+			else
+			{
+				Correction.y = -olY;
+				return Correction;
+				//OutputDebugString(L"Hit on Bottom of Block");
+			}
+		}
+		else if (abs(olZ) < abs(olY) && abs(olZ) < abs(olX))
+		{
+			if (c1.z < c2.z)
+			{
+				Correction.z = -olZ;
+				return Correction;
+				//OutputDebugString(L"Hit on Back of Block");
+			}
+			else
+			{
+				Correction.z = olZ;
+				return Correction;
+				//OutputDebugString(L"Hit on Front of Block");
+			}
+		}
+
+		return Correction;
+	}
 };
 
 #endif // MATHHELPER_H
