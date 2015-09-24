@@ -96,47 +96,35 @@ public:
 		//CHECK LEAST OVERLAP
 		if (abs(olX) < abs(olY) && abs(olX) < abs(olZ))
 		{
-			if (c1.x > c2.x)
+			if (c1.x > c2.x) //Hit Right Side
 			{
-				Correction.x = olX;
-				return Correction;
-				//OutputDebugString(L"Hit on Right of Block");
+				Correction.x = olX;		return Correction;
 			}
-			else
+			else //Hit Left
 			{
-				Correction.x = -olX;
-				return Correction;
-				//OutputDebugString(L"Hit on Left of Block");
+				Correction.x = -olX;	return Correction;
 			}
 		}
 		else if (abs(olY) < abs(olX) && abs(olY) < abs(olZ))
 		{
-			if (c1.y > c2.y)
+			if (c1.y > c2.y) //Hit Top
 			{
-				Correction.y = olY;
-				return Correction;
-				//OutputDebugString(L"Hit on Top of Block");
+				Correction.y = olY;		return Correction;
 			}
-			else
+			else // Hit Bottom
 			{
-				Correction.y = -olY;
-				return Correction;
-				//OutputDebugString(L"Hit on Bottom of Block");
+				Correction.y = -olY;	return Correction;
 			}
 		}
 		else if (abs(olZ) < abs(olY) && abs(olZ) < abs(olX))
 		{
-			if (c1.z < c2.z)
+			if (c1.z < c2.z) //Hit Back
 			{
-				Correction.z = -olZ;
-				return Correction;
-				//OutputDebugString(L"Hit on Back of Block");
+				Correction.z = -olZ;	return Correction;
 			}
-			else
+			else // Hit Front
 			{
-				Correction.z = olZ;
-				return Correction;
-				//OutputDebugString(L"Hit on Front of Block");
+				Correction.z = olZ;		return Correction;
 			}
 		}
 
