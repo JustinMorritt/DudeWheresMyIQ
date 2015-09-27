@@ -14,6 +14,7 @@ SpriteAnimation::SpriteAnimation(int Cols, int Rows, float FPS, float animSpeed 
 	mCurrentAnimation	= 0.0f;
 	mIdleAnim			= 0.0f;
 	mPaused				= false;
+	mFlipped			= false;
 }
 
 SpriteAnimation::~SpriteAnimation()
@@ -45,6 +46,7 @@ void SpriteAnimation::Update(float dt)
 				if (mPlayOnce)
 				{
 					mCurrentAnimation = mIdleAnim;
+					mPlayOnce = false;
 				}
 			}
 		}
@@ -53,10 +55,24 @@ void SpriteAnimation::Update(float dt)
 	}
 }
 
-void SpriteAnimation::SetAnim(float anim, bool once)
+void SpriteAnimation::SetAnim(float anim, bool once, bool F)
 {
-	mCurrentAnimation = anim;
-	mPlayOnce = once;
+	if (!mPlayOnce)
+	{
+		mCurrentAnimation = anim;
+		mPlayOnce = once;
+		Flip(F);
+	}
+}
+
+void SpriteAnimation::OverRidePlayOnce(bool f)
+{
+	mPlayOnce = f;
+}
+
+void SpriteAnimation::ResetFrame()
+{
+	mCurrentFrame = 0.0f;
 }
 
 void SpriteAnimation::SetAnimSpeed(float s)
@@ -77,4 +93,14 @@ float SpriteAnimation::GetX()
 float SpriteAnimation::GetY()
 {
 	return mCurrTexTransY;
+}
+
+bool SpriteAnimation::Flipped()
+{
+	return mFlipped;
+}
+
+void SpriteAnimation::Flip(bool F)
+{
+	mFlipped = F;
 }

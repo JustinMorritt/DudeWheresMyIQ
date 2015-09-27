@@ -108,12 +108,14 @@
     <ClCompile Include="Common\xnacollision.cpp" />
     <ClCompile Include="Effects.cpp" />
     <ClCompile Include="Enigine.cpp" />
+    <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="LevelSection.cpp" />
     <ClCompile Include="LoadOBJ.cpp" />
     <ClCompile Include="MeshGeometry.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="RenderStates.cpp" />
+    <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="Sky.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Sound.cpp" />
@@ -140,12 +142,14 @@
     <ClInclude Include="Common\xnacollision.h" />
     <ClInclude Include="Effects.h" />
     <ClInclude Include="Engine.h" />
+    <ClInclude Include="Inventory.h" />
     <ClInclude Include="LevelSection.h" />
     <ClInclude Include="LoadOBJ.h" />
     <ClInclude Include="MeshGeometry.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="RenderStates.h" />
+    <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="Sky.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SpriteAnimation.h" />
@@ -203,6 +207,9 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="FX\BuildShadowMap.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="FX\NormalMap.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>

@@ -31,7 +31,7 @@ Text::Text(std::string text, float x, float y, float z, float size, int BG, bool
 	switch (BG)
 	{
 	case 0: E = new Entity(2, "text", finalWidth + size, textHeight + size); 
-		E->UseTexture(mBG1); 
+		E->UseTexture(mBG1); E->reverseLook = true;
 		E->SetPos(x + ((finalWidth / 2) - (size / 2)), y - ((textHeight / 2) - (size / 2)), z);
 		ThreeD ? mText.push_back(E) : mText.insert(mText.begin(),E);
 		break;

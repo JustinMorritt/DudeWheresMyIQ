@@ -11,6 +11,13 @@
 #include <xnamath.h>
 #include "xnacollision.h"
 
+struct BoundingSphere
+{
+	BoundingSphere() : Center(0.0f, 0.0f, 0.0f), Radius(0.0f) {}
+	XMFLOAT3 Center;
+	float Radius;
+};
+
 class MathHelper
 {
 public:

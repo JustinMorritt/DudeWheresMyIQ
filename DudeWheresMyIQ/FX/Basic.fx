@@ -30,6 +30,7 @@ cbuffer cbPerObject
 // Nonnumeric values cannot be added to a cbuffer.
 Texture2D gDiffuseMap;
 TextureCube gCubeMap;
+Texture2D gShadowMap;
 
 SamplerState samAnisotropic
 {
@@ -39,6 +40,25 @@ SamplerState samAnisotropic
 	AddressU = WRAP;
 	AddressV = WRAP;
 };
+
+SamplerState samLinear
+{
+	Filter = MIN_MAG_MIP_LINEAR;
+	AddressU = WRAP;
+	AddressV = WRAP;
+};
+
+SamplerComparisonState samShadow
+{
+	Filter = COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+	AddressU = BORDER;
+	AddressV = BORDER;
+	AddressW = BORDER;
+	BorderColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	ComparisonFunc = LESS;
+};
+
  
 struct VertexIn
 {
@@ -53,6 +73,7 @@ struct VertexOut
     float3 PosW    : POSITION;
     float3 NormalW : NORMAL;
 	float2 Tex     : TEXCOORD;
+	float4 ShadowPosH : TEXCOORD1;
 };
 
 struct GeoOut
@@ -61,6 +82,7 @@ struct GeoOut
 	float3 PosW    : POSITION;
 	float3 NormalW : NORMAL;
 	float2 Tex     : TEXCOORD;
+	float4 ShadowPosH : TEXCOORD1;
 };
 
 cbuffer cbFixed
@@ -88,6 +110,9 @@ VertexOut VS(VertexIn vin)
 	// Output vertex attributes for interpolation across triangle.
 	vout.Tex = mul(float4(vin.Tex, 0.0f, 1.0f), gTexTransform).xy;
 
+	// Generate projective tex-coords to project shadow map onto scene.
+	vout.ShadowPosH = mul(float4(vin.PosL, 1.0f), gShadowTransform);
+
 	return vout;
 }
 
@@ -98,6 +123,7 @@ VertexOut SimpleVS(VertexIn vin)
 	vout.NormalW = mul(vin.NormalL, (float3x3)gWorldInvTranspose);
 	vout.PosH = float4(0.0f,0.0f,0.0f,0.0f);
 	vout.Tex = mul(float4(vin.Tex, 0.0f, 1.0f), gTexTransform).xy;
+	vout.ShadowPosH = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	return vout;
 }
 
@@ -137,6 +163,7 @@ void MyGSExplosion(triangle VertexOut gin[3], inout TriangleStream<GeoOut> triSt
 		gout.PosW = v[i].xyz;
 		gout.NormalW = look;
 		gout.Tex = gTexC[i];
+		gout.ShadowPosH = float4(0.0f, 0.0f, 0.0f, 0.0f);
 		triStream.Append(gout);
 	}
 }
@@ -189,6 +216,10 @@ float4 PS(VertexOut pin,
 		float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 		float4 spec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
+		// Only the first light casts a shadow.
+		float3 shadow = float3(1.0f, 1.0f, 1.0f);
+		shadow[0] = CalcShadowFactor(samShadow, gShadowMap, pin.ShadowPosH);
+
 		// Sum the light contribution from each light source.  
 		[unroll]
 		for(int i = 0; i < gLightCount; ++i)
@@ -198,8 +229,9 @@ float4 PS(VertexOut pin,
 				A, D, S);
 
 			ambient += A;
-			diffuse += D;
-			spec    += S;
+			diffuse += shadow[i] * D;
+			spec    += shadow[i] * S;
+	
 		}
 
 		litColor = texColor*(ambient + diffuse) + spec;

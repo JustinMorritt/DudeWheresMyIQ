@@ -3,6 +3,7 @@
 #include "Entity.h"
 #include <vector>
 #include "MathHelper.h"
+#include "Inventory.h"
 
 class Player
 {
@@ -11,15 +12,18 @@ public:
 	~Player();
 	void ResetPlayerPos();
 	void Update(const Camera& camera, float dt) ;
-	void Draw(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, float dt);
+	void Draw(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, float dt, XMMATRIX& shadow);
+	void DrawShad(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, const Camera& camera, XMFLOAT4X4 lightView, XMFLOAT4X4 lightProj);
 	void InsertCollisionItems(std::vector<Entity*> entities);
 	void EmptyCollisionItems();
 	void CheckCollisions();
 	void Applyforces(float dt);
+	void SetAnimation();
 	void Move(float dt);
 	void Jump();
 
-
+	int mLevel;
+	float mIQ;
 	float mMaxSpeed;
 	float mAccel;
 	XMFLOAT3 mVelocity;

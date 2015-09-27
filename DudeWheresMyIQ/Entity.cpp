@@ -35,7 +35,7 @@ mUseAAB(false),
 mUseAABOnce(false),
 turnAngle(0.0f),
 explosionDist(0.0f),
-mSpriteAnimation(0),
+mAnim(0),
 mLabel(label)
 {
 	//SET MATERIAL
@@ -47,7 +47,7 @@ mLabel(label)
 
 	//FLOOR PLANE
 	XMMATRIX I = XMMatrixIdentity();
-	XMStoreFloat4x4(&mWorld, I);
+	XMStoreFloat4x4(&mWorld, I); XMStoreFloat4x4(&mShadowTrans, I);
 
 	switch (type)
 	{
@@ -66,7 +66,7 @@ Entity::~Entity()
 	//Commented so you have to intentionally release these .. some are sharing textures
 // 	mTexSRV->Release();
  	mTexSRV = nullptr;
-	if (mSpriteAnimation){ delete mSpriteAnimation; mSpriteAnimation = nullptr; }
+	if (mAnim){ delete mAnim; mAnim = nullptr; }
 }
 
 void Entity::SetPos(float x, float y, float z)
@@ -173,7 +173,7 @@ void Entity::Update(const Camera& camera, float dt)
 		}
 	}
 
-	if (mUseAnimation){ mSpriteAnimation->Update(dt);}
+	if (mUseAnimation){ mAnim->Update(dt);}
 
 	//update sphere collider
 	mSphereCollider.Center	= mPosition;
@@ -184,11 +184,13 @@ void Entity::Update(const Camera& camera, float dt)
 void Entity::Draw(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, float dt)
 {
 	XMMATRIX world = XMLoadFloat4x4(&mWorld);
+	XMMATRIX shad = XMLoadFloat4x4(&mShadowTrans);
 	XMMATRIX worldInvTranspose = MathHelper::InverseTranspose(world);
 	XMMATRIX worldViewProj = world*camera.View()*camera.Proj();
 	Effects::BasicFX->SetWorld(world);
 	Effects::BasicFX->SetWorldInvTranspose(worldInvTranspose);
 	Effects::BasicFX->SetWorldViewProj(worldViewProj);
+	Effects::BasicFX->SetShadowTransform(world*shad);
 	if (!useTexTrans){ Effects::BasicFX->SetTexTransform(XMMatrixScaling(origTexScale.x, origTexScale.y, origTexScale.z)); }
 	if (useTexTrans)
 	{
@@ -203,7 +205,9 @@ void Entity::Draw(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* conte
 	}
 	if (mUseAnimation)
 	{
-		Effects::BasicFX->SetTexTransform(XMMatrixTranslation(mSpriteAnimation->GetX(), mSpriteAnimation->GetY(), texTrans.z)*XMMatrixScaling(origTexScale.x, origTexScale.y, origTexScale.z));
+		XMMATRIX Scale;
+		mAnim->Flipped() ? Scale = XMMatrixScaling(-origTexScale.x, origTexScale.y, origTexScale.z) : Scale = XMMatrixScaling(origTexScale.x, origTexScale.y, origTexScale.z);
+		Effects::BasicFX->SetTexTransform(XMMatrixTranslation(mAnim->GetX(), mAnim->GetY(), texTrans.z)*Scale);
 	}
 
 	Effects::BasicFX->SetMaterial(mMat);
@@ -248,26 +252,25 @@ void Entity::Draw2D(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* con
 	context->DrawIndexed(mIndexCount, mIndexOffset, mVertexOffset);
 }
 
-void Entity::DrawShadow(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* context, const XMVECTOR& shadPlane, const XMVECTOR& lightDir, const XMMATRIX& S, float scale, float xOff, float yOff, float zOff, const Camera& camera, const Material& mat)
+void Entity::DrawShadow(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* context, const Camera& camera, XMFLOAT4X4 lightView, XMFLOAT4X4 lightProj)
 {
+	XMMATRIX view		= XMLoadFloat4x4(&lightView);
+	XMMATRIX proj		= XMLoadFloat4x4(&lightProj);
+	XMMATRIX viewProj	= XMMatrixMultiply(view, proj);
+
 	D3DX11_TECHNIQUE_DESC techDesc;
 	activeTech->GetDesc(&techDesc);
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{
 		ID3DX11EffectPass* pass = activeTech->GetPassByIndex(p);
-		XMMATRIX shadowScale = XMMatrixScaling(scale, scale, scale);
-
-		XMMATRIX trans = XMMatrixTranslation(mWorld.m[3][0] + xOff, yOff, mWorld.m[3][2] + zOff); // ORIGINAL TRANSLATION
-		XMMATRIX world = XMLoadFloat4x4(&mWorld)*S*shadowScale*trans;
+		//XMMATRIX trans = XMMatrixTranslation(mWorld.m[3][0] + xOff, yOff, mWorld.m[3][2] + zOff); // ORIGINAL TRANSLATION
+		XMMATRIX world = XMLoadFloat4x4(&mWorld);
 		XMMATRIX worldInvTranspose = MathHelper::InverseTranspose(world);
-		XMMATRIX worldViewProj = world*camera.View()*camera.Proj();
-		Effects::BasicFX->SetTexTransform(XMMatrixScaling(origTexScale.x, origTexScale.y, origTexScale.z));
-		Effects::BasicFX->SetWorld(world);
-		Effects::BasicFX->SetWorldInvTranspose(worldInvTranspose);
-		Effects::BasicFX->SetWorldViewProj(worldViewProj);
-		Effects::BasicFX->SetMaterial(mat);
-		Effects::BasicFX->SetDiffuseMap(mTexSRV);
-
+		XMMATRIX worldViewProj = world*view*proj;
+		Effects::BuildShadowMapFX->SetWorld(world);
+		Effects::BuildShadowMapFX->SetWorldInvTranspose(worldInvTranspose);
+		Effects::BuildShadowMapFX->SetWorldViewProj(worldViewProj);
+		Effects::BuildShadowMapFX->SetTexTransform(XMMatrixScaling(1.0f, 1.0f, 1.0f));
 		pass->Apply(0, context);
 		context->DrawIndexed(mIndexCount, mIndexOffset, 0);
 	}
@@ -351,7 +354,7 @@ void Entity::ResetLookUpRight()
 
 void Entity::SetUpAnimation(float cols, float rows, float FPS, float animSpeed /*= 1.0f*/, bool isLooping /*= true*/)
 {
-	mSpriteAnimation	= new SpriteAnimation(cols, rows, FPS,animSpeed,isLooping);
+	mAnim	= new SpriteAnimation(cols, rows, FPS,animSpeed,isLooping);
 	mUseAnimation		= true;
 	origTexScale		= { 1.0f / cols, 1.0f / rows, 1.0f };
 }
@@ -372,6 +375,11 @@ void Entity::UpdateAAB()
 	}
 	XMStoreFloat3(&mMeshBox.Center, 0.5f*(vMin + vMax));
 	XMStoreFloat3(&mMeshBox.Extents, 0.5f*(vMax - vMin));
+}
+
+void Entity::SetShadTrans(XMMATRIX& shadow)
+{
+	XMStoreFloat4x4(&mShadowTrans, shadow);
 }
 
 int Entity::GetVertOffset()

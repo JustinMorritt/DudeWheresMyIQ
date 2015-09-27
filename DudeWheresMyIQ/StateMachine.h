@@ -8,6 +8,8 @@ enum class GameState
 	PAUSED,
 	WIN,
 	LOSE,
+	BATTLE,
+	INVENTORY,
 	GAMEON
 };
 

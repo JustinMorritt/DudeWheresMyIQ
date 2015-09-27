@@ -1,9 +1,16 @@
 #include "Engine.h"
 // Smart ItemS: newtons Cradle
+// TODO:  Inventory System / Ability / Level / Add Random Grass,Trees,Bush, On Grass BLocks / Movement blocks you can jump on and they move you
+// TODO:  Battle System Pops Up When You Bump into a dumbass ... make a dumb ass class (with abilitys/ iq) ... 
+// TODO:  SpeachBubble Background For Dynamic Text. 
+// TODO:  Set Up State Machine For Bonuses you have used.. As Program ticks around it will see that a bonus has been activated.
+// TODO:  Add hovering Description at bottom of inventory . Basically make a text for each description you want .. if hovering over this make a pointer = that text Description
 
 Engine::Engine(HINSTANCE hInstance)
 	: D3DApp(hInstance),
 	mSky(0),
+	mInv(0),
+	mSmap(0),
 	mFloorTexSRV(0),
 	mWalkCamMode(false),
 	mWireMode(false),
@@ -91,6 +98,14 @@ Engine::Engine(HINSTANCE hInstance)
 	mShadowMat.Diffuse = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.5f);
 	mShadowMat.Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 16.0f);
 
+	// Estimate the scene bounding sphere manually since we know how the scene was constructed.
+	// The grid is the "widest object" with a width of 20 and depth of 30.0f, and centered at
+	// the world space origin.  In general, you need to loop over every world space vertex
+	// position and compute the bounding sphere.
+	mSceneBounds.Center = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	mSceneBounds.Radius = 1000.0f;
+
+	
 
 	mOrthoWorld = XMMatrixOrthographicLH(mClientWidth, mClientHeight, -1000.0f, 1000.0f);
 }
@@ -120,21 +135,26 @@ bool Engine::Init()
 	InputLayouts::InitAll(md3dDevice);
 	RenderStates::InitAll(md3dDevice);
 
-	MathHelper::RandF(); //SEEDING RANDGEN
+	srand(time(NULL)); //SEEDING RANDGEN
 
 	Text::Init(&md3dDevice);
+	Inventory::Init(&md3dDevice);
 	LevelSection::Init(&md3dDevice);
 
 	InitAll();
 
-	mSky = new Sky(md3dDevice, L"Textures/ArstaBridge.dds", 5000.0f);
+	mSky	= new Sky(md3dDevice, L"Textures/ArstaBridge.dds", 5000.0f);
+	mSmap	= new ShadowMap(md3dDevice, SMapSize, SMapSize);
 
 	//BUILD PLAYER
 	mPlayer = new Player(&md3dDevice);
 	std::vector<Entity*> tempVec; tempVec.push_back(mPlayer->mSelf);
 	BuildVertexAndIndexBuffer(&mPlayer->mVB, &mPlayer->mIB, tempVec);
-	mPlayer->mSelf->mUseAAB = true;
 	mPlayer->InsertCollisionItems(mLevel[0]->mEntities); //INSERT LEVEL
+
+	mInventory = new Inventory();
+	BuildVertexAndIndexBuffer(&mInventory->mVB, &mInventory->mIB, mInventory->mItems);
+
 
 	*StateMachine::pGameState	= GameState::MAINMENU;
 	*StateMachine::pSoundState	= SoundState::SOUNDON;
@@ -163,6 +183,8 @@ void Engine::UpdateScene(float dt)
 	{
 	case GameState::ABOUT:		
 	case GameState::MAINMENU:	UpdateMainMenu(dt); break;
+	case GameState::BATTLE:		UpdateBattle(dt);	break;
+	case GameState::INVENTORY:	UpdateInventory(dt);break;
 	case GameState::GAMEON:
 	case GameState::PAUSED:
 	case GameState::WIN:
@@ -186,8 +208,9 @@ void Engine::UpdateMainMenu(float dt)
 }
 void Engine::UpdateGame(float dt)
 {
+	mSceneBounds.Center.x = mCam.GetPosition().x;
 	//(*StateMachine::pGameState == GameState::GAMEON) ? mCursorOn = false : mCursorOn = true;
-
+	BuildShadowTransform();
 
 	for (int i = 0; i < mPaused.size(); i++)
 	{
@@ -249,7 +272,24 @@ void Engine::UpdateGame(float dt)
 // 		mInvader->Walk(-100.0f*dt);
 
 }
-
+void Engine::UpdateBattle(float dt)
+{
+	CamFollowPlayer();
+	for (int i = 0; i < mBattleText.size(); i++)
+	{
+		mBattleText[i]->Update(mCam, dt);
+	}
+}
+void Engine::UpdateInventory(float dt)
+{
+	CamFollowPlayer();
+	for (int i = 0; i < mInventoryText.size(); i++)
+	{
+		mInventoryText[i]->Update(mCam, dt);
+	}
+	
+	mInventory->Update(mCam, mTimer.DeltaTime());
+}
 
 
 
@@ -462,8 +502,8 @@ void Engine::InitAll()
 	Entity* mMOffButt		= new Entity(0, "Moff",  40.0f, 20.0f);		mUI.push_back(mMOffButt); 		mMain.push_back(mMOffButt);
 	Entity* mTitleButt		= new Entity(0, "title", 200.0f, 50.0f);	mUI.push_back(mTitleButt); 		mMain.push_back(mTitleButt);		mAbout.push_back(mTitleButt);
 	Entity* mAboutButt		= new Entity(0,"about",  80.0f, 40.0f);		mUI.push_back(mAboutButt);		mMain.push_back(mAboutButt	);		mMainBtns.push_back(mAboutButt);
-	Entity* mBymeButt		= new Entity(0,"byme",	 110.0f, 30.0f);		mUI.push_back(mBymeButt); 		mAbout.push_back(mBymeButt	);
-	Entity* mQuitButt		= new Entity(0,"quit",	 350.0f, 200.0f);		mUI.push_back(mQuitButt); 		mPaused.push_back(mQuitButt);		mPausedBtns.push_back(mQuitButt);
+	Entity* mBymeButt		= new Entity(0,"byme",	 110.0f, 30.0f);	mUI.push_back(mBymeButt); 		mAbout.push_back(mBymeButt	);
+	Entity* mQuitButt		= new Entity(0,"quit",	 350.0f, 200.0f);	mUI.push_back(mQuitButt); 		mPaused.push_back(mQuitButt);		mPausedBtns.push_back(mQuitButt);
 	Entity* mRestartButt	= new Entity(0,"restart", 350.0f, 200.0f);	mUI.push_back(mRestartButt); 	mPaused.push_back(mRestartButt);	mPausedBtns.push_back(mRestartButt);
 	Entity* mPausedButt		= new Entity(0,"paused", 600.0f, 300.0f);	mUI.push_back(mPausedButt); 	mPaused.push_back(mPausedButt);
 	Entity* mBackButt		= new Entity(0,"back",	 80.0f, 40.0f);		mUI.push_back(mBackButt);		mAbout.push_back(mBackButt);		mAboutBtns.push_back(mBackButt);
@@ -555,15 +595,23 @@ void Engine::InitAll()
 
 
 
-	Text* t = new Text("Wassup? / hey new line kcdkdcmdck!? ", 0.0f, 0.0f, 0.0f, 20.0f, 0, true); mTexts.push_back(t);
+	Text* t = new Text("          Welcome! / Try not to get any Stupider! ", 0.0f, 90.0f, 90.0f, 20.0f, 0, true); mTexts.push_back(t);
 	BuildVertexAndIndexBuffer(&t->mVB, &t->mIB, t->mText);
+
+	Text* z = new Text("Buttons/B ..enters battle state/I ..Inventory /W S A D ..Movement/M O U S E ..Look /S P A C E ..Jump ", 0.0f, 250.0f, 90.0f, 20.0f, 0, true); mTexts.push_back(z);
+	BuildVertexAndIndexBuffer(&z->mVB, &z->mIB, z->mText);
 	
 
 	LevelSection* L = new LevelSection("1234 9fkfm kf k k k df", 0.0f, 0.0f, 0.0f, 20.0f); mLevel.push_back(L);
 	BuildVertexAndIndexBuffer(&L->mVB, &L->mIB, L->mEntities);
 
 
-
+	Text* t2 = new Text("Entered Battle!/   Good Luck!", -240.0f, 0.0f, -90.0f, 100.0f, 0, false); mBattleText.push_back(t2);
+	BuildVertexAndIndexBuffer(&t2->mVB, &t2->mIB, t2->mText);
+	
+	Text* t3 = new Text("Inventory...", -240.0f, 400.0f, -90.0f, 100.0f, 0, false); mInventoryText.push_back(t3);
+	BuildVertexAndIndexBuffer(&t3->mVB, &t3->mIB, t3->mText);
+	
 
 
 
@@ -692,6 +740,10 @@ void Engine::DrawScene()
 	
 	if( mWireMode )	md3dImmediateContext->RSSetState(RenderStates::WireframeRS);
 
+	mCam.UpdateViewMatrix();
+
+	XMMATRIX shadowTransform = XMLoadFloat4x4(&mShadowTransform);
+
 	//SWITCH ON THE MODE THE GAME IS IN 
 	switch (*StateMachine::pGameState)
 	{
@@ -701,9 +753,9 @@ void Engine::DrawScene()
 	case GameState::WIN:		DrawWin();		break;
 	case GameState::LOSE:		DrawLose();		break;
 	case GameState::GAMEON:		DrawGameOn();	break;
+	case GameState::BATTLE:		DrawBattle();	break;
+	case GameState::INVENTORY:	DrawInventory();break;
 	}
-
-	RestoreStates();
 	HR(mSwapChain->Present(0, 0));
 }
 void Engine::DrawMainMenu()
@@ -725,7 +777,6 @@ void Engine::DrawMainMenu()
 	{
 		md3dImmediateContext->IASetVertexBuffers(0, 1, &mShapesVB, &stride, &offset);
 		md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
-
 
 		for (int i = 0; i < mMain.size(); i++)
 		{
@@ -757,81 +808,19 @@ void Engine::DrawMainMenu()
 		}
 	}
 
-	//DRAW 2D STUFF
-	Effects::BasicFX->SetDirLights(mDirLights3);
-	activeTexTech = Effects::BasicFX->Light2TexAlphaClipTech;
-	md3dImmediateContext->OMSetDepthStencilState(RenderStates::ZBufferDisabled, 0); // changing 0 means overlaping draws
-	for (UINT p = 0; p < techDesc.Passes; ++p)
-	{
-		for (int i = 0; i < mTexts.size(); i++)
-		{
-			mTexts[i]->DrawText2D(&activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
-		}
-	}
-
-	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
-// 	XMMATRIX toTexSpace(
-// 		0.5f, 0.0f, 0.0f, 0.0f,
-// 		0.0f, -0.5f, 0.0f, 0.0f,
-// 		0.0f, 0.0f, 1.0f, 0.0f,
-// 		0.5f, 0.5f, 0.0f, 1.0f);
-// 	stride = sizeof(Vertex::PosNormalTexTan);
-// 	ID3DX11EffectTechnique* tech = Effects::BasicFX->Light3TexTech;
-// 	tech->GetDesc(&techDesc);
+// 	//DRAW 2D STUFF
+// 	Effects::BasicFX->SetDirLights(mDirLights3);
+// 	activeTexTech = Effects::BasicFX->Light2TexAlphaClipTech;
+// 	md3dImmediateContext->OMSetDepthStencilState(RenderStates::ZBufferDisabled, 0); // changing 0 means overlaping draws
 // 	for (UINT p = 0; p < techDesc.Passes; ++p)
 // 	{
-// 		for (UINT modelIndex = 0; modelIndex < mModelInstances.size(); ++modelIndex)
+// 		for (int i = 0; i < mTexts.size(); i++)
 // 		{
-// 			world = XMLoadFloat4x4(&mModelInstances[modelIndex].World);
-// 			worldInvTranspose = MathHelper::InverseTranspose(world);
-// 			worldViewProj = world*view*proj;
-// 
-// 			Effects::BasicFX->SetWorld(world);
-// 			Effects::BasicFX->SetWorldInvTranspose(worldInvTranspose);
-// 			Effects::BasicFX->SetWorldViewProj(worldViewProj);
-// 			Effects::BasicFX->SetWorldViewProjTex(worldViewProj*toTexSpace);
-// 			Effects::BasicFX->SetTexTransform(XMMatrixScaling(1.0f, 1.0f, 1.0f));
-// 
-// 			for (UINT subset = 0; subset < mModelInstances[modelIndex].Model->SubsetCount; ++subset)
-// 			{
-// 				Effects::BasicFX->SetMaterial(mModelInstances[modelIndex].Model->Mat[subset]);
-// 				Effects::BasicFX->SetDiffuseMap(mModelInstances[modelIndex].Model->DiffuseMapSRV[subset]);
-// 				//Effects::BasicFX->SetNormalMap(mModelInstances[modelIndex].Model->NormalMapSRV[subset]);
-// 
-// 				tech->GetPassByIndex(p)->Apply(0, md3dImmediateContext);
-// 				mModelInstances[modelIndex].Model->ModelMesh.Draw(md3dImmediateContext, subset);
-// 			}
+// 			mTexts[i]->DrawText2D(&activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
 // 		}
 // 	}
 
 
-	//SHADOWS *******************************************************************************************************
-
-// 	//set shadow states
-// 	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-// 	md3dImmediateContext->OMSetBlendState(RenderStates::TransparentBS, blendFactor, 0xffffffff);
-// 	md3dImmediateContext->OMSetDepthStencilState(RenderStates::NoDoubleBlendDSS, 0); // changing 0 means overlaping draws
-// 	md3dImmediateContext->IASetVertexBuffers(0, 1, &mShapesVB, &stride, &offset);
-// 	md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
-// 
-// 	//Set Shadow Constants
-// 	XMVECTOR shadowPlane = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // xz plane
-// 	XMVECTOR toMainLight = -XMLoadFloat3(&mDirLights[0].Direction);
-// 	XMMATRIX S = XMMatrixShadow(shadowPlane, toMainLight);
-// 	float xOffSet = 43.0f; float zOffSet = 90.0f; float yOffSet = 0.1f; float sScale = 0.15f;
-// 
-// 	mPlayButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-// 	mSoundButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-// 	mMusicButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-// 	mSOnButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-// 	mSOffButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-// 	mMOnButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-// 	mMOffButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-// 	mTitleButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet + 100.0f, mCam, mShadowMat);
-// 	mAboutButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-// 	mModeButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale/2, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-// 	mEasyButt->DrawShadow(activeTexTech, md3dImmediateContext, shadowPlane, toMainLight, S, sScale/2, xOffSet, yOffSet, zOffSet, mCam, mShadowMat);
-	// Restore default states.
 	RestoreStates();
 
 	if(!fullyLoaded)fullyLoaded = true;
@@ -889,10 +878,9 @@ void Engine::DrawAbout()
 }
 void Engine::DrawPaused()
 {
+	DrawGameOn();
 	UINT stride = sizeof(Vertex::Basic32);
 	UINT offset = 0;
-
-	mCam.UpdateViewMatrix();
 
 	ID3DX11EffectTechnique* activeTexTech = Effects::BasicFX->Light1TexAlphaClipTech;
 	D3DX11_TECHNIQUE_DESC techDesc;
@@ -900,7 +888,6 @@ void Engine::DrawPaused()
 
 	md3dImmediateContext->IASetVertexBuffers(0, 1, &mShapesVB, &stride, &offset);
 	md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
-
 
 	//DRAW 2D STUFF
 	Effects::BasicFX->SetDirLights(mDirLights2);
@@ -915,10 +902,20 @@ void Engine::DrawPaused()
 	}
 
 	RestoreStates();
-	DrawGameOn();
 }
 void Engine::DrawGameOn()
 {
+	mSmap->BindDsvAndSetNullRenderTarget(md3dImmediateContext);
+	DrawSceneToShadowMap();
+	md3dImmediateContext->RSSetState(0);
+
+	ID3D11RenderTargetView* renderTargets[1] = { mRenderTargetView };
+	md3dImmediateContext->OMSetRenderTargets(1, renderTargets, mDepthStencilView);
+	md3dImmediateContext->RSSetViewports(1, &mScreenViewport);
+	md3dImmediateContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	
+	XMMATRIX shadowTransform = XMLoadFloat4x4(&mShadowTransform);
+
 	UINT stride = sizeof(Vertex::Basic32);
 	UINT offset = 0;
 
@@ -926,6 +923,7 @@ void Engine::DrawGameOn()
 
 	Effects::BasicFX->SetDirLights(mDirLights);
 	Effects::BasicFX->SetEyePosW(mCam.GetPosition());
+	Effects::BasicFX->SetShadowMap(mSmap->DepthMapSRV());
 
 	ID3DX11EffectTechnique* activeTexTech = Effects::BasicFX->Light1TexAlphaClipTech;
 	D3DX11_TECHNIQUE_DESC techDesc;
@@ -948,10 +946,16 @@ void Engine::DrawGameOn()
 
 			for (int i = 0; i < mLevel.size(); i++)
 			{
-				mLevel[i]->Draw(&activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
+				mLevel[i]->Draw(&activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime(),shadowTransform);
 			}
 
-			mPlayer->Draw(&activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
+			mPlayer->Draw(&activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime(),shadowTransform);
+
+
+			for (int i = 0; i < mTexts.size(); i++)
+			{
+			 	mTexts[i]->DrawText3D(&activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
+			}
 		}
 
 
@@ -973,6 +977,14 @@ void Engine::DrawGameOn()
 		}
 
 	}
+
+	//DRAW SHADOW
+	md3dImmediateContext->RSSetState(0);
+	md3dImmediateContext->OMSetDepthStencilState(0, 0);
+	ID3D11ShaderResourceView* nullSRV[16] = { 0 };
+	md3dImmediateContext->PSSetShaderResources(0, 16, nullSRV);
+
+
 }
 void Engine::DrawWin()
 {
@@ -1038,44 +1050,27 @@ void Engine::DrawLose()
 	RestoreStates();
 	DrawGameOn();
 }
-void Engine::DrawBossWin()
+void Engine::DrawBattle()
 {
-	UINT stride = sizeof(Vertex::Basic32);
-	UINT offset = 0;
-
-	mCam.UpdateViewMatrix();
-
-	XMMATRIX view = mCam.View();
-	XMMATRIX proj = mCam.Proj();
-	XMMATRIX viewProj = mCam.ViewProj();
-
-	// Set per frame constants.
-	Effects::BasicFX->SetDirLights(mDirLights2);
-	Effects::BasicFX->SetEyePosW(mCam.GetPosition());
-
-	ID3DX11EffectTechnique* activeTexTech = Effects::BasicFX->Light1TexAlphaClipTech;
-	D3DX11_TECHNIQUE_DESC techDesc;
-	activeTexTech->GetDesc(&techDesc);
-	md3dImmediateContext->IASetVertexBuffers(0, 1, &mShapesVB, &stride, &offset);
-	md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
-	for (UINT p = 0; p < techDesc.Passes; ++p)
-	{
-		
-	}
-
-	RestoreStates();
 	DrawGameOn();
+	Effects::BasicFX->SetDirLights(mDirLights2);
+	Effects::BasicFX->SetEyePosW(mCam.GetPosition());
+
+	ID3DX11EffectTechnique* activeTexTech = Effects::BasicFX->Light1TexAlphaClipTech;
+	D3DX11_TECHNIQUE_DESC techDesc;
+	activeTexTech->GetDesc(&techDesc);
+	for (UINT p = 0; p < techDesc.Passes; ++p)
+	{
+		for (int i = 0; i < mBattleText.size(); i++)
+		{
+			mBattleText[i]->DrawText2D(&activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
+		}
+	}
+	RestoreStates();
 }
-void Engine::DrawBossLose()
+void Engine::DrawInventory()
 {
-	UINT stride = sizeof(Vertex::Basic32);
-	UINT offset = 0;
-
-	mCam.UpdateViewMatrix();
-
-	XMMATRIX view = mCam.View();
-	XMMATRIX proj = mCam.Proj();
-	XMMATRIX viewProj = mCam.ViewProj();
+	DrawGameOn();
 
 	// Set per frame constants.
 	Effects::BasicFX->SetDirLights(mDirLights2);
@@ -1084,13 +1079,14 @@ void Engine::DrawBossLose()
 	ID3DX11EffectTechnique* activeTexTech = Effects::BasicFX->Light1TexAlphaClipTech;
 	D3DX11_TECHNIQUE_DESC techDesc;
 	activeTexTech->GetDesc(&techDesc);
-	md3dImmediateContext->IASetVertexBuffers(0, 1, &mShapesVB, &stride, &offset);
-	md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{
+		for (int i = 0; i < mInventoryText.size(); i++)
+		{
+			mInventoryText[i]->DrawText2D(&activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
+		}
 
-
-
+		mInventory->Draw(&activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
 	}
 }
 
@@ -1113,6 +1109,8 @@ void Engine::OnMouseDown(WPARAM btnState, int x, int y)
 			case GameState::WIN:		BtnsWin(x, y, true);			break;
 			case GameState::LOSE:		BtnsLose(x, y, true);			break;
 			case GameState::GAMEON:		BtnsGameOn(x, y, true);			break;
+			case GameState::INVENTORY:	BtnsInventory(x, y, true);		break;
+			case GameState::BATTLE:	    BtnsBattle(x, y, true);			break;
 			}
 		}
 	}
@@ -1133,6 +1131,8 @@ void Engine::OnMouseMove(WPARAM btnState, int x, int y)
 		case GameState::WIN:		BtnsWin(x, y, false);			break;
 		case GameState::LOSE:		BtnsLose(x, y, false);			break;
 		case GameState::GAMEON:		BtnsGameOn(x, y, false);		break;
+		case GameState::INVENTORY:	BtnsInventory(x, y, false);		break;
+		case GameState::BATTLE:		BtnsBattle(x, y, false);		break;
 		}
 	}
 	if (*StateMachine::pGameState == GameState::GAMEON)
@@ -1189,6 +1189,8 @@ void Engine::OnKeyDOWN(WPARAM btnState)
 	switch (btnState)
 	{
 	case 0x20: mPlayer->Jump(); break; //SPACE
+	case 0x49:if (*StateMachine::pGameState == GameState::GAMEON || *StateMachine::pGameState == GameState::INVENTORY){ (*StateMachine::pGameState == GameState::INVENTORY) ? *StateMachine::pGameState = GameState::GAMEON : *StateMachine::pGameState = GameState::INVENTORY; } break; // I
+	case 0x42:if (*StateMachine::pGameState == GameState::GAMEON || *StateMachine::pGameState == GameState::BATTLE){ (*StateMachine::pGameState == GameState::BATTLE) ? *StateMachine::pGameState = GameState::GAMEON : *StateMachine::pGameState = GameState::BATTLE; } break; // B
 	}
 }
 void Engine::KeyboardHandler(float dt)
@@ -1233,19 +1235,19 @@ void Engine::KeyboardHandler(float dt)
 
 
 
-		if (GetAsyncKeyState('I') & 0x8000)
+		if (GetAsyncKeyState('O') & 0x8000)
 		{
 			mCam.Walk(mMoveSpeed*dt);
 		}
-		if (GetAsyncKeyState('K') & 0x8000)
+		if (GetAsyncKeyState('L') & 0x8000)
 		{
 			mCam.Walk(-mMoveSpeed*dt);
 		}
-		if (GetAsyncKeyState('J') & 0x8000)
+		if (GetAsyncKeyState('K') & 0x8000)
 		{
 			mCam.Strafe(-mMoveSpeed*dt);
 		}
-		if (GetAsyncKeyState('L') & 0x8000)
+		if (GetAsyncKeyState(';') & 0x8000)
 		{
 			mCam.Strafe(mMoveSpeed*dt);
 		}
@@ -1356,23 +1358,23 @@ void Engine::BtnsLose(float x, float y, bool clicked)
 // 	}
 // 	else{ mRetryButt->hovering = false; }
 }
-void Engine::BtnsBossLose(float x, float y, bool clicked)
+void Engine::BtnsInventory(float x, float y, bool clicked)
 {
-// 	if (InButton2D(x, y, mBSOD) && exitable)
-// 	{
-// 		if (clicked)
-// 		{
-// 			mCompBar->currProgress = 0.0f;
-// 			mBugBar->currProgress = 0.0f;
-// 			mBoss->currProgress = 0.0f;
-// 			mWalkCamMode = false;
-// 			*StateMachine::pGameState = GameState::MAINMENU;
-// 			ResetCamMainMenu(); ClearVectors();
-// 			exitable = false;
-// 		}
-// 	}
+	for (int i = 0; i < mInventory->GetItems().size(); i++)
+	{
+		if (InButton2D(x, y, mInventory->GetItems()[i]))
+		{
+			mInventory->GetItems()[i]->hovering = true;
+			if (clicked)
+			{
+				mInventory->UseItem(i);
+			}
+		}
+		else{ mInventory->GetItems()[i]->hovering = false;}
+	}
+
 }
-void Engine::BtnsBossWin(float x, float y, bool clicked)
+void Engine::BtnsBattle(float x, float y, bool clicked)
 {
 // 	if (InButton2D(x, y, mQuitButt))
 // 	{
@@ -1636,4 +1638,85 @@ void Engine::SpawnGhost()
 // 	
 // 	Ghost->mMeshBox = mGhost1->mMeshBox;
 // 	mGhosts.push_back(Ghost);
+}
+
+
+//SHADOWS
+void Engine::DrawSceneToShadowMap()
+{
+	XMMATRIX view = XMLoadFloat4x4(&mLightView);
+	XMMATRIX proj = XMLoadFloat4x4(&mLightProj);
+	XMMATRIX viewProj = XMMatrixMultiply(view, proj);
+
+	Effects::BuildShadowMapFX->SetEyePosW(mCam.GetPosition());
+	Effects::BuildShadowMapFX->SetViewProj(viewProj);
+
+	// These properties could be set per object if needed.
+	Effects::BuildShadowMapFX->SetHeightScale(0.07f);
+	Effects::BuildShadowMapFX->SetMaxTessDistance(1.0f);
+	Effects::BuildShadowMapFX->SetMinTessDistance(25.0f);
+	Effects::BuildShadowMapFX->SetMinTessFactor(1.0f);
+	Effects::BuildShadowMapFX->SetMaxTessFactor(5.0f);
+
+	ID3DX11EffectTechnique* tessSmapTech	= Effects::BuildShadowMapFX->BuildShadowMapTech;
+	ID3DX11EffectTechnique* smapTech		= Effects::BuildShadowMapFX->BuildShadowMapTech;
+
+	md3dImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	smapTech		= Effects::BuildShadowMapFX->BuildShadowMapTech;
+	tessSmapTech	= Effects::BuildShadowMapFX->BuildShadowMapTech;
+	
+
+
+	// Draw Stuff Normally
+
+	for (int i = 0; i < mLevel.size(); i++)
+	{
+		mLevel[i]->DrawShad(&smapTech, md3dImmediateContext, mCam,mLightView,mLightProj);
+	}
+
+
+
+
+
+
+	mPlayer->DrawShad(&smapTech, md3dImmediateContext, mCam, mLightView, mLightProj);
+
+
+
+}
+void Engine::BuildShadowTransform()
+{
+	// Only the first "main" light casts a shadow.
+	XMVECTOR lightDir = XMLoadFloat3(&mDirLights2[0].Direction);
+	XMVECTOR lightPos = -2.0f*mSceneBounds.Radius*lightDir;
+	XMVECTOR targetPos = XMLoadFloat3(&mSceneBounds.Center);
+	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+	XMMATRIX V = XMMatrixLookAtLH(lightPos, targetPos, up);
+
+	// Transform bounding sphere to light space.
+	XMFLOAT3 sphereCenterLS;
+	XMStoreFloat3(&sphereCenterLS, XMVector3TransformCoord(targetPos, V));
+
+	// Ortho frustum in light space encloses scene.
+	float l = sphereCenterLS.x - mSceneBounds.Radius;
+	float b = sphereCenterLS.y - mSceneBounds.Radius;
+	float n = sphereCenterLS.z - mSceneBounds.Radius;
+	float r = sphereCenterLS.x + mSceneBounds.Radius;
+	float t = sphereCenterLS.y + mSceneBounds.Radius;
+	float f = sphereCenterLS.z + mSceneBounds.Radius;
+	XMMATRIX P = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
+
+	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
+	XMMATRIX T(
+		0.5f, 0.0f, 0.0f, 0.0f,
+		0.0f, -0.5f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.0f, 1.0f);
+
+	XMMATRIX S = V*P*T;
+
+	XMStoreFloat4x4(&mLightView, V);
+	XMStoreFloat4x4(&mLightProj, P);
+	XMStoreFloat4x4(&mShadowTransform, S);
 }

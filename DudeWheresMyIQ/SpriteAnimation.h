@@ -8,11 +8,15 @@ public:
 	SpriteAnimation(int cols, int rows, float FPS, float animSpeed = 1.0f, bool isLooping = true);
 	~SpriteAnimation();
 	void Update(float dt);
-	void SetAnim(float anim, bool once);
+	void SetAnim(float anim, bool once, bool F);
+	void OverRidePlayOnce(bool f);
+	void ResetFrame();
 	void SetAnimSpeed(float s);
 	void Pause(bool p);
 	float GetX();
 	float GetY();
+	bool Flipped();
+	void Flip(bool F);
 
 private:
 	bool  mPaused;
@@ -30,6 +34,7 @@ private:
 	float mFramesPerSecond;
 	bool  mIsLooping;
 	bool  mPlayOnce;
+	bool  mFlipped;
 };
 
 #endif // SpriteAnimation_h__

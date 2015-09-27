@@ -105,6 +105,12 @@
     <ClCompile Include="Player.cpp">
       <Filter>CPP</Filter>
     </ClCompile>
+    <ClCompile Include="Inventory.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowMap.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Effects.h">
@@ -194,6 +200,12 @@
     <ClInclude Include="Player.h">
       <Filter>HEADER</Filter>
     </ClInclude>
+    <ClInclude Include="Inventory.h">
+      <Filter>HEADER</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMap.h">
+      <Filter>HEADER</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="FX\LightHelper.fx">
@@ -219,6 +231,9 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="FX\NormalMap.fx">
+      <Filter>SHADERS</Filter>
+    </FxCompile>
+    <FxCompile Include="FX\BuildShadowMap.fx">
       <Filter>SHADERS</Filter>
     </FxCompile>
   </ItemGroup>

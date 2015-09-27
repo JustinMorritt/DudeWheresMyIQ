@@ -22,7 +22,7 @@ public:
 	void Update(const Camera& camera, float dt);
 	void Draw(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, float dt);
 	void Draw2D(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, XMMATRIX& ortho);
-	void DrawShadow(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* context,const XMVECTOR& shadPlane,const XMVECTOR& lightDir,const XMMATRIX& S, float scale, float xOff, float yOff, float zOff, const Camera& camera, const Material& mat);
+	void DrawShadow(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* context, const Camera& camera, XMFLOAT4X4 lightView, XMFLOAT4X4 lightProj);
 	void SetVertexOffset(int offSet);
 	void SetIndexOffset(int offSet);
 	void LoadVertData(std::vector<Vertex::Basic32>& verts, UINT& k);
@@ -32,6 +32,7 @@ public:
 	void ResetLookUpRight();
 	void SetUpAnimation(float cols, float rows, float FPS, float animSpeed = 1.0f, bool isLooping = true);
 	void UpdateAAB();
+	void SetShadTrans(XMMATRIX& shadow);
 
 	// Strafe/Walk
 	void Strafe(float d);
@@ -80,7 +81,7 @@ public:
 	GeometryGenerator::MeshData mGrid;
 
 
-
+	XMFLOAT4X4 mShadowTrans;
 	XMFLOAT3 mPosition;
 	XMFLOAT3 mGoToPos;
 	XMFLOAT3 mRight;
@@ -128,7 +129,7 @@ public:
 
 	XNA::AxisAlignedBox mMeshBox;
 	XNA::Sphere			mSphereCollider;
-	SpriteAnimation*	mSpriteAnimation;
+	SpriteAnimation*	mAnim;
 };
 
 #endif // Button_h__

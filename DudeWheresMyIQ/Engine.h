@@ -25,6 +25,8 @@
 #include "Text.h"
 #include "LevelSection.h"
 #include "Player.h"
+#include "Inventory.h"
+#include "ShadowMap.h"
 
 
 class Engine : public D3DApp
@@ -74,12 +76,14 @@ public:
 	void DrawGameOn();
 	void DrawWin();
 	void DrawLose();
-	void DrawBossWin();
-	void DrawBossLose();
+	void DrawBattle();
+	void DrawInventory();
 
 	//UPDATES
 	void UpdateMainMenu(float dt);
 	void UpdateGame(float dt);
+	void UpdateBattle(float dt);
+	void UpdateInventory(float dt);
 
 	//SPAWNERS
 	void SpawnBug();
@@ -95,8 +99,8 @@ public:
 	void BtnsGameOn(float x, float y, bool clicked);
 	void BtnsWin(float x, float y, bool clicked);
 	void BtnsLose(float x, float y, bool clicked);
-	void BtnsBossLose(float x, float y, bool clicked);
-	void BtnsBossWin(float x, float y, bool clicked);
+	void BtnsInventory(float x, float y, bool clicked);
+	void BtnsBattle(float x, float y, bool clicked);
 	bool InButton3D(float sx, float sy, Entity* button);
 	bool InButton2D(float sx, float sy, Entity* button);
 
@@ -118,12 +122,25 @@ public:
 	bool GhostHitCam(Entity* ghost);
 	bool BossHitCam(Entity* ghost);
 
+	//SHADOW MAP
+	void DrawSceneToShadowMap();
+	void BuildShadowTransform();
+
 private:
 	Sky* mSky;
+
+	BoundingSphere mSceneBounds;
+	static const int SMapSize = 2048;
+	ShadowMap* mSmap;
+	XMFLOAT4X4 mLightView;
+	XMFLOAT4X4 mLightProj;
+	XMFLOAT4X4 mShadowTransform;
+
 	TextureMgr mTexMgr;
 	Camera mCam;
 	Sound mSound;
 	Player* mPlayer;
+	Inventory* mInventory;
 
 	ID3D11Buffer* mShapesVB;
 	ID3D11Buffer* mShapesIB;
@@ -135,9 +152,13 @@ private:
 	std::vector<Entity*> mMain;		std::vector<Entity*> mMainBtns;
 	std::vector<Entity*> mAbout;	std::vector<Entity*> mAboutBtns;
 	std::vector<Entity*> mPaused;	std::vector<Entity*> mPausedBtns;
+	std::vector<Entity*> mInv;		std::vector<Entity*> mInvBtns;
+	std::vector<Entity*> mBattle;	std::vector<Entity*> mBattleBtns;
 
 
 	std::vector<Text*> mTexts;
+	std::vector<Text*> mBattleText;
+	std::vector<Text*> mInventoryText;
 	std::vector<LevelSection*> mLevel;
 
 	//Models
@@ -195,6 +216,7 @@ private:
 
 	XMMATRIX mOrthoWorld;
 };
+
 
 
 
