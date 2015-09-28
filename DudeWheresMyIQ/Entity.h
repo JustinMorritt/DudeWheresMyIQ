@@ -33,6 +33,7 @@ public:
 	void SetUpAnimation(float cols, float rows, float FPS, float animSpeed = 1.0f, bool isLooping = true);
 	void UpdateAAB();
 	void SetShadTrans(XMMATRIX& shadow);
+	void SetShadowScale(float x, float y, float z);
 
 	// Strafe/Walk
 	void Strafe(float d);
@@ -82,6 +83,7 @@ public:
 
 
 	XMFLOAT4X4 mShadowTrans;
+	XMFLOAT3 mShadowScale;
 	XMFLOAT3 mPosition;
 	XMFLOAT3 mGoToPos;
 	XMFLOAT3 mRight;

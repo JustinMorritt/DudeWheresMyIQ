@@ -3,6 +3,7 @@
 //Makes a Square by default 
 Entity::Entity(int type, std::string label, float width, float height, float depth) :
 mPosition(0.0f, 0.0f, 0.0f),
+mShadowScale(0.0f,0.0f,0.0f),
 mRight(1.0f, 0.0f, 0.0f),
 mUp(0.0f, 1.0f, 0.0f),
 mLook(0.0f, 0.0f, 1.0f),
@@ -270,9 +271,9 @@ void Entity::DrawShadow(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext*
 		Effects::BuildShadowMapFX->SetWorld(world);
 		Effects::BuildShadowMapFX->SetWorldInvTranspose(worldInvTranspose);
 		Effects::BuildShadowMapFX->SetWorldViewProj(worldViewProj);
-		Effects::BuildShadowMapFX->SetTexTransform(XMMatrixScaling(1.0f, 1.0f, 1.0f));
+		//Effects::BuildShadowMapFX->SetTexTransform(XMMatrixScaling(mShadowScale.x, mShadowScale.y, mShadowScale.z));
 		pass->Apply(0, context);
-		context->DrawIndexed(mIndexCount, mIndexOffset, 0);
+		context->DrawIndexed(mIndexCount, mIndexOffset, mVertexOffset);
 	}
 }
 
@@ -380,6 +381,11 @@ void Entity::UpdateAAB()
 void Entity::SetShadTrans(XMMATRIX& shadow)
 {
 	XMStoreFloat4x4(&mShadowTrans, shadow);
+}
+
+void Entity::SetShadowScale(float x, float y, float z)
+{
+	mShadowScale.x = x; mShadowScale.y = y; mShadowScale.z = z;
 }
 
 int Entity::GetVertOffset()

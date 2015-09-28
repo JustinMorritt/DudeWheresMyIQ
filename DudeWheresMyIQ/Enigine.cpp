@@ -43,7 +43,7 @@ Engine::Engine(HINSTANCE hInstance)
 	mCam.Pitch(XM_PI / 6.5);
 
 
-	mDirLights[0].Ambient  = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	mDirLights[0].Ambient  = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
 	mDirLights[0].Diffuse  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	mDirLights[0].Specular = XMFLOAT4(0.8f, 0.8f, 0.7f, 1.0f);
 	mDirLights[0].Direction = XMFLOAT3(0.707f, -0.707f, 0.0f);
@@ -766,7 +766,7 @@ void Engine::DrawMainMenu()
 	mCam.UpdateViewMatrix();
 
 	// Set per frame constants.
-	Effects::BasicFX->SetDirLights(mDirLights);
+	Effects::BasicFX->SetDirLights(mDirLights2);
 	Effects::BasicFX->SetEyePosW(mCam.GetPosition());
 
 	ID3DX11EffectTechnique* activeTexTech = Effects::BasicFX->Light2TexAlphaClipTech;
@@ -921,11 +921,11 @@ void Engine::DrawGameOn()
 
 	mCam.UpdateViewMatrix();
 
-	Effects::BasicFX->SetDirLights(mDirLights);
+	Effects::BasicFX->SetDirLights(mDirLights2);
 	Effects::BasicFX->SetEyePosW(mCam.GetPosition());
 	Effects::BasicFX->SetShadowMap(mSmap->DepthMapSRV());
 
-	ID3DX11EffectTechnique* activeTexTech = Effects::BasicFX->Light1TexAlphaClipTech;
+	ID3DX11EffectTechnique* activeTexTech = Effects::BasicFX->Light2TexAlphaClipTechShad;
 	D3DX11_TECHNIQUE_DESC techDesc;
 	activeTexTech->GetDesc(&techDesc);
 	for (UINT p = 0; p < techDesc.Passes; ++p)
@@ -934,16 +934,13 @@ void Engine::DrawGameOn()
 		md3dImmediateContext->IASetIndexBuffer(mShapesIB, DXGI_FORMAT_R32_UINT, 0);
 
 
-		Effects::BasicFX->SetDirLights(mDirLights2);
-		activeTexTech = Effects::BasicFX->Light1TexAlphaClipTech;
-
 		for (UINT p = 0; p < techDesc.Passes; ++p)
 		{
 // 			for (int i = 0; i < mTexts.size(); i++)
 // 			{
 // 				mTexts[i]->DrawText3D(&activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
 // 			}
-
+			activeTexTech = Effects::BasicFX->Light2TexAlphaClipTechShad;
 			for (int i = 0; i < mLevel.size(); i++)
 			{
 				mLevel[i]->Draw(&activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime(),shadowTransform);
@@ -952,6 +949,8 @@ void Engine::DrawGameOn()
 			mPlayer->Draw(&activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime(),shadowTransform);
 
 
+
+			activeTexTech = Effects::BasicFX->Light2TexAlphaClipTech;
 			for (int i = 0; i < mTexts.size(); i++)
 			{
 			 	mTexts[i]->DrawText3D(&activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
@@ -1071,12 +1070,13 @@ void Engine::DrawBattle()
 void Engine::DrawInventory()
 {
 	DrawGameOn();
-
+	
 	// Set per frame constants.
 	Effects::BasicFX->SetDirLights(mDirLights2);
 	Effects::BasicFX->SetEyePosW(mCam.GetPosition());
 
 	ID3DX11EffectTechnique* activeTexTech = Effects::BasicFX->Light1TexAlphaClipTech;
+	md3dImmediateContext->OMSetDepthStencilState(RenderStates::ZBufferDisabled, 0); // changing 0 means overlaping draws
 	D3DX11_TECHNIQUE_DESC techDesc;
 	activeTexTech->GetDesc(&techDesc);
 	for (UINT p = 0; p < techDesc.Passes; ++p)
@@ -1665,20 +1665,11 @@ void Engine::DrawSceneToShadowMap()
 	smapTech		= Effects::BuildShadowMapFX->BuildShadowMapTech;
 	tessSmapTech	= Effects::BuildShadowMapFX->BuildShadowMapTech;
 	
-
-
 	// Draw Stuff Normally
-
 	for (int i = 0; i < mLevel.size(); i++)
 	{
 		mLevel[i]->DrawShad(&smapTech, md3dImmediateContext, mCam,mLightView,mLightProj);
 	}
-
-
-
-
-
-
 	mPlayer->DrawShad(&smapTech, md3dImmediateContext, mCam, mLightView, mLightProj);
 
 

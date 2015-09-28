@@ -67,7 +67,7 @@ void LevelSection::MakeChunk(char letter, float x, float y, float z, float w, fl
 	switch (letter)
 	{
 	default: E = new Entity(3, "ground", w, h, d); E->UseTexture(mGrass); E->mUseAABOnce = true; E->mUseAAB = true; E->SetPos(x, y, z);  mEntities.push_back(E);
-		if (MathHelper::RandF() > 0.5){ Entity* B = new Entity(2, "bush", 30.0f, 70.0f); B->UseTexture(mBush); B->SetPos(x + (MathHelper::RandF(-w / 2, w / 2)), y + h + 5.0f, z + (MathHelper::RandF(-d / 2, d / 2))); B->reverseLook = true;  mEntities.push_back(B); }
+		if (MathHelper::RandF() > 0.5){ Entity* B = new Entity(2, "bush", 60.0f, 30.0f); B->UseTexture(mBush); B->SetPos(x + (MathHelper::RandF(-w / 2, w / 2)), y + h + 5.0f, z + (MathHelper::RandF(-d / 2, d / 2)));   mEntities.push_back(B); }
 		if (MathHelper::RandF() > 0.2){ Entity* B = new Entity(2, "beer", 30.0f, 25.0f); B->UseTexture(Inventory::mBeer); B->SetPos(x + (MathHelper::RandF(-w / 2, w / 2)), y + h, z + (MathHelper::RandF(-d / 2, d / 2))); B->mUseAABOnce = true; B->mUseAAB = true; B->reverseLook = true;  mEntities.push_back(B); }
 		break;
 	}
@@ -98,7 +98,6 @@ void LevelSection::DrawShad(ID3DX11EffectTechnique** activeTech, ID3D11DeviceCon
 
 	for (int i = 0; i < mEntities.size(); i++)
 	{
-		Effects::BuildShadowMapFX->SetTexTransform(XMMatrixScaling(2.0f, 6.0f, 1.0f));
 		mEntities[i]->DrawShadow(*activeTech, context, camera, lightView, lightProj);
 	}
 }

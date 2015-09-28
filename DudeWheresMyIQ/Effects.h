@@ -62,6 +62,7 @@ public:
 	ID3DX11EffectTechnique* Light0TexAlphaClipTech;
 	ID3DX11EffectTechnique* Light1TexAlphaClipTech;
 	ID3DX11EffectTechnique* Light2TexAlphaClipTech;
+	ID3DX11EffectTechnique* Light2TexAlphaClipTechShad;
 	ID3DX11EffectTechnique* Light3TexAlphaClipTech;
 
 	ID3DX11EffectTechnique* Light1FogTech;
