@@ -11,15 +11,26 @@
 class LevelSection
 {
 public:
-	LevelSection(std::string seed, float x, float y, float z, float size);
+	LevelSection(float x, float y, float z, float size);
 	~LevelSection();
 	static void Init(ID3D11Device** device);
 	void Update(const Camera& cam, float dt);
-	void MakeChunk(char letter, float x, float y, float z, float w, float h, float d);
+	void MakeChunk(float x, float y, float z, float w, float h, float d);
+	void MakeObstacle(float x, float y, float z, float w, float h, float d);
+
+	//OBSTACLES
+	void MakeSpinBlock(float x, float y, float z, float w, float h, float d);
+	void MakeSpinBlock2(float x, float y, float z, float w, float h, float d);
+	void MakeUpDownBlock(float x, float y, float z, float w, float h, float d);
+	void MakeSpinningStairs(float x, float y, float z, float w, float h, float d);
+	void MakeFlippingBlock(float x, float y, float z, float w, float h, float d);
+	void MakeRollingBlock(float x, float y, float z, float w, float h, float d);
+	void MakeSideToSideBlock(float x, float y, float z, float w, float h, float d);
+	void MakeMovingStairs(float x, float y, float z, float w, float h, float d);
+	void MakeMovingStairs2(float x, float y, float z, float w, float h, float d);
+
 	void Draw(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, float dt, XMMATRIX& shadow);
-
 	void DrawShad(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, const Camera& camera, XMFLOAT4X4 lightView, XMFLOAT4X4 lightProj);
-
 	void ShutDown();
 	
 	static ID3D11ShaderResourceView* mGrass;

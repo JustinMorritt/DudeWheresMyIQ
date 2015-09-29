@@ -230,6 +230,8 @@ float4 PS(VertexOut pin,
 				A, D, S);
 
 			ambient += A;
+
+			
 			if (gShadowsOn)
 			{
 				diffuse += shadow[i] * D;
@@ -239,7 +241,6 @@ float4 PS(VertexOut pin,
 				diffuse +=  D;
 				spec	+=  S;
 			}
-		
 	
 		}
 

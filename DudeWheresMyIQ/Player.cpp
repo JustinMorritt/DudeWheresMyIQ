@@ -3,7 +3,7 @@
 
 Player::Player(ID3D11Device** device) : mDevice(*device), mLevel(1), mIQ(110.0f),
 GoFW(false), GoBW(false), GoIn(false), GoOut(false), SlFW(false), SlBW(false), SlIn(false), SlOut(false), onGround(false),
-mMaxSpeed(100.0f), mVelocity(0.0f, 0.0f, 0.0f), mAccel(180.0f)
+mMaxSpeed(100.0f), mVelocity(0.0f, 0.0f, 0.0f), mAccel(180.0f), mItemDescription(0)
 {
 	mSelf = new Entity(2, "player", 80.0f, 80.0f);
 	mSelf->LoadTexture(*device, L"Textures/Guy/guy.dds");
@@ -11,6 +11,9 @@ mMaxSpeed(100.0f), mVelocity(0.0f, 0.0f, 0.0f), mAccel(180.0f)
 	mSelf->reverseLook = true;
 	mSelf->mUseAAB = true;
 	ResetPlayerPos();
+
+	//MAKE TEXT DESCRIPTIONS
+	Text* t = new Text(" mmm Beer ../", mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t); // 0 BEER
 }
 
 
@@ -20,7 +23,7 @@ Player::~Player()
 
 void Player::ResetPlayerPos()
 {
-	mSelf->SetPos(0.0f, 150.0f, 0.0f);
+	mSelf->SetPos(0.0f, 350.0f, 0.0f);
 }
 
 void Player::Update(const Camera& camera, float dt)
@@ -32,9 +35,11 @@ void Player::Update(const Camera& camera, float dt)
 	//triming the AABB
 	mSelf->mMeshBox.Extents.z = 5.0f; // Makes the Dude a bit wider then 0 to prevent Z fighting ..
 	mSelf->mMeshBox.Extents.x -= 23.0f; 
-	mSelf->mMeshBox.Extents.y += 2.0f; 
-
+	//mSelf->mMeshBox.Extents.y -= 1.0f; 
+	
 	CheckCollisions();
+
+	if (mItemDescription){ mItemDescription->Update(camera, dt); if (mItemDescription->mDead){ mItemDescription = nullptr; } }
 }
 
 void Player::Draw(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, float dt, XMMATRIX& shadow)
@@ -46,6 +51,7 @@ void Player::Draw(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* cont
 	context->IASetIndexBuffer(mIB, DXGI_FORMAT_R32_UINT, 0);
 	mSelf->SetShadTrans(shadow);
 	mSelf->Draw(*activeTech, context, pass, camera, dt);
+	if (mItemDescription){ mItemDescription->SetShadowTran(shadow); mItemDescription->DrawText3D(activeTech, context, pass, camera, dt); }
 }
 
 void Player::DrawShad(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, const Camera& camera, XMFLOAT4X4 lightView, XMFLOAT4X4 lightProj)
@@ -56,6 +62,7 @@ void Player::DrawShad(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* 
 	context->IASetVertexBuffers(0, 1, &mVB, &stride, &offset);
 	context->IASetIndexBuffer(mIB, DXGI_FORMAT_R32_UINT, 0);
 	mSelf->DrawShadow(*activeTech, context, camera, lightView, lightProj);
+	if (mItemDescription){ mItemDescription->DrawTextShad(activeTech, context, camera, lightView, lightProj); }
 }
 
 void Player::InsertCollisionItems(std::vector<Entity*> entities)
@@ -100,6 +107,7 @@ void Player::CheckCollisions()
 			{
 				if (XNA::IntersectAxisAlignedBoxAxisAlignedBox(&mSelf->mMeshBox, &mEntities[i][j]->mMeshBox)) //Broad phase quick check
 				{
+					SetItemDescription(0);
 					mEntities[i][j]->mDead = true; Inventory::AddToInventory("beer");
 					mEntities[i].erase(mEntities[i].begin() + j);
 				}
@@ -107,6 +115,13 @@ void Player::CheckCollisions()
 
 		}
 	}
+}
+
+void Player::SetItemDescription(int i)
+{
+	mItemDescription = mText[i]; 
+	mItemDescription->SetPosition(mSelf->mPosition.x-70.0f, mSelf->mPosition.y+60.0f, mSelf->mPosition.z);
+	mItemDescription->SetLife(false, 3.0f);
 }
 
 void Player::Applyforces(float dt)

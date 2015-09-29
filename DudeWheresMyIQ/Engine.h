@@ -57,6 +57,8 @@ public:
 	void DecBugs(float dt);
 	void DecHP(float dt);
 	void ClearVectors();
+	void RebuildLevel();
+	void ResetPlayer();
 
 	//SCENE INITS
 	void InitAll();
@@ -159,7 +161,7 @@ private:
 	std::vector<Text*> mTexts;
 	std::vector<Text*> mBattleText;
 	std::vector<Text*> mInventoryText;
-	std::vector<LevelSection*> mLevel;
+	LevelSection* mLevel;
 
 	//Models
 	std::vector<BasicModelInstance> mModelInstances;
@@ -216,7 +218,6 @@ private:
 
 	XMMATRIX mOrthoWorld;
 };
-
 
 
 

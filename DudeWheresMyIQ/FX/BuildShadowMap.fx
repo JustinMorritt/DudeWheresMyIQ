@@ -191,14 +191,16 @@ DomainOut DS(PatchTess patchTess,
 
 // This is only used for alpha cut out geometry, so that shadows 
 // show up correctly.  Geometry that does not need to sample a
-// texture can use a NULL pixel shader for depth pass.
+// texture can use a NULL pixel shad1er for depth pass.
 void PS(VertexOut pin)
 {
 	float4 diffuse = gDiffuseMap.Sample(samLinear, pin.Tex);
 
 	// Don't write transparent pixels to the shadow map.
-	clip(diffuse.a - 0.15f);
+	clip(diffuse.a - 0.1f);
 }
+
+
 
 // This is only used for alpha cut out geometry, so that shadows 
 // show up correctly.  Geometry that does not need to sample a
@@ -251,6 +253,8 @@ technique11 BuildShadowMapAlphaClipTech
         SetVertexShader( CompileShader( vs_5_0, VS() ) );
         SetGeometryShader( NULL );
         SetPixelShader( CompileShader( ps_5_0, PS() ) );
+
+		SetRasterizerState(Depth);
     }
 }
 

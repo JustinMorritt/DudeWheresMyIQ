@@ -12,8 +12,10 @@ ID3D11Device* Inventory::mDevice;
 std::vector<std::string> Inventory::mItemStrings;
 int Inventory::mSlots;
 
-Inventory::Inventory()
+Inventory::Inventory() : mItemDescription(0)
 {
+	mTitle = new Text("Inventory...", -240.0f, 400.0f, -90.0f, 100.0f, 0, false);
+
 	
 	float size = 200.0f;
 	float baseX = -100.0f - (size * 2);
@@ -27,6 +29,10 @@ Inventory::Inventory()
 		MakeInv(currX, currY, size/1.2);
 		currX += size;
 	}
+
+	//MAKE TEXT DESCRIPTIONS
+	Text* t = new Text("Drink This Beer And you may or may not get smarter ...", -650, -400.0f, 90.0f, 50.0f, 0, false); mText.push_back(t);
+
 }
 
 Inventory::~Inventory()
@@ -47,7 +53,7 @@ void Inventory::Update(const Camera& cam, float dt)
 		{
 			AssignItem(mItems[i], mItemStrings[ItemSpot]); ItemSpot++;
 		}
-	
+		mTitle->Update(cam, dt);
 		mItems[i]->Update(cam, dt);
 	}
 }
@@ -75,16 +81,36 @@ void Inventory::AssignItem(Entity* E, std::string item)
 	else{ E->UseTexture(mEmpty); }
 }
 
+void Inventory::HoveringItem(int E)
+{
+	mItemButtons[E]->hovering = true;
+	SetDescription(mItemButtons[E]->mLabel);
+}
+
+void Inventory::NotHovering(int E)
+{
+	
+	mItemButtons[E]->hovering = false;
+}
+
+void Inventory::SetDescription(std::string item)
+{
+	if (item == ""){ mItemDescription = nullptr; return; }
+	if (item == "beer"){ mItemDescription = mText[0]; }
+}
+
+std::vector<Text*> Inventory::GetText()
+{
+	return mText;
+}
+
 void Inventory::UseItem(int E)
 {
-	if (mItemButtons[E]->mLabel == "beer"){/*Beer Has Been Used*/}
+	if (mItemButtons[E]->mLabel == "beer"){/*Beer Has Been Used*/mItemButtons[E]->mLabel = "empty"; }
 
 	
-	if (mItemStrings.size() > E)
-	{
-		mItemButtons[E]->UseTexture(mEmpty);
-		mItemStrings[E] = "";
-	}
+	mItemButtons[E]->UseTexture(mEmpty);
+	mItemStrings[E] = "";
 }
 
 void Inventory::Draw(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, XMMATRIX& ortho)

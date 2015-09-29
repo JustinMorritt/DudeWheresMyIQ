@@ -4,12 +4,16 @@
 // TODO:  Battle System Pops Up When You Bump into a dumbass ... make a dumb ass class (with abilitys/ iq) ... 
 // TODO:  SpeachBubble Background For Dynamic Text. 
 // TODO:  Set Up State Machine For Bonuses you have used.. As Program ticks around it will see that a bonus has been activated.
-// TODO:  Add hovering Description at bottom of inventory . Basically make a text for each description you want .. if hovering over this make a pointer = that text Description
+// TODO:  IQ bar on left and scale by the height ... also have an IQ bar on the right during battle from an enemy dumb ass.
+// TODO:  Random Obstacles .. Sections of Entitys that 
+// TODO:  Fall Animation for main character
+// TODO:  Light position is not updating as you progress through the level ... need to move it as well
 
 Engine::Engine(HINSTANCE hInstance)
 	: D3DApp(hInstance),
 	mSky(0),
 	mInv(0),
+	mLevel(0),
 	mSmap(0),
 	mFloorTexSRV(0),
 	mWalkCamMode(false),
@@ -150,10 +154,20 @@ bool Engine::Init()
 	mPlayer = new Player(&md3dDevice);
 	std::vector<Entity*> tempVec; tempVec.push_back(mPlayer->mSelf);
 	BuildVertexAndIndexBuffer(&mPlayer->mVB, &mPlayer->mIB, tempVec);
-	mPlayer->InsertCollisionItems(mLevel[0]->mEntities); //INSERT LEVEL
+	mPlayer->InsertCollisionItems(mLevel->mEntities); //INSERT LEVEL
+	for (int i = 0; i < mPlayer->mText.size(); i++)
+	{
+		BuildVertexAndIndexBuffer(&mPlayer->mText[i]->mVB, &mPlayer->mText[i]->mIB, mPlayer->mText[i]->mText); //Descriptions
+	}
 
+	//BUILD INVENTORY
 	mInventory = new Inventory();
-	BuildVertexAndIndexBuffer(&mInventory->mVB, &mInventory->mIB, mInventory->mItems);
+	BuildVertexAndIndexBuffer(&mInventory->mTitle->mVB, &mInventory->mTitle->mIB, mInventory->mTitle->mText);	// Title
+	BuildVertexAndIndexBuffer(&mInventory->mVB, &mInventory->mIB, mInventory->mItems);							// Inventory
+	for (int i = 0; i < mInventory->GetText().size(); i++)
+	{
+		BuildVertexAndIndexBuffer(&mInventory->GetText()[i]->mVB, &mInventory->GetText()[i]->mIB, mInventory->GetText()[i]->mText); //Descriptions
+	}
 
 
 	*StateMachine::pGameState	= GameState::MAINMENU;
@@ -216,13 +230,9 @@ void Engine::UpdateGame(float dt)
 	{
 		mPaused[i]->Update(mCam, dt);
 	}
-
-
-	for (int i = 0; i < mLevel.size(); i++)
-	{
-		mLevel[i]->Update(mCam, dt);
+	mLevel->Update(mCam, dt);
 		
-	}
+	
 
 	mPlayer->Update(mCam, dt);
 	CamFollowPlayer();
@@ -287,7 +297,7 @@ void Engine::UpdateInventory(float dt)
 	{
 		mInventoryText[i]->Update(mCam, dt);
 	}
-	
+
 	mInventory->Update(mCam, mTimer.DeltaTime());
 }
 
@@ -602,15 +612,14 @@ void Engine::InitAll()
 	BuildVertexAndIndexBuffer(&z->mVB, &z->mIB, z->mText);
 	
 
-	LevelSection* L = new LevelSection("1234 9fkfm kf k k k df", 0.0f, 0.0f, 0.0f, 20.0f); mLevel.push_back(L);
-	BuildVertexAndIndexBuffer(&L->mVB, &L->mIB, L->mEntities);
+	mLevel = new LevelSection(0.0f, 0.0f, 0.0f, 20.0f);
+	BuildVertexAndIndexBuffer(&mLevel->mVB, &mLevel->mIB, mLevel->mEntities);
 
 
 	Text* t2 = new Text("Entered Battle!/   Good Luck!", -240.0f, 0.0f, -90.0f, 100.0f, 0, false); mBattleText.push_back(t2);
 	BuildVertexAndIndexBuffer(&t2->mVB, &t2->mIB, t2->mText);
 	
-	Text* t3 = new Text("Inventory...", -240.0f, 400.0f, -90.0f, 100.0f, 0, false); mInventoryText.push_back(t3);
-	BuildVertexAndIndexBuffer(&t3->mVB, &t3->mIB, t3->mText);
+	
 	
 
 
@@ -623,7 +632,7 @@ void Engine::InitAll()
 
 
 
-	mSound.StreamMusic(1);
+	//mSound.StreamMusic(1);
 }
 void Engine::InsertAllIndices(std::vector<UINT>& indices, std::vector<Entity*>& entitys)
 {
@@ -725,6 +734,18 @@ void Engine::BuildVertexAndIndexBuffer(ID3D11Buffer** VB, ID3D11Buffer** IB, std
 	D3D11_SUBRESOURCE_DATA iinitData;
 	iinitData.pSysMem = &indices[0];
 	HR(md3dDevice->CreateBuffer(&ibd, &iinitData, IB));
+}
+void Engine::RebuildLevel()
+{
+	delete mLevel;
+	mLevel = new LevelSection(0.0f, 0.0f, 0.0f, 20.0f);
+	BuildVertexAndIndexBuffer(&mLevel->mVB, &mLevel->mIB, mLevel->mEntities);
+}
+void Engine::ResetPlayer()
+{
+	mPlayer->ResetPlayerPos();
+	mPlayer->EmptyCollisionItems();
+	mPlayer->InsertCollisionItems(mLevel->mEntities); //INSERT LEVEL
 }
 
 
@@ -936,23 +957,13 @@ void Engine::DrawGameOn()
 
 		for (UINT p = 0; p < techDesc.Passes; ++p)
 		{
-// 			for (int i = 0; i < mTexts.size(); i++)
-// 			{
-// 				mTexts[i]->DrawText3D(&activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
-// 			}
-			activeTexTech = Effects::BasicFX->Light2TexAlphaClipTechShad;
-			for (int i = 0; i < mLevel.size(); i++)
-			{
-				mLevel[i]->Draw(&activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime(),shadowTransform);
-			}
-
-			mPlayer->Draw(&activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime(),shadowTransform);
-
-
-
-			activeTexTech = Effects::BasicFX->Light2TexAlphaClipTech;
+			mPlayer->Draw(&activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime(), shadowTransform);
+			mLevel->Draw(&activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime(),shadowTransform);
+			
+		
 			for (int i = 0; i < mTexts.size(); i++)
 			{
+				mTexts[i]->SetShadowTran(shadowTransform);
 			 	mTexts[i]->DrawText3D(&activeTexTech, md3dImmediateContext, p, mCam, mTimer.DeltaTime());
 			}
 		}
@@ -982,8 +993,6 @@ void Engine::DrawGameOn()
 	md3dImmediateContext->OMSetDepthStencilState(0, 0);
 	ID3D11ShaderResourceView* nullSRV[16] = { 0 };
 	md3dImmediateContext->PSSetShaderResources(0, 16, nullSRV);
-
-
 }
 void Engine::DrawWin()
 {
@@ -1081,11 +1090,8 @@ void Engine::DrawInventory()
 	activeTexTech->GetDesc(&techDesc);
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{
-		for (int i = 0; i < mInventoryText.size(); i++)
-		{
-			mInventoryText[i]->DrawText2D(&activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
-		}
-
+		mInventory->mTitle->DrawText2D(&activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
+		if (mInventory->mItemDescription){ mInventory->mItemDescription->DrawText2D(&activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);}
 		mInventory->Draw(&activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
 	}
 }
@@ -1360,19 +1366,21 @@ void Engine::BtnsLose(float x, float y, bool clicked)
 }
 void Engine::BtnsInventory(float x, float y, bool clicked)
 {
+	bool test = false;
 	for (int i = 0; i < mInventory->GetItems().size(); i++)
 	{
 		if (InButton2D(x, y, mInventory->GetItems()[i]))
 		{
-			mInventory->GetItems()[i]->hovering = true;
+			test = true;
+			mInventory->HoveringItem(i);
 			if (clicked)
 			{
 				mInventory->UseItem(i);
 			}
 		}
-		else{ mInventory->GetItems()[i]->hovering = false;}
+		else{ mInventory->NotHovering(i); }
 	}
-
+	if (!test){ mInventory->SetDescription(""); }
 }
 void Engine::BtnsBattle(float x, float y, bool clicked)
 {
@@ -1464,7 +1472,7 @@ bool Engine::InButton2D(float sx, float sy, Entity* button)
 	return(inX && inY);
 }
 
-//BUTOON FUNCTIONS
+//BUTON FUNCTIONS
 void Engine::Play()
 {
 	ClearVectors();
@@ -1520,7 +1528,9 @@ void Engine::Restart()
 	if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
 	*StateMachine::pGameState = GameState::GAMEON;
 	ClearVectors();
-	ResetCamInGame();
+	RebuildLevel();
+	ResetPlayer();
+	//ResetCamInGame();
 }
 
 //SPAWNERS 
@@ -1651,29 +1661,18 @@ void Engine::DrawSceneToShadowMap()
 	Effects::BuildShadowMapFX->SetEyePosW(mCam.GetPosition());
 	Effects::BuildShadowMapFX->SetViewProj(viewProj);
 
-	// These properties could be set per object if needed.
-	Effects::BuildShadowMapFX->SetHeightScale(0.07f);
-	Effects::BuildShadowMapFX->SetMaxTessDistance(1.0f);
-	Effects::BuildShadowMapFX->SetMinTessDistance(25.0f);
-	Effects::BuildShadowMapFX->SetMinTessFactor(1.0f);
-	Effects::BuildShadowMapFX->SetMaxTessFactor(5.0f);
-
-	ID3DX11EffectTechnique* tessSmapTech	= Effects::BuildShadowMapFX->BuildShadowMapTech;
-	ID3DX11EffectTechnique* smapTech		= Effects::BuildShadowMapFX->BuildShadowMapTech;
-
-	md3dImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	smapTech		= Effects::BuildShadowMapFX->BuildShadowMapTech;
-	tessSmapTech	= Effects::BuildShadowMapFX->BuildShadowMapTech;
+	ID3DX11EffectTechnique* smapTech		= Effects::BuildShadowMapFX->BuildShadowMapAlphaClipTech;
 	
 	// Draw Stuff Normally
-	for (int i = 0; i < mLevel.size(); i++)
-	{
-		mLevel[i]->DrawShad(&smapTech, md3dImmediateContext, mCam,mLightView,mLightProj);
-	}
+	mLevel->DrawShad(&smapTech, md3dImmediateContext, mCam,mLightView,mLightProj);
 	mPlayer->DrawShad(&smapTech, md3dImmediateContext, mCam, mLightView, mLightProj);
+	for (int i = 0; i < mTexts.size(); i++)
+	{
+		mTexts[i]->DrawTextShad(&smapTech, md3dImmediateContext, mCam, mLightView, mLightProj);
+	}
 
 
-
+	RestoreStates();
 }
 void Engine::BuildShadowTransform()
 {

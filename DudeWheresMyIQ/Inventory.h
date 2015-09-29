@@ -15,6 +15,10 @@ public:
 	void MakeInv(float x, float y, float size);
 	static bool AddToInventory(std::string item);
 	void AssignItem(Entity* E, std::string item);
+	void HoveringItem(int E);
+	void NotHovering(int E);
+	void SetDescription(std::string item);
+	std::vector<Text*> GetText();
 	void UseItem(int E);
 	void Draw(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, XMMATRIX& ortho); 
 	void ShutDown();
@@ -37,6 +41,7 @@ public:
 	
 	std::vector<Text*> mText; // Storage for all the Descriptions.
 	Text* mItemDescription; // This will be used for drawing the text apply whatever the description to the item when hovering on it .
+	Text* mTitle;
 
 	static int mSlots;
 };

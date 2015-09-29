@@ -19,6 +19,11 @@ rotationZ(0.0f),
 mDistanceLeft(0.0f),
 mTexWidth(0.0f),
 mTexHeight(0.0f),
+mUpDown(false),
+mOrigY(0.0f),
+mOrigX(0.0f),
+mOrigZ(0.0f),
+mHeightToGo(0.0f),
 mWidth(width),
 mHeight(height),
 hovering(false),
@@ -29,14 +34,22 @@ billboard(false),
 flipUpright(false),
 reverseLook(false),
 mDead(false),
+mSpinning(false),
 mExplode(false),
 mBasicTexTrans(false),
 mUseAnimation(false),
 mUseAAB(false),
 mUseAABOnce(false),
+mGoUp(true),
+mGoDown(false),
+mSideToSide(false),
 turnAngle(0.0f),
 explosionDist(0.0f),
 mAnim(0),
+movementMult(0.0f),
+mFlipping(false),
+mRolling(false),
+mBackAndForth(false),
 mLabel(label)
 {
 	//SET MATERIAL
@@ -56,6 +69,7 @@ mLabel(label)
 	case 1: geoGen.CreateSphere(width, height, height, mGrid);/*height is slice count .. width for radius*/ break;
 	case 2: geoGen.CreateUprightSquare(width, height, mGrid); break;
 	case 3: geoGen.CreateBox(width, height, depth, mGrid);    break;
+	case 4: geoGen.CreateFrontandBackFace(width, height, depth, mGrid);    break;
 	}
 
 	mIndexCount = mGrid.Indices.size();
@@ -72,6 +86,9 @@ Entity::~Entity()
 
 void Entity::SetPos(float x, float y, float z)
 {
+	mOrigY = y;
+	mOrigX = x;
+	mOrigZ = z;
 	mPosition = XMFLOAT3(x, y, z);
 }
 
@@ -85,6 +102,13 @@ void Entity::SetRot(float x, float y, float z)
 
 void Entity::Update(const Camera& camera, float dt)
 {
+	if (mSpinning)		{Yaw(dt*movementMult);}
+	if (mUpDown)		{GoUpDown(dt);}
+	if (mFlipping)		{Pitch(dt*movementMult);}
+	if (mRolling)		{Roll(dt*movementMult);}
+	if (mSideToSide)	{GoSideToSide(dt);}
+	if (mBackAndForth)	{GoBackAndForth(dt);}
+
 	XMVECTOR R = XMLoadFloat3(&mRight);
 	XMVECTOR U = XMLoadFloat3(&mUp);
 	XMVECTOR L = XMLoadFloat3(&mLook);
@@ -259,19 +283,32 @@ void Entity::DrawShadow(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext*
 	XMMATRIX proj		= XMLoadFloat4x4(&lightProj);
 	XMMATRIX viewProj	= XMMatrixMultiply(view, proj);
 
+	ID3DX11EffectTechnique* smapTech = Effects::BuildShadowMapFX->BuildShadowMapAlphaClipTech;
 	D3DX11_TECHNIQUE_DESC techDesc;
-	activeTech->GetDesc(&techDesc);
+	smapTech->GetDesc(&techDesc);
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{
 		ID3DX11EffectPass* pass = activeTech->GetPassByIndex(p);
-		//XMMATRIX trans = XMMatrixTranslation(mWorld.m[3][0] + xOff, yOff, mWorld.m[3][2] + zOff); // ORIGINAL TRANSLATION
 		XMMATRIX world = XMLoadFloat4x4(&mWorld);
 		XMMATRIX worldInvTranspose = MathHelper::InverseTranspose(world);
 		XMMATRIX worldViewProj = world*view*proj;
 		Effects::BuildShadowMapFX->SetWorld(world);
 		Effects::BuildShadowMapFX->SetWorldInvTranspose(worldInvTranspose);
 		Effects::BuildShadowMapFX->SetWorldViewProj(worldViewProj);
-		//Effects::BuildShadowMapFX->SetTexTransform(XMMatrixScaling(mShadowScale.x, mShadowScale.y, mShadowScale.z));
+		Effects::BuildShadowMapFX->SetDiffuseMap(mTexSRV);
+
+		if (!useTexTrans){ Effects::BuildShadowMapFX->SetTexTransform(XMMatrixScaling(origTexScale.x, origTexScale.y, origTexScale.z)); }
+		if (mBasicTexTrans)
+		{
+			Effects::BuildShadowMapFX->SetTexTransform(XMMatrixTranslation(texTrans.x, texTrans.y, texTrans.z)*XMMatrixScaling(origTexScale.x, origTexScale.y, origTexScale.z));
+		}
+		if (mUseAnimation)
+		{
+			XMMATRIX Scale;
+			mAnim->Flipped() ? Scale = XMMatrixScaling(-origTexScale.x, origTexScale.y, origTexScale.z) : Scale = XMMatrixScaling(origTexScale.x, origTexScale.y, origTexScale.z);
+			Effects::BuildShadowMapFX->SetTexTransform(XMMatrixTranslation(mAnim->GetX(), mAnim->GetY(), texTrans.z)*Scale);
+		}
+
 		pass->Apply(0, context);
 		context->DrawIndexed(mIndexCount, mIndexOffset, mVertexOffset);
 	}
@@ -388,6 +425,7 @@ void Entity::SetShadowScale(float x, float y, float z)
 	mShadowScale.x = x; mShadowScale.y = y; mShadowScale.z = z;
 }
 
+
 int Entity::GetVertOffset()
 {
 	return mVertexOffset;
@@ -432,6 +470,8 @@ XMFLOAT3 Entity::GetLook()const
 {
 	return mLook;
 }
+
+
 
 void Entity::Strafe(float d)
 {
@@ -596,4 +636,88 @@ void Entity::SetOrbitPos(float x, float y, float z, float dt)
 	mPosition.x = x; mPosition.y = y; mPosition.z = z;
 
 
+}
+
+
+//MOVEMENT 
+void Entity::SetToSpin(float mult, bool spin)
+{
+	movementMult = mult;
+	mSpinning = spin;
+}
+
+void Entity::SetToGoUpAndDown(float mult, float height, bool updown)
+{
+	mHeightToGo = height;
+	movementMult = mult;
+	mUpDown = updown;
+}
+
+void Entity::SetToFlip(float mult, bool flip)
+{
+	movementMult = mult;
+	mFlipping = flip;
+}
+
+
+void Entity::SetToRoll(float mult, bool roll)
+{
+	movementMult = mult;
+	mRolling = roll;
+}
+
+void Entity::SetSideToSide(float mult, float dist, bool b)
+{
+	mHeightToGo  = dist;
+	movementMult = mult;
+	mSideToSide  = b;
+}
+
+void Entity::SetBackAndForth(float mult, float dist, bool b)
+{
+	mHeightToGo   = dist;
+	movementMult  = mult;
+	mBackAndForth = b;
+}
+
+void Entity::GoUpDown(float dt)
+{
+	if (mGoUp)
+	{
+		Jump(dt*movementMult);
+		if (mPosition.y > mOrigY + mHeightToGo){ mGoUp = false; mGoDown = true; }
+	}
+	if (mGoDown)
+	{
+		Jump(-dt*movementMult);
+		if (mPosition.y < mOrigY - mHeightToGo){ mGoUp = true; mGoDown = false; }
+	}
+}
+
+void Entity::GoSideToSide(float dt)
+{
+	if (mGoUp)
+	{
+		Walk(dt*movementMult);
+		if (mPosition.z > mOrigZ + mHeightToGo){ mGoUp = false; mGoDown = true; }
+	}
+	if (mGoDown)
+	{
+		Walk(-dt*movementMult);
+		if (mPosition.z < mOrigZ - mHeightToGo){ mGoUp = true; mGoDown = false; }
+	}
+}
+
+void Entity::GoBackAndForth(float dt)
+{
+	if (mGoUp)
+	{
+		Strafe(dt*movementMult);
+		if (mPosition.x > mOrigX + mHeightToGo){ mGoUp = false; mGoDown = true; }
+	}
+	if (mGoDown)
+	{
+		Strafe(-dt*movementMult);
+		if (mPosition.x < mOrigX - mHeightToGo){ mGoUp = true; mGoDown = false; }
+	}
 }

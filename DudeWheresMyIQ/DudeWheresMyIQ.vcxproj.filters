@@ -228,12 +228,12 @@
     <CustomBuild Include="FX\Rain.fx">
       <Filter>SHADERS</Filter>
     </CustomBuild>
+    <CustomBuild Include="FX\BuildShadowMap.fx">
+      <Filter>SHADERS</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="FX\NormalMap.fx">
-      <Filter>SHADERS</Filter>
-    </FxCompile>
-    <FxCompile Include="FX\BuildShadowMap.fx">
       <Filter>SHADERS</Filter>
     </FxCompile>
   </ItemGroup>

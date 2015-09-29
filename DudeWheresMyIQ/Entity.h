@@ -14,7 +14,7 @@
 class Entity
 {
 public:
-	//TYPES 0:grid 1:sphere 2:URSquare 3:Box 
+	//TYPES 0:grid 1:sphere 2:URSquare 3:Box 4:FR/B Squares
 	Entity(int type, std::string label, float width, float height, float depth = 0.0f);
 	~Entity();
 	void SetPos(float x, float y, float z);
@@ -34,6 +34,17 @@ public:
 	void UpdateAAB();
 	void SetShadTrans(XMMATRIX& shadow);
 	void SetShadowScale(float x, float y, float z);
+	
+	//CUSTOM PERMANENT MOVEMENTS
+	void SetToSpin(float mult, bool spin);
+	void SetToGoUpAndDown(float mult,float height, bool updown);
+	void SetToFlip(float mult, bool flip);
+	void SetToRoll(float mult, bool roll);
+	void SetSideToSide(float mult, float dist, bool b);
+	void SetBackAndForth(float mult, float dist, bool b);
+	void GoUpDown(float dt);
+	void GoSideToSide(float dt);
+	void GoBackAndForth(float dt);
 
 	// Strafe/Walk
 	void Strafe(float d);
@@ -122,6 +133,23 @@ public:
 	bool mUseAnimation;
 	bool mUseAAB;
 	bool mUseAABOnce;
+
+	//CUSTOM MOVEMENTS
+	bool mSpinning;
+	float mSpinMult;
+	bool  mUpDown;
+	float mHeightToGo;
+	bool  mGoUp;
+	bool  mGoDown;
+	float mOrigY;
+	float mOrigX;
+	float mOrigZ;
+	float mUpDownMult;
+	float movementMult;
+	bool  mFlipping;
+	bool  mRolling;
+	bool  mSideToSide;
+	bool  mBackAndForth;
 	
 	std::string mLabel;
 

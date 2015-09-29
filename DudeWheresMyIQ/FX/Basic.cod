@@ -363,16 +363,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r0.xyz, r0.xyzx, r4.xyzx  // r0.x <- diffuse.x; r0.y <- diffuse.y; r0.z <- diffuse.z
                 add r1.xyz, r1.xyzx, r5.xyzx  // r1.x <- spec.x; r1.y <- spec.y; r1.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r0.xyz, r0.xyzx, r3.xyzx
                 mul r0.xyz, r0.xyzx, r2.xyzx
                 add r0.xyz, r1.xyzx, r0.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -681,7 +681,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -736,16 +736,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r0.xyz, r0.xyzx, r4.xyzx  // r0.x <- diffuse.x; r0.y <- diffuse.y; r0.z <- diffuse.z
                 add r1.xyz, r1.xyzx, r5.xyzx  // r1.x <- spec.x; r1.y <- spec.y; r1.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r0.xyz, r0.xyzx, r3.xyzx
                 mul r0.xyz, r0.xyzx, r2.xyzx
                 add r0.xyz, r1.xyzx, r0.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -1054,7 +1054,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -1109,7 +1109,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -1164,16 +1164,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r0.xyz, r0.xyzx, r4.xyzx  // r0.x <- diffuse.x; r0.y <- diffuse.y; r0.z <- diffuse.z
                 add r1.xyz, r1.xyzx, r5.xyzx  // r1.x <- spec.x; r1.y <- spec.y; r1.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r0.xyz, r0.xyzx, r3.xyzx
                 mul r0.xyz, r0.xyzx, r2.xyzx
                 add r0.xyz, r1.xyzx, r0.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -1386,7 +1386,7 @@ fxgroup
                 #line 212
                 mov r0.xyz, r0.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r0.w, cb0[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -1700,16 +1700,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r0.xyz, r0.xyzx, r4.xyzx  // r0.x <- diffuse.x; r0.y <- diffuse.y; r0.z <- diffuse.z
                 add r1.xyz, r1.xyzx, r5.xyzx  // r1.x <- spec.x; r1.y <- spec.y; r1.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r0.xyz, r0.xyzx, r3.xyzx
                 mul r0.xyz, r0.xyzx, r2.xyzx
                 add r0.xyz, r1.xyzx, r0.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -2023,7 +2023,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -2078,16 +2078,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r0.xyz, r0.xyzx, r4.xyzx  // r0.x <- diffuse.x; r0.y <- diffuse.y; r0.z <- diffuse.z
                 add r1.xyz, r1.xyzx, r5.xyzx  // r1.x <- spec.x; r1.y <- spec.y; r1.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r0.xyz, r0.xyzx, r3.xyzx
                 mul r0.xyz, r0.xyzx, r2.xyzx
                 add r0.xyz, r1.xyzx, r0.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -2401,7 +2401,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -2456,7 +2456,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -2511,16 +2511,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r0.xyz, r0.xyzx, r4.xyzx  // r0.x <- diffuse.x; r0.y <- diffuse.y; r0.z <- diffuse.z
                 add r1.xyz, r1.xyzx, r5.xyzx  // r1.x <- spec.x; r1.y <- spec.y; r1.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r0.xyz, r0.xyzx, r3.xyzx
                 mul r0.xyz, r0.xyzx, r2.xyzx
                 add r0.xyz, r1.xyzx, r0.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -2740,7 +2740,7 @@ fxgroup
                 #line 212
                 mov r0.xyz, r0.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r0.w, cb0[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -3061,16 +3061,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r0.xyz, r0.xyzx, r4.xyzx  // r0.x <- diffuse.x; r0.y <- diffuse.y; r0.z <- diffuse.z
                 add r1.xyz, r1.xyzx, r5.xyzx  // r1.x <- spec.x; r1.y <- spec.y; r1.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r0.xyz, r0.xyzx, r3.xyzx
                 mul r0.xyz, r0.xyzx, r2.xyzx
                 add r0.xyz, r1.xyzx, r0.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -3391,7 +3391,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -3446,16 +3446,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r0.xyz, r0.xyzx, r4.xyzx  // r0.x <- diffuse.x; r0.y <- diffuse.y; r0.z <- diffuse.z
                 add r1.xyz, r1.xyzx, r5.xyzx  // r1.x <- spec.x; r1.y <- spec.y; r1.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r0.xyz, r0.xyzx, r3.xyzx
                 mul r0.xyz, r0.xyzx, r2.xyzx
                 add r0.xyz, r1.xyzx, r0.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -3849,18 +3849,18 @@ fxgroup
                 #line 232
                 add r0.yzw, r0.yyzw, r4.xxyz  // r0.y <- ambient.x; r0.z <- ambient.y; r0.w <- ambient.z
                 
-                #line 235
+                #line 237
                 mul r1.xyz, r0.xxxx, r1.xyzx
                 add r1.xyz, r1.xyzx, r5.xyzx  // r1.x <- diffuse.x; r1.y <- diffuse.y; r1.z <- diffuse.z
                 mul r2.xyz, r0.xxxx, r2.xyzx
                 add r2.xyz, r2.xyzx, r6.xyzx  // r2.x <- spec.x; r2.y <- spec.y; r2.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r0.xyz, r0.yzwy, r1.xyzx
                 mul r0.xyz, r0.xyzx, r3.xyzx
                 add r0.xyz, r2.xyzx, r0.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r3.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -4181,7 +4181,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -4236,7 +4236,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -4291,16 +4291,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r0.xyz, r0.xyzx, r4.xyzx  // r0.x <- diffuse.x; r0.y <- diffuse.y; r0.z <- diffuse.z
                 add r1.xyz, r1.xyzx, r5.xyzx  // r1.x <- spec.x; r1.y <- spec.y; r1.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r0.xyz, r0.xyzx, r3.xyzx
                 mul r0.xyz, r0.xyzx, r2.xyzx
                 add r0.xyz, r1.xyzx, r0.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -4609,29 +4609,29 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r1.xyz, r1.xyzx, r4.xyzx  // r1.x <- diffuse.x; r1.y <- diffuse.y; r1.z <- diffuse.z
                 add r0.xyz, r0.xyzx, r5.xyzx  // r0.x <- spec.x; r0.y <- spec.y; r0.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r1.xyz, r1.xyzx, r3.xyzx
                 mul r1.xyz, r1.xyzx, r2.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r1.x, -cb0[13].x
                 add r0.w, r0.w, r1.x
                 div r0.w, r0.w, cb0[13].y
                 max r0.w, r0.w, l(0.000000)
                 min r0.w, r0.w, l(1.000000)  // r0.w <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r1.xyz, -r0.xyzx
                 add r1.xyz, r1.xyzx, cb0[14].xyzx
                 mul r1.xyz, r0.wwww, r1.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -4940,7 +4940,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -4995,29 +4995,29 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r1.xyz, r1.xyzx, r4.xyzx  // r1.x <- diffuse.x; r1.y <- diffuse.y; r1.z <- diffuse.z
                 add r0.xyz, r0.xyzx, r5.xyzx  // r0.x <- spec.x; r0.y <- spec.y; r0.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r1.xyz, r1.xyzx, r3.xyzx
                 mul r1.xyz, r1.xyzx, r2.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r1.x, -cb0[13].x
                 add r0.w, r0.w, r1.x
                 div r0.w, r0.w, cb0[13].y
                 max r0.w, r0.w, l(0.000000)
                 min r0.w, r0.w, l(1.000000)  // r0.w <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r1.xyz, -r0.xyzx
                 add r1.xyz, r1.xyzx, cb0[14].xyzx
                 mul r1.xyz, r0.wwww, r1.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -5326,7 +5326,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -5381,7 +5381,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -5436,29 +5436,29 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r1.xyz, r1.xyzx, r4.xyzx  // r1.x <- diffuse.x; r1.y <- diffuse.y; r1.z <- diffuse.z
                 add r0.xyz, r0.xyzx, r5.xyzx  // r0.x <- spec.x; r0.y <- spec.y; r0.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r1.xyz, r1.xyzx, r3.xyzx
                 mul r1.xyz, r1.xyzx, r2.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r1.x, -cb0[13].x
                 add r0.w, r0.w, r1.x
                 div r0.w, r0.w, cb0[13].y
                 max r0.w, r0.w, l(0.000000)
                 min r0.w, r0.w, l(1.000000)  // r0.w <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r1.xyz, -r0.xyzx
                 add r1.xyz, r1.xyzx, cb0[14].xyzx
                 mul r1.xyz, r0.wwww, r1.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -5703,20 +5703,20 @@ fxgroup
                 #line 212
                 mov r1.xyz, r1.xyzx  // r1.x <- litColor.x; r1.y <- litColor.y; r1.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r0.y, -cb0[13].x
                 add r0.x, r0.y, r0.x
                 div r0.x, r0.x, cb0[13].y
                 max r0.x, r0.x, l(0.000000)
                 min r0.x, r0.x, l(1.000000)  // r0.x <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r0.yzw, -r1.xxyz
                 add r0.yzw, r0.yyzw, cb0[14].xxyz
                 mul r0.xyz, r0.yzwy, r0.xxxx
                 add r0.xyz, r0.xyzx, r1.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r1.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -6030,29 +6030,29 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r1.xyz, r1.xyzx, r4.xyzx  // r1.x <- diffuse.x; r1.y <- diffuse.y; r1.z <- diffuse.z
                 add r0.xyz, r0.xyzx, r5.xyzx  // r0.x <- spec.x; r0.y <- spec.y; r0.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r1.xyz, r1.xyzx, r3.xyzx
                 mul r1.xyz, r1.xyzx, r2.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r1.x, -cb0[13].x
                 add r0.w, r0.w, r1.x
                 div r0.w, r0.w, cb0[13].y
                 max r0.w, r0.w, l(0.000000)
                 min r0.w, r0.w, l(1.000000)  // r0.w <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r1.xyz, -r0.xyzx
                 add r1.xyz, r1.xyzx, cb0[14].xyzx
                 mul r1.xyz, r0.wwww, r1.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -6366,7 +6366,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -6421,29 +6421,29 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r1.xyz, r1.xyzx, r4.xyzx  // r1.x <- diffuse.x; r1.y <- diffuse.y; r1.z <- diffuse.z
                 add r0.xyz, r0.xyzx, r5.xyzx  // r0.x <- spec.x; r0.y <- spec.y; r0.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r1.xyz, r1.xyzx, r3.xyzx
                 mul r1.xyz, r1.xyzx, r2.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r1.x, -cb0[13].x
                 add r0.w, r0.w, r1.x
                 div r0.w, r0.w, cb0[13].y
                 max r0.w, r0.w, l(0.000000)
                 min r0.w, r0.w, l(1.000000)  // r0.w <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r1.xyz, -r0.xyzx
                 add r1.xyz, r1.xyzx, cb0[14].xyzx
                 mul r1.xyz, r0.wwww, r1.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -6757,7 +6757,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -6812,7 +6812,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -6867,29 +6867,29 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r1.xyz, r1.xyzx, r4.xyzx  // r1.x <- diffuse.x; r1.y <- diffuse.y; r1.z <- diffuse.z
                 add r0.xyz, r0.xyzx, r5.xyzx  // r0.x <- spec.x; r0.y <- spec.y; r0.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r1.xyz, r1.xyzx, r3.xyzx
                 mul r1.xyz, r1.xyzx, r2.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r1.x, -cb0[13].x
                 add r0.w, r0.w, r1.x
                 div r0.w, r0.w, cb0[13].y
                 max r0.w, r0.w, l(0.000000)
                 min r0.w, r0.w, l(1.000000)  // r0.w <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r1.xyz, -r0.xyzx
                 add r1.xyz, r1.xyzx, cb0[14].xyzx
                 mul r1.xyz, r0.wwww, r1.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -7141,20 +7141,20 @@ fxgroup
                 #line 212
                 mov r1.xyz, r1.xyzx  // r1.x <- litColor.x; r1.y <- litColor.y; r1.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r0.y, -cb0[13].x
                 add r0.x, r0.y, r0.x
                 div r0.x, r0.x, cb0[13].y
                 max r0.x, r0.x, l(0.000000)
                 min r0.x, r0.x, l(1.000000)  // r0.x <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r0.yzw, -r1.xxyz
                 add r0.yzw, r0.yyzw, cb0[14].xxyz
                 mul r0.xyz, r0.yzwy, r0.xxxx
                 add r0.xyz, r0.xyzx, r1.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r1.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -7475,29 +7475,29 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r1.xyz, r1.xyzx, r4.xyzx  // r1.x <- diffuse.x; r1.y <- diffuse.y; r1.z <- diffuse.z
                 add r0.xyz, r0.xyzx, r5.xyzx  // r0.x <- spec.x; r0.y <- spec.y; r0.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r1.xyz, r1.xyzx, r3.xyzx
                 mul r1.xyz, r1.xyzx, r2.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r1.x, -cb0[13].x
                 add r0.w, r0.w, r1.x
                 div r0.w, r0.w, cb0[13].y
                 max r0.w, r0.w, l(0.000000)
                 min r0.w, r0.w, l(1.000000)  // r0.w <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r1.xyz, -r0.xyzx
                 add r1.xyz, r1.xyzx, cb0[14].xyzx
                 mul r1.xyz, r0.wwww, r1.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -7818,7 +7818,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -7873,29 +7873,29 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r1.xyz, r1.xyzx, r4.xyzx  // r1.x <- diffuse.x; r1.y <- diffuse.y; r1.z <- diffuse.z
                 add r0.xyz, r0.xyzx, r5.xyzx  // r0.x <- spec.x; r0.y <- spec.y; r0.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r1.xyz, r1.xyzx, r3.xyzx
                 mul r1.xyz, r1.xyzx, r2.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r1.x, -cb0[13].x
                 add r0.w, r0.w, r1.x
                 div r0.w, r0.w, cb0[13].y
                 max r0.w, r0.w, l(0.000000)
                 min r0.w, r0.w, l(1.000000)  // r0.w <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r1.xyz, -r0.xyzx
                 add r1.xyz, r1.xyzx, cb0[14].xyzx
                 mul r1.xyz, r0.wwww, r1.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -8216,7 +8216,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -8271,7 +8271,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -8326,29 +8326,29 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r1.xyz, r1.xyzx, r4.xyzx  // r1.x <- diffuse.x; r1.y <- diffuse.y; r1.z <- diffuse.z
                 add r0.xyz, r0.xyzx, r5.xyzx  // r0.x <- spec.x; r0.y <- spec.y; r0.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r1.xyz, r1.xyzx, r3.xyzx
                 mul r1.xyz, r1.xyzx, r2.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r1.x, -cb0[13].x
                 add r0.w, r0.w, r1.x
                 div r0.w, r0.w, cb0[13].y
                 max r0.w, r0.w, l(0.000000)
                 min r0.w, r0.w, l(1.000000)  // r0.w <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r1.xyz, -r0.xyzx
                 add r1.xyz, r1.xyzx, cb0[14].xyzx
                 mul r1.xyz, r0.wwww, r1.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -8661,16 +8661,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
-                #line 246
+                #line 247
                 add r3.xyz, r3.xyzx, r4.xyzx
                 mul r2.xyz, r2.xyzx, r3.xyzx
                 add r2.xyz, r5.xyzx, r2.xyzx  // r2.x <- litColor.x; r2.y <- litColor.y; r2.z <- litColor.z
                 
-                #line 250
+                #line 251
                 mov r1.xyz, -r1.xyzx  // r1.x <- incident.x; r1.y <- incident.y; r1.z <- incident.z
                 dp3 r0.w, r1.xyzx, r0.xyzx
                 add r0.w, r0.w, r0.w
@@ -8682,7 +8682,7 @@ fxgroup
                 mul r0.xyz, r0.xyzx, cb1[27].xyzx
                 add r0.xyz, r0.xyzx, r2.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -8995,7 +8995,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -9050,16 +9050,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
-                #line 246
+                #line 247
                 add r3.xyz, r3.xyzx, r4.xyzx
                 mul r2.xyz, r2.xyzx, r3.xyzx
                 add r2.xyz, r5.xyzx, r2.xyzx  // r2.x <- litColor.x; r2.y <- litColor.y; r2.z <- litColor.z
                 
-                #line 250
+                #line 251
                 mov r1.xyz, -r1.xyzx  // r1.x <- incident.x; r1.y <- incident.y; r1.z <- incident.z
                 dp3 r0.w, r1.xyzx, r0.xyzx
                 add r0.w, r0.w, r0.w
@@ -9071,7 +9071,7 @@ fxgroup
                 mul r0.xyz, r0.xyzx, cb1[27].xyzx
                 add r0.xyz, r0.xyzx, r2.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -9384,7 +9384,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -9439,7 +9439,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -9494,16 +9494,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
-                #line 246
+                #line 247
                 add r3.xyz, r3.xyzx, r4.xyzx
                 mul r2.xyz, r2.xyzx, r3.xyzx
                 add r2.xyz, r5.xyzx, r2.xyzx  // r2.x <- litColor.x; r2.y <- litColor.y; r2.z <- litColor.z
                 
-                #line 250
+                #line 251
                 mov r1.xyz, -r1.xyzx  // r1.x <- incident.x; r1.y <- incident.y; r1.z <- incident.z
                 dp3 r0.w, r1.xyzx, r0.xyzx
                 add r0.w, r0.w, r0.w
@@ -9515,7 +9515,7 @@ fxgroup
                 mul r0.xyz, r0.xyzx, cb1[27].xyzx
                 add r0.xyz, r0.xyzx, r2.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -9728,7 +9728,7 @@ fxgroup
                 #line 212
                 mov r0.xyz, r0.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r0.w, cb0[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -10044,16 +10044,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
-                #line 246
+                #line 247
                 add r3.xyz, r3.xyzx, r4.xyzx
                 mul r2.xyz, r2.xyzx, r3.xyzx
                 add r2.xyz, r5.xyzx, r2.xyzx  // r2.x <- litColor.x; r2.y <- litColor.y; r2.z <- litColor.z
                 
-                #line 250
+                #line 251
                 mov r1.xyz, -r1.xyzx  // r1.x <- incident.x; r1.y <- incident.y; r1.z <- incident.z
                 dp3 r0.w, r1.xyzx, r0.xyzx
                 add r0.w, r0.w, r0.w
@@ -10065,7 +10065,7 @@ fxgroup
                 mul r0.xyz, r0.xyzx, cb1[27].xyzx
                 add r0.xyz, r0.xyzx, r2.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -10381,7 +10381,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -10436,16 +10436,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
-                #line 246
+                #line 247
                 add r3.xyz, r3.xyzx, r4.xyzx
                 mul r2.xyz, r2.xyzx, r3.xyzx
                 add r2.xyz, r5.xyzx, r2.xyzx  // r2.x <- litColor.x; r2.y <- litColor.y; r2.z <- litColor.z
                 
-                #line 250
+                #line 251
                 mov r1.xyz, -r1.xyzx  // r1.x <- incident.x; r1.y <- incident.y; r1.z <- incident.z
                 dp3 r0.w, r1.xyzx, r0.xyzx
                 add r0.w, r0.w, r0.w
@@ -10457,7 +10457,7 @@ fxgroup
                 mul r0.xyz, r0.xyzx, cb1[27].xyzx
                 add r0.xyz, r0.xyzx, r2.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -10773,7 +10773,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -10828,7 +10828,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -10883,16 +10883,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
-                #line 246
+                #line 247
                 add r3.xyz, r3.xyzx, r4.xyzx
                 mul r2.xyz, r2.xyzx, r3.xyzx
                 add r2.xyz, r5.xyzx, r2.xyzx  // r2.x <- litColor.x; r2.y <- litColor.y; r2.z <- litColor.z
                 
-                #line 250
+                #line 251
                 mov r1.xyz, -r1.xyzx  // r1.x <- incident.x; r1.y <- incident.y; r1.z <- incident.z
                 dp3 r0.w, r1.xyzx, r0.xyzx
                 add r0.w, r0.w, r0.w
@@ -10904,7 +10904,7 @@ fxgroup
                 mul r0.xyz, r0.xyzx, cb1[27].xyzx
                 add r0.xyz, r0.xyzx, r2.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -11124,7 +11124,7 @@ fxgroup
                 #line 212
                 mov r0.xyz, r0.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r0.w, cb0[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -11447,16 +11447,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
-                #line 246
+                #line 247
                 add r3.xyz, r3.xyzx, r4.xyzx
                 mul r2.xyz, r2.xyzx, r3.xyzx
                 add r2.xyz, r5.xyzx, r2.xyzx  // r2.x <- litColor.x; r2.y <- litColor.y; r2.z <- litColor.z
                 
-                #line 250
+                #line 251
                 mov r1.xyz, -r1.xyzx  // r1.x <- incident.x; r1.y <- incident.y; r1.z <- incident.z
                 dp3 r0.w, r1.xyzx, r0.xyzx
                 add r0.w, r0.w, r0.w
@@ -11468,7 +11468,7 @@ fxgroup
                 mul r0.xyz, r0.xyzx, cb1[27].xyzx
                 add r0.xyz, r0.xyzx, r2.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -11791,7 +11791,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -11846,16 +11846,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
-                #line 246
+                #line 247
                 add r3.xyz, r3.xyzx, r4.xyzx
                 mul r2.xyz, r2.xyzx, r3.xyzx
                 add r2.xyz, r5.xyzx, r2.xyzx  // r2.x <- litColor.x; r2.y <- litColor.y; r2.z <- litColor.z
                 
-                #line 250
+                #line 251
                 mov r1.xyz, -r1.xyzx  // r1.x <- incident.x; r1.y <- incident.y; r1.z <- incident.z
                 dp3 r0.w, r1.xyzx, r0.xyzx
                 add r0.w, r0.w, r0.w
@@ -11867,7 +11867,7 @@ fxgroup
                 mul r0.xyz, r0.xyzx, cb1[27].xyzx
                 add r0.xyz, r0.xyzx, r2.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -12190,7 +12190,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -12245,7 +12245,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -12300,16 +12300,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
-                #line 246
+                #line 247
                 add r3.xyz, r3.xyzx, r4.xyzx
                 mul r2.xyz, r2.xyzx, r3.xyzx
                 add r2.xyz, r5.xyzx, r2.xyzx  // r2.x <- litColor.x; r2.y <- litColor.y; r2.z <- litColor.z
                 
-                #line 250
+                #line 251
                 mov r1.xyz, -r1.xyzx  // r1.x <- incident.x; r1.y <- incident.y; r1.z <- incident.z
                 dp3 r0.w, r1.xyzx, r0.xyzx
                 add r0.w, r0.w, r0.w
@@ -12321,7 +12321,7 @@ fxgroup
                 mul r0.xyz, r0.xyzx, cb1[27].xyzx
                 add r0.xyz, r0.xyzx, r2.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -12634,16 +12634,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
-                #line 246
+                #line 247
                 add r3.xyz, r3.xyzx, r4.xyzx
                 mul r2.xyz, r2.xyzx, r3.xyzx
                 add r2.xyz, r5.xyzx, r2.xyzx  // r2.x <- litColor.x; r2.y <- litColor.y; r2.z <- litColor.z
                 
-                #line 250
+                #line 251
                 mov r1.xyz, -r1.xyzx  // r1.x <- incident.x; r1.y <- incident.y; r1.z <- incident.z
                 dp3 r1.w, r1.xyzx, r0.xyzx
                 add r1.w, r1.w, r1.w
@@ -12655,20 +12655,20 @@ fxgroup
                 mul r0.xyz, r0.xyzx, cb1[27].xyzx
                 add r0.xyz, r0.xyzx, r2.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r1.x, -cb0[13].x
                 add r0.w, r0.w, r1.x
                 div r0.w, r0.w, cb0[13].y
                 max r0.w, r0.w, l(0.000000)
                 min r0.w, r0.w, l(1.000000)  // r0.w <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r1.xyz, -r0.xyzx
                 add r1.xyz, r1.xyzx, cb0[14].xyzx
                 mul r1.xyz, r0.wwww, r1.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -12981,7 +12981,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -13036,16 +13036,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
-                #line 246
+                #line 247
                 add r3.xyz, r3.xyzx, r4.xyzx
                 mul r2.xyz, r2.xyzx, r3.xyzx
                 add r2.xyz, r5.xyzx, r2.xyzx  // r2.x <- litColor.x; r2.y <- litColor.y; r2.z <- litColor.z
                 
-                #line 250
+                #line 251
                 mov r1.xyz, -r1.xyzx  // r1.x <- incident.x; r1.y <- incident.y; r1.z <- incident.z
                 dp3 r1.w, r1.xyzx, r0.xyzx
                 add r1.w, r1.w, r1.w
@@ -13057,20 +13057,20 @@ fxgroup
                 mul r0.xyz, r0.xyzx, cb1[27].xyzx
                 add r0.xyz, r0.xyzx, r2.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r1.x, -cb0[13].x
                 add r0.w, r0.w, r1.x
                 div r0.w, r0.w, cb0[13].y
                 max r0.w, r0.w, l(0.000000)
                 min r0.w, r0.w, l(1.000000)  // r0.w <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r1.xyz, -r0.xyzx
                 add r1.xyz, r1.xyzx, cb0[14].xyzx
                 mul r1.xyz, r0.wwww, r1.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -13383,7 +13383,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -13438,7 +13438,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -13493,16 +13493,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
-                #line 246
+                #line 247
                 add r3.xyz, r3.xyzx, r4.xyzx
                 mul r2.xyz, r2.xyzx, r3.xyzx
                 add r2.xyz, r5.xyzx, r2.xyzx  // r2.x <- litColor.x; r2.y <- litColor.y; r2.z <- litColor.z
                 
-                #line 250
+                #line 251
                 mov r1.xyz, -r1.xyzx  // r1.x <- incident.x; r1.y <- incident.y; r1.z <- incident.z
                 dp3 r1.w, r1.xyzx, r0.xyzx
                 add r1.w, r1.w, r1.w
@@ -13514,20 +13514,20 @@ fxgroup
                 mul r0.xyz, r0.xyzx, cb1[27].xyzx
                 add r0.xyz, r0.xyzx, r2.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r1.x, -cb0[13].x
                 add r0.w, r0.w, r1.x
                 div r0.w, r0.w, cb0[13].y
                 max r0.w, r0.w, l(0.000000)
                 min r0.w, r0.w, l(1.000000)  // r0.w <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r1.xyz, -r0.xyzx
                 add r1.xyz, r1.xyzx, cb0[14].xyzx
                 mul r1.xyz, r0.wwww, r1.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -13772,20 +13772,20 @@ fxgroup
                 #line 212
                 mov r1.xyz, r1.xyzx  // r1.x <- litColor.x; r1.y <- litColor.y; r1.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r0.y, -cb0[13].x
                 add r0.x, r0.y, r0.x
                 div r0.x, r0.x, cb0[13].y
                 max r0.x, r0.x, l(0.000000)
                 min r0.x, r0.x, l(1.000000)  // r0.x <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r0.yzw, -r1.xxyz
                 add r0.yzw, r0.yyzw, cb0[14].xxyz
                 mul r0.xyz, r0.yzwy, r0.xxxx
                 add r0.xyz, r0.xyzx, r1.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r1.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -14101,16 +14101,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
-                #line 246
+                #line 247
                 add r3.xyz, r3.xyzx, r4.xyzx
                 mul r2.xyz, r2.xyzx, r3.xyzx
                 add r2.xyz, r5.xyzx, r2.xyzx  // r2.x <- litColor.x; r2.y <- litColor.y; r2.z <- litColor.z
                 
-                #line 250
+                #line 251
                 mov r1.xyz, -r1.xyzx  // r1.x <- incident.x; r1.y <- incident.y; r1.z <- incident.z
                 dp3 r1.w, r1.xyzx, r0.xyzx
                 add r1.w, r1.w, r1.w
@@ -14122,20 +14122,20 @@ fxgroup
                 mul r0.xyz, r0.xyzx, cb1[27].xyzx
                 add r0.xyz, r0.xyzx, r2.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r1.x, -cb0[13].x
                 add r0.w, r0.w, r1.x
                 div r0.w, r0.w, cb0[13].y
                 max r0.w, r0.w, l(0.000000)
                 min r0.w, r0.w, l(1.000000)  // r0.w <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r1.xyz, -r0.xyzx
                 add r1.xyz, r1.xyzx, cb0[14].xyzx
                 mul r1.xyz, r0.wwww, r1.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -14451,7 +14451,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -14506,16 +14506,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
-                #line 246
+                #line 247
                 add r3.xyz, r3.xyzx, r4.xyzx
                 mul r2.xyz, r2.xyzx, r3.xyzx
                 add r2.xyz, r5.xyzx, r2.xyzx  // r2.x <- litColor.x; r2.y <- litColor.y; r2.z <- litColor.z
                 
-                #line 250
+                #line 251
                 mov r1.xyz, -r1.xyzx  // r1.x <- incident.x; r1.y <- incident.y; r1.z <- incident.z
                 dp3 r1.w, r1.xyzx, r0.xyzx
                 add r1.w, r1.w, r1.w
@@ -14527,20 +14527,20 @@ fxgroup
                 mul r0.xyz, r0.xyzx, cb1[27].xyzx
                 add r0.xyz, r0.xyzx, r2.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r1.x, -cb0[13].x
                 add r0.w, r0.w, r1.x
                 div r0.w, r0.w, cb0[13].y
                 max r0.w, r0.w, l(0.000000)
                 min r0.w, r0.w, l(1.000000)  // r0.w <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r1.xyz, -r0.xyzx
                 add r1.xyz, r1.xyzx, cb0[14].xyzx
                 mul r1.xyz, r0.wwww, r1.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -14856,7 +14856,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -14911,7 +14911,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -14966,16 +14966,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
-                #line 246
+                #line 247
                 add r3.xyz, r3.xyzx, r4.xyzx
                 mul r2.xyz, r2.xyzx, r3.xyzx
                 add r2.xyz, r5.xyzx, r2.xyzx  // r2.x <- litColor.x; r2.y <- litColor.y; r2.z <- litColor.z
                 
-                #line 250
+                #line 251
                 mov r1.xyz, -r1.xyzx  // r1.x <- incident.x; r1.y <- incident.y; r1.z <- incident.z
                 dp3 r1.w, r1.xyzx, r0.xyzx
                 add r1.w, r1.w, r1.w
@@ -14987,20 +14987,20 @@ fxgroup
                 mul r0.xyz, r0.xyzx, cb1[27].xyzx
                 add r0.xyz, r0.xyzx, r2.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r1.x, -cb0[13].x
                 add r0.w, r0.w, r1.x
                 div r0.w, r0.w, cb0[13].y
                 max r0.w, r0.w, l(0.000000)
                 min r0.w, r0.w, l(1.000000)  // r0.w <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r1.xyz, -r0.xyzx
                 add r1.xyz, r1.xyzx, cb0[14].xyzx
                 mul r1.xyz, r0.wwww, r1.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -15252,20 +15252,20 @@ fxgroup
                 #line 212
                 mov r1.xyz, r1.xyzx  // r1.x <- litColor.x; r1.y <- litColor.y; r1.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r0.y, -cb0[13].x
                 add r0.x, r0.y, r0.x
                 div r0.x, r0.x, cb0[13].y
                 max r0.x, r0.x, l(0.000000)
                 min r0.x, r0.x, l(1.000000)  // r0.x <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r0.yzw, -r1.xxyz
                 add r0.yzw, r0.yyzw, cb0[14].xxyz
                 mul r0.xyz, r0.yzwy, r0.xxxx
                 add r0.xyz, r0.xyzx, r1.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r1.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -15588,16 +15588,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
-                #line 246
+                #line 247
                 add r3.xyz, r3.xyzx, r4.xyzx
                 mul r2.xyz, r2.xyzx, r3.xyzx
                 add r2.xyz, r5.xyzx, r2.xyzx  // r2.x <- litColor.x; r2.y <- litColor.y; r2.z <- litColor.z
                 
-                #line 250
+                #line 251
                 mov r1.xyz, -r1.xyzx  // r1.x <- incident.x; r1.y <- incident.y; r1.z <- incident.z
                 dp3 r1.w, r1.xyzx, r0.xyzx
                 add r1.w, r1.w, r1.w
@@ -15609,20 +15609,20 @@ fxgroup
                 mul r0.xyz, r0.xyzx, cb1[27].xyzx
                 add r0.xyz, r0.xyzx, r2.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r1.x, -cb0[13].x
                 add r0.w, r0.w, r1.x
                 div r0.w, r0.w, cb0[13].y
                 max r0.w, r0.w, l(0.000000)
                 min r0.w, r0.w, l(1.000000)  // r0.w <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r1.xyz, -r0.xyzx
                 add r1.xyz, r1.xyzx, cb0[14].xyzx
                 mul r1.xyz, r0.wwww, r1.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -15945,7 +15945,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -16000,16 +16000,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
-                #line 246
+                #line 247
                 add r3.xyz, r3.xyzx, r4.xyzx
                 mul r2.xyz, r2.xyzx, r3.xyzx
                 add r2.xyz, r5.xyzx, r2.xyzx  // r2.x <- litColor.x; r2.y <- litColor.y; r2.z <- litColor.z
                 
-                #line 250
+                #line 251
                 mov r1.xyz, -r1.xyzx  // r1.x <- incident.x; r1.y <- incident.y; r1.z <- incident.z
                 dp3 r1.w, r1.xyzx, r0.xyzx
                 add r1.w, r1.w, r1.w
@@ -16021,20 +16021,20 @@ fxgroup
                 mul r0.xyz, r0.xyzx, cb1[27].xyzx
                 add r0.xyz, r0.xyzx, r2.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r1.x, -cb0[13].x
                 add r0.w, r0.w, r1.x
                 div r0.w, r0.w, cb0[13].y
                 max r0.w, r0.w, l(0.000000)
                 min r0.w, r0.w, l(1.000000)  // r0.w <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r1.xyz, -r0.xyzx
                 add r1.xyz, r1.xyzx, cb0[14].xyzx
                 mul r1.xyz, r0.wwww, r1.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -16357,7 +16357,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -16412,7 +16412,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -16467,16 +16467,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
-                #line 246
+                #line 247
                 add r3.xyz, r3.xyzx, r4.xyzx
                 mul r2.xyz, r2.xyzx, r3.xyzx
                 add r2.xyz, r5.xyzx, r2.xyzx  // r2.x <- litColor.x; r2.y <- litColor.y; r2.z <- litColor.z
                 
-                #line 250
+                #line 251
                 mov r1.xyz, -r1.xyzx  // r1.x <- incident.x; r1.y <- incident.y; r1.z <- incident.z
                 dp3 r1.w, r1.xyzx, r0.xyzx
                 add r1.w, r1.w, r1.w
@@ -16488,20 +16488,20 @@ fxgroup
                 mul r0.xyz, r0.xyzx, cb1[27].xyzx
                 add r0.xyz, r0.xyzx, r2.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 264
+                #line 265
                 mov r1.x, -cb0[13].x
                 add r0.w, r0.w, r1.x
                 div r0.w, r0.w, cb0[13].y
                 max r0.w, r0.w, l(0.000000)
                 min r0.w, r0.w, l(1.000000)  // r0.w <- fogLerp
                 
-                #line 267
+                #line 268
                 mov r1.xyz, -r0.xyzx
                 add r1.xyz, r1.xyzx, cb0[14].xyzx
                 mul r1.xyz, r0.wwww, r1.xyzx
                 add r0.xyz, r0.xyzx, r1.xyzx
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w
@@ -17031,7 +17031,7 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r4.xyz, r4.xyzx, r7.xyzx
                 add r5.xyz, r5.xyzx, r8.xyzx
                 
@@ -17086,16 +17086,16 @@ fxgroup
                 #line 232
                 add r3.xyz, r3.xyzx, r6.xyzx
                 
-                #line 239
+                #line 241
                 add r0.xyz, r0.xyzx, r4.xyzx  // r0.x <- diffuse.x; r0.y <- diffuse.y; r0.z <- diffuse.z
                 add r1.xyz, r1.xyzx, r5.xyzx  // r1.x <- spec.x; r1.y <- spec.y; r1.z <- spec.z
                 
-                #line 246
+                #line 247
                 add r0.xyz, r0.xyzx, r3.xyzx
                 mul r0.xyz, r0.xyzx, r2.xyzx
                 add r0.xyz, r1.xyzx, r0.xyzx  // r0.x <- litColor.x; r0.y <- litColor.y; r0.z <- litColor.z
                 
-                #line 271
+                #line 272
                 mul r0.w, r2.w, cb1[25].w  // r0.w <- litColor.w
                 mov o0.xyz, r0.xyzx
                 mov o0.w, r0.w

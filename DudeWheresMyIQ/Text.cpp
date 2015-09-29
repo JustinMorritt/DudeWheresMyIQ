@@ -3,9 +3,10 @@
 
 ID3D11ShaderResourceView* Text::mLetters;
 ID3D11ShaderResourceView* Text::mBG1;
+ID3D11ShaderResourceView* Text::mBG2;
 ID3D11Device* Text::mDevice;
 
-Text::Text(std::string text, float x, float y, float z, float size, int BG, bool ThreeD) : mIB(0), mVB(0), numLetters(65.0f)
+Text::Text(std::string text, float x, float y, float z, float size, int BG, bool ThreeD) : mIB(0), mVB(0), numLetters(65.0f), mOrigPos(x, y, z)
 {
 	float origX = x;
 	float origY = y;
@@ -27,15 +28,17 @@ Text::Text(std::string text, float x, float y, float z, float size, int BG, bool
 		}
 	}
 	if (textWidth > finalWidth){ finalWidth = textWidth; }
-	Entity* E = nullptr;
+
+	//SET UP TEXT BACKGROUND
+	Entity* E = new Entity(4, "text", finalWidth + size, textHeight + size);
+	E->SetPos(x + ((finalWidth / 2) - (size / 2)), y - ((textHeight / 2) - (size / 2)), z);
+	ThreeD ? mText.push_back(E) : mText.insert(mText.begin(), E);
 	switch (BG)
 	{
-	case 0: E = new Entity(2, "text", finalWidth + size, textHeight + size); 
-		E->UseTexture(mBG1); E->reverseLook = true;
-		E->SetPos(x + ((finalWidth / 2) - (size / 2)), y - ((textHeight / 2) - (size / 2)), z);
-		ThreeD ? mText.push_back(E) : mText.insert(mText.begin(),E);
-		break;
+	case 0:	E->UseTexture(mBG1); break;
+	case 1: E->UseTexture(mBG2); break;
 	}
+
 }
 
 
@@ -48,11 +51,13 @@ void Text::Init(ID3D11Device** device)
 {
 	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Fonts/FontRaster.dds", 0, 0, &mLetters, 0));
 	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Fonts/BG1.dds", 0, 0, &mBG1, 0));
+	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Fonts/BG2.dds", 0, 0, &mBG2, 0));
 	mDevice = *device;
 }																			 
 
 void Text::Update(const Camera& cam, float dt)
 {
+	if (!mDead){ mLife -= dt; if (mLife < 0.0f){ mDead = true; } }
 	for (int i = 0; i < mText.size(); i++)
 	{
 		mText[i]->Update(cam, dt);
@@ -169,9 +174,46 @@ void Text::DrawText3D(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* 
 	}
 }
 
+void Text::DrawTextShad(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, const Camera& camera, XMFLOAT4X4 lightView, XMFLOAT4X4 lightProj)
+{
+	UINT stride = sizeof(Vertex::Basic32);
+	UINT offset = 0;
+
+	context->IASetVertexBuffers(0, 1, &mVB, &stride, &offset);
+	context->IASetIndexBuffer(mIB, DXGI_FORMAT_R32_UINT, 0);
+
+	mText[mText.size()-1]->DrawShadow(*activeTech, context, camera, lightView, lightProj);
+}
+
+void Text::SetShadowTran(XMMATRIX& shad)
+{
+	mText[mText.size() - 1]->SetShadTrans(shad);
+}
+
+void Text::SetPosition(float x, float y, float z)
+{
+	//Need To Get Difference From Original Posision And Go Through Each Entity += the difference
+	XMFLOAT3 to = { x, y, z };
+	XMFLOAT3 from = mOrigPos;
+	XMFLOAT3 diff = { to.x - from.x, to.y - from.y, to.z - from.z };
+
+	
+	for (int i = 0; i < mText.size(); i++)
+	{
+		mText[i]->SetPos(mText[i]->mPosition.x += diff.x, mText[i]->mPosition.y += diff.y, mText[i]->mPosition.z += diff.z);
+	}
+	mOrigPos = to;
+}
+
 void Text::ShutDown()
 { 
 
 	if (mLetters){ mLetters->Release(); mLetters = 0; }
+}
+
+void Text::SetLife(bool b, float life)
+{
+	mLife = life;
+	mDead = b;
 }
 

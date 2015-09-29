@@ -17,6 +17,7 @@ public:
 	void InsertCollisionItems(std::vector<Entity*> entities);
 	void EmptyCollisionItems();
 	void CheckCollisions();
+	void SetItemDescription(int i);
 	void Applyforces(float dt);
 	void SetAnimation();
 	void Move(float dt);
@@ -33,6 +34,9 @@ public:
 
 	//COLLISION ITEMS
 	std::vector<std::vector<Entity*>> mEntities;
+
+	std::vector<Text*> mText; // Storage for all the Descriptions.
+	Text* mItemDescription; // This will be used for drawing the text apply whatever the description to the item when hovering on it .
 
 	Entity* mSelf;
 	ID3D11Buffer* mVB;
