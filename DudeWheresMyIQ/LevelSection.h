@@ -28,6 +28,8 @@ public:
 	void MakeSideToSideBlock(float x, float y, float z, float w, float h, float d);
 	void MakeMovingStairs(float x, float y, float z, float w, float h, float d);
 	void MakeMovingStairs2(float x, float y, float z, float w, float h, float d);
+	void MakeSpindal(float x, float y, float z, float w, float h, float d);
+	void MakeSideSpindal(float x, float y, float z, float w, float h, float d);
 
 	void Draw(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, float dt, XMMATRIX& shadow);
 	void DrawShad(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, const Camera& camera, XMFLOAT4X4 lightView, XMFLOAT4X4 lightProj);

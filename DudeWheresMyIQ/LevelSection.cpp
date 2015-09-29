@@ -71,8 +71,9 @@ void LevelSection::MakeChunk(float x, float y, float z, float w, float h, float 
 
 void LevelSection::MakeObstacle(float x, float y, float z, float w, float h, float d)
 {
-
-	float rand = MathHelper::RandF();
+	float rand = MathHelper::RandF(0.0f,1.1f);
+	rand > 1.0 ? MakeSideSpindal(x, y, z, w, h, d)		:
+	rand > 0.9 ? MakeSpindal(x, y, z, w, h, d)			:
 	rand > 0.8 ? MakeSpinBlock2(x, y, z, w, h, d)		:
 	rand > 0.7 ? MakeMovingStairs2(x, y, z, w, h, d)	:
 	rand > 0.6 ? MakeMovingStairs(x, y, z, w, h, d)		:
@@ -82,7 +83,6 @@ void LevelSection::MakeObstacle(float x, float y, float z, float w, float h, flo
 	rand > 0.2 ? MakeRollingBlock(x, y, z, w, h, d)		:
 	rand > 0.1 ? MakeSideToSideBlock(x, y, z, w, h, d)	:
 	MakeSpinningStairs(x, y, z, w, h, d);
-
 }
 void LevelSection::MakeSpinBlock(float x, float y, float z, float w, float h, float d)
 {
@@ -155,6 +155,20 @@ void LevelSection::MakeMovingStairs2(float x, float y, float z, float w, float h
 		currY += h;
 		currPos += d / 8;
 	}
+}
+
+void LevelSection::MakeSpindal(float x, float y, float z, float w, float h, float d)
+{
+	Entity* E = new Entity(3, "ground", w, h, d); E->UseTexture(mGrass); E->mUseAABOnce = true; E->mUseAAB = true; E->SetPos(x, y, z);  mEntities.push_back(E);
+	Entity* E2 = new Entity(3, "ground", w / 10, h*10, d/1.1); E2->SetToSpin(1.0f, true); E2->UseTexture(mGrass); E2->mUseAABOnce = true; E2->mUseAAB = true; E2->SetPos(x, y + h*5.5, z);  mEntities.push_back(E2);
+	Entity* E3 = new Entity(3, "ground", w / 10, h*10, d/1.1); E3->Yaw(XM_PI / 2); E3->SetToSpin(1.0f, true); E3->UseTexture(mGrass); E3->mUseAABOnce = true; E3->mUseAAB = true; E3->SetPos(x, y + h*5.5, z);  mEntities.push_back(E3);
+}
+
+void LevelSection::MakeSideSpindal(float x, float y, float z, float w, float h, float d)
+{
+	Entity* E = new Entity(3, "ground", w, h, d); E->UseTexture(mGrass); E->mUseAABOnce = true; E->mUseAAB = true; E->SetPos(x, y, z);  mEntities.push_back(E);
+	Entity* E2 = new Entity(3, "ground", w / 4, h , d ); E2->SetToFlip(1.0f, true); E2->UseTexture(mGrass); E2->mUseAABOnce = true; E2->mUseAAB = true; E2->SetPos(x, y + h*5.5, z);  mEntities.push_back(E2);
+	Entity* E3 = new Entity(3, "ground", w / 4, h , d ); E3->Pitch(XM_PI / 2); E3->SetToFlip(1.0f, true); E3->UseTexture(mGrass); E3->mUseAABOnce = true; E3->mUseAAB = true; E3->SetPos(x+2.0f, y + h*5.5, z);  mEntities.push_back(E3);
 }
 
 void LevelSection::Draw(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, float dt, XMMATRIX& shadow)
