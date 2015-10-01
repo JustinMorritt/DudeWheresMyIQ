@@ -72,7 +72,7 @@ protected:
 
 	GameTimer mTimer;
 
-	ID3D11Device* md3dDevice;
+	static ID3D11Device* md3dDevice;
 	ID3D11DeviceContext* md3dImmediateContext;
 	IDXGISwapChain* mSwapChain;
 	ID3D11Texture2D* mDepthStencilBuffer;

@@ -4,6 +4,10 @@
 #include <vector>
 #include "MathHelper.h"
 #include "Inventory.h"
+#include "StateMachine.h"
+#include "Battle.h"
+
+class Engine;
 
 class Player
 {
@@ -11,6 +15,7 @@ public:
 	Player(ID3D11Device** device);
 	~Player();
 	void ResetPlayerPos();
+	void ResetPlayerStats();
 	void Update(const Camera& camera, float dt) ;
 	void Draw(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, float dt, XMMATRIX& shadow);
 	void DrawShad(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, const Camera& camera, XMFLOAT4X4 lightView, XMFLOAT4X4 lightProj);
@@ -22,10 +27,12 @@ public:
 	void SetAnimation();
 	void Move(float dt);
 	void Jump();
+	static Entity* GetSelf();
 
-	int mLevel;
-	float mIQ;
-	float mMaxSpeed;
+	static int   mLevel;
+	static float mIQ;
+	static float mMaxSpeed;
+	static float mJumpHeight;
 	float mAccel;
 	XMFLOAT3 mVelocity;
 	
@@ -38,7 +45,7 @@ public:
 	std::vector<Text*> mText; // Storage for all the Descriptions.
 	Text* mItemDescription; // This will be used for drawing the text apply whatever the description to the item when hovering on it .
 
-	Entity* mSelf;
+	static Entity* mSelf;
 	ID3D11Buffer* mVB;
 	ID3D11Buffer* mIB;
 

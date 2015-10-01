@@ -262,13 +262,17 @@ void Entity::Draw2D(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* con
 	Effects::BasicFX->SetWorld(world);
 	Effects::BasicFX->SetWorldInvTranspose(worldInvTranspose);
 	Effects::BasicFX->SetWorldViewProj(worldViewProj);
+
+	if (!useTexTrans){ Effects::BasicFX->SetTexTransform(XMMatrixScaling(origTexScale.x, origTexScale.y, origTexScale.z)); }
 	if (mBasicTexTrans)
 	{
 		Effects::BasicFX->SetTexTransform(XMMatrixTranslation(texTrans.x, texTrans.y, texTrans.z)*XMMatrixScaling(origTexScale.x, origTexScale.y, origTexScale.z));
 	}
-	else
+	if (mUseAnimation)
 	{
-		Effects::BasicFX->SetTexTransform(XMMatrixScaling(origTexScale.x, origTexScale.y, origTexScale.z));
+		XMMATRIX Scale;
+		mAnim->Flipped() ? Scale = XMMatrixScaling(-origTexScale.x, origTexScale.y, origTexScale.z) : Scale = XMMatrixScaling(origTexScale.x, origTexScale.y, origTexScale.z);
+		Effects::BasicFX->SetTexTransform(XMMatrixTranslation(mAnim->GetX(), mAnim->GetY(), texTrans.z)*Scale);
 	}
 	Effects::BasicFX->SetMaterial(mMat);
 	Effects::BasicFX->SetDiffuseMap(mTexSRV);

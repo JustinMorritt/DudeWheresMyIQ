@@ -1,4 +1,5 @@
 #include "Text.h"
+#include "Engine.h"
 //62 Pictures 
 
 ID3D11ShaderResourceView* Text::mLetters;
@@ -8,11 +9,17 @@ ID3D11Device* Text::mDevice;
 
 Text::Text(std::string text, float x, float y, float z, float size, int BG, bool ThreeD) : mIB(0), mVB(0), numLetters(65.0f), mOrigPos(x, y, z)
 {
+	Build(text, x, y, z, size, BG, ThreeD);
+}
+
+
+void Text::Build(std::string text, float x, float y, float z, float size, int BG, bool ThreeD)
+{
 	float origX = x;
 	float origY = y;
 	float currX = x;
 	float currY = y;
-	float textWidth  = 0.0f;
+	float textWidth = 0.0f;
 	float textHeight = size;
 	float finalWidth = 0.0f;
 
@@ -21,10 +28,10 @@ Text::Text(std::string text, float x, float y, float z, float size, int BG, bool
 		char spot = text[i];
 		switch (spot)
 		{
-		case ' ': currX += size / 2; textWidth += size/2; break;
-		case '/': currY -= size;   textHeight += size; currX = origX ; textWidth += size / 2; 
+		case ' ': currX += size / 2; textWidth += size / 2; break;
+		case '/': currY -= size;   textHeight += size; currX = origX; textWidth += size / 2;
 			if (textWidth > finalWidth){ finalWidth = textWidth; } textWidth = 0.0f; break;
-		default: MakeLetter(spot, currX, currY, z-1.0f, size); currX += size / 2; textWidth += size / 2; break;
+		default: MakeLetter(spot, currX, currY, z - 1.0f, size); currX += size / 2; textWidth += size / 2; break;
 		}
 	}
 	if (textWidth > finalWidth){ finalWidth = textWidth; }
@@ -38,13 +45,20 @@ Text::Text(std::string text, float x, float y, float z, float size, int BG, bool
 	case 0:	E->UseTexture(mBG1); break;
 	case 1: E->UseTexture(mBG2); break;
 	}
-
 }
 
+void Text::Rebuild(std::string text, float x, float y, float z, float size, int BG, bool ThreeD)
+{
+	SafeVecEmpty(mText);
+	Build(text, x, y, z, size, BG, ThreeD);
+	Engine::BuildVertexAndIndexBuffer(&mIB, &mVB, mText);
+}
 
 Text::~Text()
 {
-
+	ReleaseCOM(mVB);
+	ReleaseCOM(mIB);
+	SafeVecEmpty(mText);
 }
 
 void Text::Init(ID3D11Device** device)
@@ -140,6 +154,7 @@ void Text::MakeLetter(char letter, float x, float y, float z, float size)
 	case '!': E = new Entity(2, "text", size, size); E->UseTexture(mLetters); E->texTrans = base; E->texTrans.x = 62.0f; E->SetPos(x, y, z); mText.push_back(E); break;
 	case '?': E = new Entity(2, "text", size, size); E->UseTexture(mLetters); E->texTrans = base; E->texTrans.x = 63.0f; E->SetPos(x, y, z); mText.push_back(E); break;
 	case '.': E = new Entity(2, "text", size, size); E->UseTexture(mLetters); E->texTrans = base; E->texTrans.x = 64.0f; E->SetPos(x, y, z); mText.push_back(E); break;
+	default : E = new Entity(2, "text", size, size); E->UseTexture(mLetters); E->texTrans = base; E->texTrans.x = 63.0f; E->SetPos(x, y, z); mText.push_back(E); break;
 	}
 	E->mBasicTexTrans = true;
 	E->origTexScale = { 1.0f /numLetters, 1.0f, 1.0f };

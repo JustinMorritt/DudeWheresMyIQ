@@ -61,6 +61,10 @@
 
 #define SafeDelete(x) { delete x; x = 0; }
 
+
+// SAFE VECTOR EMPTY
+#define SafeVecEmpty(x){ for(int i = 0; i < x.size(); i++){	delete x[i]; x[i] = nullptr; x.erase(x.begin() + i);} x.clear();}
+
 //---------------------------------------------------------------------------------------
 // Utility classes.
 //---------------------------------------------------------------------------------------

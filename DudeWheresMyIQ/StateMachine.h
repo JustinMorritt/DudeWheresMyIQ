@@ -13,6 +13,16 @@ enum class GameState
 	GAMEON
 };
 
+enum class BattleState
+{
+	START,
+	PLAYERTURN,
+	CPUTURN,
+	PLAYERWIN,
+	PLAYERLOSE,
+	DONE
+};
+
 enum class GameMode
 {
 	EASY,
@@ -37,6 +47,7 @@ enum class MusicState
 
 struct StateMachine
 {
+	static BattleState* pBattleState;
 	static GameState*	pGameState;
 	static SoundState*	pSoundState;
 	static MusicState*	pMusicState;

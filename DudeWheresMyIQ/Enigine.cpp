@@ -9,6 +9,7 @@
 // TODO:  Fall Animation for main character
 // TODO:  Light position is not updating as you progress through the level ... need to move it as well
 
+Battle* Engine::mBattle;
 Engine::Engine(HINSTANCE hInstance)
 	: D3DApp(hInstance),
 	mSky(0),
@@ -144,6 +145,7 @@ bool Engine::Init()
 	Text::Init(&md3dDevice);
 	Inventory::Init(&md3dDevice);
 	LevelSection::Init(&md3dDevice);
+	Battle::Init(&md3dDevice);
 
 	InitAll();
 
@@ -162,11 +164,21 @@ bool Engine::Init()
 
 	//BUILD INVENTORY
 	mInventory = new Inventory();
-	BuildVertexAndIndexBuffer(&mInventory->mTitle->mVB, &mInventory->mTitle->mIB, mInventory->mTitle->mText);	// Title
 	BuildVertexAndIndexBuffer(&mInventory->mVB, &mInventory->mIB, mInventory->mItems);							// Inventory
+	BuildVertexAndIndexBuffer(&mInventory->mVB2, &mInventory->mIB2, mInventory->mAbilitys);						// Inventory
 	for (int i = 0; i < mInventory->GetText().size(); i++)
 	{
 		BuildVertexAndIndexBuffer(&mInventory->GetText()[i]->mVB, &mInventory->GetText()[i]->mIB, mInventory->GetText()[i]->mText); //Descriptions
+	}
+	for (int i = 0; i < mInventory->mTitles.size(); i++)
+	{
+		BuildVertexAndIndexBuffer(&mInventory->mTitles[i]->mVB, &mInventory->mTitles[i]->mIB, mInventory->mTitles[i]->mText); //TITLES
+	}
+
+	//BUILD BATTLE STATIC ITEMS
+	for (int i = 0; i < Battle::mTitleText.size(); i++)
+	{
+		BuildVertexAndIndexBuffer(&Battle::mTitleText[i]->mVB, &Battle::mTitleText[i]->mIB, Battle::mTitleText[i]->mText); //Titles
 	}
 
 
@@ -197,8 +209,8 @@ void Engine::UpdateScene(float dt)
 	{
 	case GameState::ABOUT:		
 	case GameState::MAINMENU:	UpdateMainMenu(dt); break;
-	case GameState::BATTLE:		UpdateBattle(dt);	break;
 	case GameState::INVENTORY:	UpdateInventory(dt);break;
+	case GameState::BATTLE:		UpdateBattle(dt);	break;
 	case GameState::GAMEON:
 	case GameState::PAUSED:
 	case GameState::WIN:
@@ -284,20 +296,13 @@ void Engine::UpdateGame(float dt)
 }
 void Engine::UpdateBattle(float dt)
 {
+	if (!mBattle){ NewBattle(); }
 	CamFollowPlayer();
-	for (int i = 0; i < mBattleText.size(); i++)
-	{
-		mBattleText[i]->Update(mCam, dt);
-	}
+	mBattle->Update(mCam, dt);
 }
 void Engine::UpdateInventory(float dt)
 {
 	CamFollowPlayer();
-	for (int i = 0; i < mInventoryText.size(); i++)
-	{
-		mInventoryText[i]->Update(mCam, dt);
-	}
-
 	mInventory->Update(mCam, mTimer.DeltaTime());
 }
 
@@ -615,9 +620,6 @@ void Engine::InitAll()
 	mLevel = new LevelSection(0.0f, 0.0f, 0.0f, 20.0f);
 	BuildVertexAndIndexBuffer(&mLevel->mVB, &mLevel->mIB, mLevel->mEntities);
 
-
-	Text* t2 = new Text("Entered Battle!/   Good Luck!", -240.0f, 0.0f, -90.0f, 100.0f, 0, false); mBattleText.push_back(t2);
-	BuildVertexAndIndexBuffer(&t2->mVB, &t2->mIB, t2->mText);
 	
 	
 	
@@ -717,7 +719,7 @@ void Engine::BuildVertexAndIndexBuffer(ID3D11Buffer** VB, ID3D11Buffer** IB, std
 	vbd.MiscFlags = 0;
 	D3D11_SUBRESOURCE_DATA vinitData;
 	vinitData.pSysMem = &vertices[0];
-	HR(md3dDevice->CreateBuffer(&vbd, &vinitData, VB));
+	md3dDevice->CreateBuffer(&vbd, &vinitData, VB);
 
 
 	// Pack the indices of all the meshes into one index buffer.
@@ -733,7 +735,7 @@ void Engine::BuildVertexAndIndexBuffer(ID3D11Buffer** VB, ID3D11Buffer** IB, std
 	ibd.MiscFlags = 0;
 	D3D11_SUBRESOURCE_DATA iinitData;
 	iinitData.pSysMem = &indices[0];
-	HR(md3dDevice->CreateBuffer(&ibd, &iinitData, IB));
+	md3dDevice->CreateBuffer(&ibd, &iinitData, IB);
 }
 void Engine::RebuildLevel()
 {
@@ -747,7 +749,12 @@ void Engine::ResetPlayer()
 	mPlayer->EmptyCollisionItems();
 	mPlayer->InsertCollisionItems(mLevel->mEntities); //INSERT LEVEL
 }
-
+void Engine::NewBattle()
+{
+	delete mBattle;
+	mBattle = new Battle();
+	BuildVertexAndIndexBuffer(&mBattle->mVB, &mBattle->mIB, mBattle->mEntities);
+}
 
 
 //GAME DRAWS
@@ -1060,7 +1067,6 @@ void Engine::DrawLose()
 }
 void Engine::DrawBattle()
 {
-	DrawGameOn();
 	Effects::BasicFX->SetDirLights(mDirLights2);
 	Effects::BasicFX->SetEyePosW(mCam.GetPosition());
 
@@ -1069,10 +1075,7 @@ void Engine::DrawBattle()
 	activeTexTech->GetDesc(&techDesc);
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{
-		for (int i = 0; i < mBattleText.size(); i++)
-		{
-			mBattleText[i]->DrawText2D(&activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
-		}
+		if (mBattle){ mBattle->Draw(&activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld); }
 	}
 	RestoreStates();
 }
@@ -1090,8 +1093,6 @@ void Engine::DrawInventory()
 	activeTexTech->GetDesc(&techDesc);
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{
-		mInventory->mTitle->DrawText2D(&activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
-		if (mInventory->mItemDescription){ mInventory->mItemDescription->DrawText2D(&activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);}
 		mInventory->Draw(&activeTexTech, md3dImmediateContext, p, mCam, mOrthoWorld);
 	}
 }
@@ -1182,21 +1183,22 @@ void Engine::OnKeyUP(WPARAM btnState)
 	{
 	case 0x31:(mWireMode)	? mWireMode = false : mWireMode = true; break;	// 1 KEY
 	case 0x32:(mBFCull)		? mBFCull	= false	: mBFCull	= true; break;	// 2 KEY
-	case 0x50:if (*StateMachine::pGameState == GameState::GAMEON || *StateMachine::pGameState == GameState::PAUSED)
+	case 0x50:if (*StateMachine::pGameState == GameState::GAMEON || *StateMachine::pGameState == GameState::PAUSED) //P
 		{(*StateMachine::pGameState == GameState::PAUSED) ? *StateMachine::pGameState = GameState::GAMEON : *StateMachine::pGameState = GameState::PAUSED;}break;
 	case 0x57: mPlayer->GoOut = false; mPlayer->SlOut = true; break; // W
 	case 0x41: mPlayer->GoBW  = false; mPlayer->SlBW  = true; break; // A
 	case 0x53: mPlayer->GoIn  = false; mPlayer->SlIn  = true; break; // S
 	case 0x44: mPlayer->GoFW  = false; mPlayer->SlFW  = true; break; // D
+	case 0x20: mPlayer->Jump(); break;								//SPACE
+	case 0x09:														//TAB KEY OR I
+	case 0x49:if (*StateMachine::pGameState == GameState::GAMEON || *StateMachine::pGameState == GameState::INVENTORY){ (*StateMachine::pGameState == GameState::INVENTORY) ? *StateMachine::pGameState = GameState::GAMEON : *StateMachine::pGameState = GameState::INVENTORY; } break; // I
 	}
 }
 void Engine::OnKeyDOWN(WPARAM btnState)
 {
 	switch (btnState)
 	{
-	case 0x20: mPlayer->Jump(); break; //SPACE
-	case 0x49:if (*StateMachine::pGameState == GameState::GAMEON || *StateMachine::pGameState == GameState::INVENTORY){ (*StateMachine::pGameState == GameState::INVENTORY) ? *StateMachine::pGameState = GameState::GAMEON : *StateMachine::pGameState = GameState::INVENTORY; } break; // I
-	case 0x42:if (*StateMachine::pGameState == GameState::GAMEON || *StateMachine::pGameState == GameState::BATTLE){ (*StateMachine::pGameState == GameState::BATTLE) ? *StateMachine::pGameState = GameState::GAMEON : *StateMachine::pGameState = GameState::BATTLE; } break; // B
+
 	}
 }
 void Engine::KeyboardHandler(float dt)
@@ -1678,7 +1680,7 @@ void Engine::BuildShadowTransform()
 {
 	// Only the first "main" light casts a shadow.
 	XMVECTOR lightDir = XMLoadFloat3(&mDirLights2[0].Direction);
-	XMVECTOR lightPos = -2.0f*mSceneBounds.Radius*lightDir;
+	XMVECTOR lightPos = -2.0f*mSceneBounds.Radius*lightDir + XMLoadFloat3(&mSceneBounds.Center);
 	XMVECTOR targetPos = XMLoadFloat3(&mSceneBounds.Center);
 	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 

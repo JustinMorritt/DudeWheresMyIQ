@@ -1,9 +1,17 @@
 #include "Player.h"
+#include "Engine.h"
+
+Entity* Player::mSelf;
+
+int Player::mLevel;
+float Player::mIQ;
+float Player::mMaxSpeed;
+float Player::mJumpHeight;
 
 
-Player::Player(ID3D11Device** device) : mDevice(*device), mLevel(1), mIQ(110.0f),
+Player::Player(ID3D11Device** device) : mDevice(*device),
 GoFW(false), GoBW(false), GoIn(false), GoOut(false), SlFW(false), SlBW(false), SlIn(false), SlOut(false), onGround(false),
-mMaxSpeed(100.0f), mVelocity(0.0f, 0.0f, 0.0f), mAccel(180.0f), mItemDescription(0)
+ mVelocity(0.0f, 0.0f, 0.0f), mAccel(180.0f), mItemDescription(0)
 {
 	mSelf = new Entity(2, "player", 80.0f, 80.0f);
 	mSelf->LoadTexture(*device, L"Textures/Guy/guy.dds");
@@ -11,6 +19,11 @@ mMaxSpeed(100.0f), mVelocity(0.0f, 0.0f, 0.0f), mAccel(180.0f), mItemDescription
 	mSelf->reverseLook = true;
 	mSelf->mUseAAB = true;
 	ResetPlayerPos();
+
+	mMaxSpeed = 100.0f;
+	mLevel = 1;
+	mIQ = 110.0f;
+	mJumpHeight = 200.0f;
 
 	//MAKE TEXT DESCRIPTIONS
 	Text* t = new Text(" mmm Beer ../", mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t); // 0 BEER
@@ -24,6 +37,14 @@ Player::~Player()
 void Player::ResetPlayerPos()
 {
 	mSelf->SetPos(0.0f, 350.0f, 0.0f);
+}
+
+void Player::ResetPlayerStats()
+{
+	mMaxSpeed = 100.0f;
+	mLevel = 1;
+	mIQ = 110.0f;
+	mJumpHeight = 200.0f;
 }
 
 void Player::Update(const Camera& camera, float dt)
@@ -112,6 +133,25 @@ void Player::CheckCollisions()
 					mEntities[i].erase(mEntities[i].begin() + j);
 				}
 			}
+			if (mEntities[i][j]->mLabel.size() > 7)
+			{
+				std::string str(mEntities[i][j]->mLabel.begin(), mEntities[i][j]->mLabel.begin() + 5);
+				if (str == "enemy")
+				{
+					if (!mEntities[i][j]->mDead)
+					{
+						if (XNA::IntersectAxisAlignedBoxAxisAlignedBox(&mSelf->mMeshBox, &mEntities[i][j]->mMeshBox)) //Broad phase quick check
+						{
+							std::string str2(mEntities[i][j]->mLabel.begin() + 6, mEntities[i][j]->mLabel.end()); // Minus one or you get an Iterator past the end of the string 
+							Battle::SetBattleType(str2);
+							Engine::NewBattle();
+							*StateMachine::pGameState = GameState::BATTLE;
+							mEntities[i].erase(mEntities[i].begin() + j);
+						}
+					}
+
+				}
+			}
 
 		}
 	}
@@ -171,7 +211,14 @@ void Player::Jump()
 {
 	if (onGround)
 	{
-		mVelocity.y = 200.0f; onGround = false;
+		mVelocity.y = mJumpHeight; onGround = false;
 		GoBW ? mSelf->mAnim->SetAnim(5, true, true) : mSelf->mAnim->SetAnim(5, true, false); mSelf->mAnim->ResetFrame();
 	}
 }
+
+Entity* Player::GetSelf()
+{
+	return mSelf;
+}
+
+

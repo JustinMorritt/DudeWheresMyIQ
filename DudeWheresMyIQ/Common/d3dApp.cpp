@@ -5,7 +5,7 @@
 #include "d3dApp.h"
 #include <WindowsX.h>
 #include <sstream>
-
+ID3D11Device* D3DApp::md3dDevice;
 namespace
 {
 	// This is just used to forward Windows messages from a global window
@@ -39,8 +39,6 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 	mCursorOn(true),
 
 	m_rasterState(0),
- 
-	md3dDevice(0),
 	md3dImmediateContext(0),
 	mSwapChain(0),
 	mDepthStencilBuffer(0),
@@ -672,6 +670,7 @@ void D3DApp::CalculateFrameStats()
 		timeElapsed += 1.0f;
 	}
 }
+
 
 
 

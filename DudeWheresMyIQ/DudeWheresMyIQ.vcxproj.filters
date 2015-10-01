@@ -111,6 +111,9 @@
     <ClCompile Include="ShadowMap.cpp">
       <Filter>CPP</Filter>
     </ClCompile>
+    <ClCompile Include="Battle.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Effects.h">
@@ -204,6 +207,9 @@
       <Filter>HEADER</Filter>
     </ClInclude>
     <ClInclude Include="ShadowMap.h">
+      <Filter>HEADER</Filter>
+    </ClInclude>
+    <ClInclude Include="Battle.h">
       <Filter>HEADER</Filter>
     </ClInclude>
   </ItemGroup>

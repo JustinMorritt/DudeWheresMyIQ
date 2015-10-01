@@ -17,12 +17,14 @@ public:
 	void Update(const Camera& cam, float dt);
 	void MakeChunk(float x, float y, float z, float w, float h, float d);
 	void MakeObstacle(float x, float y, float z, float w, float h, float d);
+	void MakeRandomEnemy(float x, float y, float z, float w, float h, float d);
 
 	//OBSTACLES
 	void MakeSpinBlock(float x, float y, float z, float w, float h, float d);
 	void MakeSpinBlock2(float x, float y, float z, float w, float h, float d);
 	void MakeUpDownBlock(float x, float y, float z, float w, float h, float d);
 	void MakeSpinningStairs(float x, float y, float z, float w, float h, float d);
+	void MakeDoubleStairClimb(float x, float y, float z, float w, float h, float d);
 	void MakeFlippingBlock(float x, float y, float z, float w, float h, float d);
 	void MakeRollingBlock(float x, float y, float z, float w, float h, float d);
 	void MakeSideToSideBlock(float x, float y, float z, float w, float h, float d);
@@ -37,6 +39,15 @@ public:
 	
 	static ID3D11ShaderResourceView* mGrass;
 	static ID3D11ShaderResourceView* mBush;
+
+	//ENEMYS
+	static ID3D11ShaderResourceView* mChick1;
+	static ID3D11ShaderResourceView* mChick2;
+	static ID3D11ShaderResourceView* mChick3;
+	static ID3D11ShaderResourceView* mChick4;
+	static ID3D11ShaderResourceView* mDude1;
+	static ID3D11ShaderResourceView* mDude2;
+	static ID3D11ShaderResourceView* mDude3;
 
 	static ID3D11Device* mDevice;
 

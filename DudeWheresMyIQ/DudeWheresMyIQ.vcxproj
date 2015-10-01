@@ -95,6 +95,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BasicModel.cpp" />
+    <ClCompile Include="Battle.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Common\Camera.cpp" />
     <ClCompile Include="Common\d3dApp.cpp" />
@@ -127,6 +128,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BasicModel.h" />
+    <ClInclude Include="Battle.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Common\Camera.h" />
     <ClInclude Include="Common\d3dApp.h" />

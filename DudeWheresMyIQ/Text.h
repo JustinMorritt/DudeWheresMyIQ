@@ -7,10 +7,13 @@
 #include "d3dUtil.h"
 
 
+class Engine;
 class Text
 {
 public:
 	Text(std::string text, float x, float y, float z, float size, int BG, bool ThreeD);
+	void Build(std::string text, float x, float y, float z, float size, int BG, bool ThreeD);
+	void Rebuild(std::string text, float x, float y, float z, float size, int BG, bool ThreeD);
 	~Text();
 	static void Init(ID3D11Device** device);
 	void Update(const Camera& cam, float dt);

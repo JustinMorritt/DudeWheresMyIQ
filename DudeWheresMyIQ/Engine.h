@@ -27,6 +27,7 @@
 #include "Player.h"
 #include "Inventory.h"
 #include "ShadowMap.h"
+#include "Battle.h"
 
 
 class Engine : public D3DApp
@@ -59,16 +60,17 @@ public:
 	void ClearVectors();
 	void RebuildLevel();
 	void ResetPlayer();
+	static void NewBattle();
 
 	//SCENE INITS
 	void InitAll();
-	void InsertAllIndices(std::vector<UINT>& indicies, std::vector<Entity*>& entitys);
-	void InsertAllVertices(std::vector<Vertex::Basic32>& verts, UINT& k, std::vector<Entity*>& entitys);
-	UINT TotalVertexCount(std::vector<Entity*>& entitys);
-	UINT TotalIndiceCount(std::vector<Entity*>& entitys);
-	void SetAllVertexOffsets(std::vector<Entity*>& entitys);
-	void SetAllIndexOffsets(std::vector<Entity*>& entitys);
-	void BuildVertexAndIndexBuffer(ID3D11Buffer** VB, ID3D11Buffer** IB, std::vector<Entity*>& entities);
+	static void InsertAllIndices(std::vector<UINT>& indicies, std::vector<Entity*>& entitys);
+	static void InsertAllVertices(std::vector<Vertex::Basic32>& verts, UINT& k, std::vector<Entity*>& entitys);
+	static UINT TotalVertexCount(std::vector<Entity*>& entitys);
+	static UINT TotalIndiceCount(std::vector<Entity*>& entitys);
+	static void SetAllVertexOffsets(std::vector<Entity*>& entitys);
+	static void SetAllIndexOffsets(std::vector<Entity*>& entitys);
+	static void BuildVertexAndIndexBuffer(ID3D11Buffer** VB, ID3D11Buffer** IB, std::vector<Entity*>& entities);
 
 
 	//GAME DRAWS
@@ -143,6 +145,8 @@ private:
 	Sound mSound;
 	Player* mPlayer;
 	Inventory* mInventory;
+	LevelSection* mLevel;
+	static Battle* mBattle;
 
 	ID3D11Buffer* mShapesVB;
 	ID3D11Buffer* mShapesIB;
@@ -155,13 +159,13 @@ private:
 	std::vector<Entity*> mAbout;	std::vector<Entity*> mAboutBtns;
 	std::vector<Entity*> mPaused;	std::vector<Entity*> mPausedBtns;
 	std::vector<Entity*> mInv;		std::vector<Entity*> mInvBtns;
-	std::vector<Entity*> mBattle;	std::vector<Entity*> mBattleBtns;
+	std::vector<Entity*> mBattleBtns;
 
 
 	std::vector<Text*> mTexts;
 	std::vector<Text*> mBattleText;
 	std::vector<Text*> mInventoryText;
-	LevelSection* mLevel;
+	
 
 	//Models
 	std::vector<BasicModelInstance> mModelInstances;
@@ -218,6 +222,8 @@ private:
 
 	XMMATRIX mOrthoWorld;
 };
+
+
 
 
 
