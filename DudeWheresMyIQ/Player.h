@@ -22,7 +22,7 @@ public:
 	void InsertCollisionItems(std::vector<Entity*> entities);
 	void EmptyCollisionItems();
 	void CheckCollisions();
-	void SetItemDescription(int i);
+	void SetItemDescription(std::string item);
 	void Applyforces(float dt);
 	void SetAnimation();
 	void Move(float dt);

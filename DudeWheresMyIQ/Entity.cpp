@@ -3,7 +3,7 @@
 //Makes a Square by default 
 Entity::Entity(int type, std::string label, float width, float height, float depth) :
 mPosition(0.0f, 0.0f, 0.0f),
-mShadowScale(0.0f,0.0f,0.0f),
+mShadowScale(0.0f, 0.0f, 0.0f),
 mRight(1.0f, 0.0f, 0.0f),
 mUp(0.0f, 1.0f, 0.0f),
 mLook(0.0f, 0.0f, 1.0f),
@@ -20,10 +20,13 @@ mDistanceLeft(0.0f),
 mTexWidth(0.0f),
 mTexHeight(0.0f),
 mUpDown(false),
+mGrowing(false),
 mOrigY(0.0f),
 mOrigX(0.0f),
 mOrigZ(0.0f),
+mGrowOut(false),
 mHeightToGo(0.0f),
+mScale(1.0f),
 mWidth(width),
 mHeight(height),
 hovering(false),
@@ -43,6 +46,8 @@ mUseAABOnce(false),
 mGoUp(true),
 mGoDown(false),
 mSideToSide(false),
+mPulse(false),
+mOrbit(false),
 turnAngle(0.0f),
 explosionDist(0.0f),
 mAnim(0),
@@ -50,6 +55,10 @@ movementMult(0.0f),
 mFlipping(false),
 mRolling(false),
 mBackAndForth(false),
+mGrow(true),
+mShrink(false),
+mGrowIn(false),
+mFlipTexture(false),
 mLabel(label)
 {
 	//SET MATERIAL
@@ -108,6 +117,7 @@ void Entity::Update(const Camera& camera, float dt)
 	if (mRolling)		{Roll(dt*movementMult);}
 	if (mSideToSide)	{GoSideToSide(dt);}
 	if (mBackAndForth)	{GoBackAndForth(dt);}
+	if (mOrbit)			{ Yaw(dt*movementMult); Walk(dt*movementMult*100); }
 
 	XMVECTOR R = XMLoadFloat3(&mRight);
 	XMVECTOR U = XMLoadFloat3(&mUp);
@@ -175,6 +185,11 @@ void Entity::Update(const Camera& camera, float dt)
 		ScaleX(currProgress);
 	}
 
+	//GROWING MOVEMENTS
+	if (mPulse)	{ Pulse(dt); }
+	if (mGrowIn){ GrowIn(dt); }
+	if (mGrowOut){ GrowOut(dt); }
+
 	if (billboard)
 	{
 		XMMATRIX M		= XMLoadFloat4x4(&mWorld);
@@ -192,10 +207,6 @@ void Entity::Update(const Camera& camera, float dt)
 	if (goToPos)
 	{
 		if (mDistanceLeft <= 0){ goToPos = false; }
-		else
-		{
-			
-		}
 	}
 
 	if (mUseAnimation){ mAnim->Update(dt);}
@@ -226,7 +237,9 @@ void Entity::Draw(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* conte
 	}
 	if (mBasicTexTrans)
 	{
-		Effects::BasicFX->SetTexTransform(XMMatrixTranslation(texTrans.x, texTrans.y, texTrans.z)*XMMatrixScaling(origTexScale.x, origTexScale.y, origTexScale.z));
+		XMMATRIX Scale;
+		mFlipTexture ? Scale = XMMatrixScaling(-origTexScale.x, origTexScale.y, origTexScale.z) : Scale = XMMatrixScaling(origTexScale.x, origTexScale.y, origTexScale.z);
+		Effects::BasicFX->SetTexTransform(XMMatrixTranslation(texTrans.x, texTrans.y, texTrans.z)*Scale);
 	}
 	if (mUseAnimation)
 	{
@@ -249,7 +262,9 @@ void Entity::Draw(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* conte
 	{
 		activeTech->GetPassByIndex(pass)->Apply(0, context);
 	}
-	
+
+
+
 	context->DrawIndexed(mIndexCount, mIndexOffset, mVertexOffset);
 }
 
@@ -266,7 +281,9 @@ void Entity::Draw2D(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* con
 	if (!useTexTrans){ Effects::BasicFX->SetTexTransform(XMMatrixScaling(origTexScale.x, origTexScale.y, origTexScale.z)); }
 	if (mBasicTexTrans)
 	{
-		Effects::BasicFX->SetTexTransform(XMMatrixTranslation(texTrans.x, texTrans.y, texTrans.z)*XMMatrixScaling(origTexScale.x, origTexScale.y, origTexScale.z));
+		XMMATRIX Scale;
+		mFlipTexture ? Scale = XMMatrixScaling(-origTexScale.x, origTexScale.y, origTexScale.z) : Scale = XMMatrixScaling(origTexScale.x, origTexScale.y, origTexScale.z);
+		Effects::BasicFX->SetTexTransform(XMMatrixTranslation(texTrans.x, texTrans.y, texTrans.z)*Scale);
 	}
 	if (mUseAnimation)
 	{
@@ -429,7 +446,6 @@ void Entity::SetShadowScale(float x, float y, float z)
 	mShadowScale.x = x; mShadowScale.y = y; mShadowScale.z = z;
 }
 
-
 int Entity::GetVertOffset()
 {
 	return mVertexOffset;
@@ -572,13 +588,11 @@ void Entity::RotateZ(float angle)
 
 }
 
-void Entity::Scale(float scale)
+void Entity::ScaleWhole(float scale)
 {
-	//SCALING THE WAY I THOUGHT NEEDED DONE
-	XMMATRIX curr = XMLoadFloat4x4(&mWorld);
-	XMMATRIX trans = XMMatrixTranslation(curr.m[3][0], curr.m[3][1], curr.m[3][2]);
-	XMMATRIX scaling = XMMatrixScaling(scale,scale,scale);
-	XMStoreFloat4x4(&mWorld, scaling * trans); // Scaled Then sent Back To Original Position;
+	XMMATRIX W = XMLoadFloat4x4(&mWorld);
+	XMMATRIX scaling = XMMatrixScaling(scale, scale, scale);
+	XMStoreFloat4x4(&mWorld, scaling * W);
 }
 
 //USED FOR THE PROGRESS BARS
@@ -586,9 +600,8 @@ void Entity::ScaleX(float scale)
 {
 	//Progress gets offset on the X depending on the currProgress
 	XMMATRIX trans = XMMatrixTranslation(mWorld.m[3][0]-(mWidth/2 - (mWidth/2*currProgress)), mWorld.m[3][1], mWorld.m[3][2]); // ORIGINAL TRANSLATION
-	XMMATRIX rotX = XMMatrixRotationX(-XM_PI / 4);
 	XMMATRIX scaling = XMMatrixScaling(scale, 1.0f, 1.0f);
-	XMStoreFloat4x4(&mWorld, scaling * rotX * trans); // Scaled Then sent Back To Original Position;
+	XMStoreFloat4x4(&mWorld, scaling * trans); //Scaled Then sent Back To Original Position;
 }
 
 XMVECTOR Entity::GetPositionXM()const
@@ -663,11 +676,16 @@ void Entity::SetToFlip(float mult, bool flip)
 	mFlipping = flip;
 }
 
-
 void Entity::SetToRoll(float mult, bool roll)
 {
 	movementMult = mult;
-	mRolling = roll;
+	mRolling     = roll;
+}
+
+void Entity::SetToOrbit(float mult, bool orbit)
+{
+	movementMult	= mult;
+	mOrbit			= orbit;
 }
 
 void Entity::SetSideToSide(float mult, float dist, bool b)
@@ -682,6 +700,42 @@ void Entity::SetBackAndForth(float mult, float dist, bool b)
 	mHeightToGo   = dist;
 	movementMult  = mult;
 	mBackAndForth = b;
+}
+
+void Entity::SetPulse(float mult, float dist, bool b)
+{
+	mHeightToGo = dist;
+	movementMult = mult;
+	mPulse = b;
+}
+
+void Entity::SetGrowIn(float mult, bool b)
+{
+	mScale = 0.0f;
+	mGrowIn = b;
+	movementMult = mult;
+	mGrowing = true;
+}
+
+void Entity::SetGrowOut(float mult, bool b)
+{
+	mGrowOut = b;
+	movementMult = mult;
+	mGrowing = true;
+}
+
+void Entity::GrowIn(float dt)
+{
+	mScale += dt*movementMult;
+	if (mScale > 1.0f){ mScale = 1.0; mGrowIn = false; mGrowing = false; }
+	ScaleWhole(mScale);
+}
+
+void Entity::GrowOut(float dt)
+{
+	mScale -= dt*movementMult;
+	if (mScale < 0.0f){ mScale = 0.0; mGrowOut = false; mGrowing = false; }
+	ScaleWhole(mScale);
 }
 
 void Entity::GoUpDown(float dt)
@@ -723,5 +777,21 @@ void Entity::GoBackAndForth(float dt)
 	{
 		Strafe(-dt*movementMult);
 		if (mPosition.x < mOrigX - mHeightToGo){ mGoUp = true; mGoDown = false; }
+	}
+}
+
+void Entity::Pulse(float dt)
+{
+	if (mGrow)
+	{
+		mScale += dt*movementMult;
+		ScaleWhole(mScale);
+		if (mScale > mHeightToGo * 2){ mGrow = false; mShrink = true; }
+	}
+	else if (mShrink)
+	{
+		mScale += -dt*movementMult;
+		ScaleWhole(mScale);
+		if (mScale < mHeightToGo / 2){ mGrow = true; mShrink = false; }
 	}
 }

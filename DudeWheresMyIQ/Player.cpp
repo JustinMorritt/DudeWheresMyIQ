@@ -13,6 +13,8 @@ Player::Player(ID3D11Device** device) : mDevice(*device),
 GoFW(false), GoBW(false), GoIn(false), GoOut(false), SlFW(false), SlBW(false), SlIn(false), SlOut(false), onGround(false),
  mVelocity(0.0f, 0.0f, 0.0f), mAccel(180.0f), mItemDescription(0)
 {
+
+
 	mSelf = new Entity(2, "player", 80.0f, 80.0f);
 	mSelf->LoadTexture(*device, L"Textures/Guy/guy.dds");
 	mSelf->SetUpAnimation(24, 8, 30, 0.9f);
@@ -26,7 +28,11 @@ GoFW(false), GoBW(false), GoIn(false), GoOut(false), SlFW(false), SlBW(false), S
 	mJumpHeight = 200.0f;
 
 	//MAKE TEXT DESCRIPTIONS
-	Text* t = new Text(" mmm Beer ../", mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t); // 0 BEER
+	Text* t = nullptr;
+	/*0*/t = new Text(" mmm Beer ../",					mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
+	/*1*/t = new Text(" Yummy Random Pill ../",			mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
+	/*2*/t = new Text(" This will grow chest hair!/",	mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
+	/*3*/t = new Text(" This aint meat!/",				mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
 }
 
 
@@ -124,13 +130,18 @@ void Player::CheckCollisions()
 					}//Means it Hit Ground Reset Y Velocity So it Doesnt Go To Much And Jitter
 				}
 			}
-			if (mEntities[i][j]->mLabel == "beer")
+			if (mEntities[i][j]->mLabel.size() > 3)
 			{
-				if (XNA::IntersectAxisAlignedBoxAxisAlignedBox(&mSelf->mMeshBox, &mEntities[i][j]->mMeshBox)) //Broad phase quick check
+				std::string str(mEntities[i][j]->mLabel.begin(), mEntities[i][j]->mLabel.begin() + 4);
+				if (str == "item")
 				{
-					SetItemDescription(0);
-					mEntities[i][j]->mDead = true; Inventory::AddToInventory("beer");
-					mEntities[i].erase(mEntities[i].begin() + j);
+					if (XNA::IntersectAxisAlignedBoxAxisAlignedBox(&mSelf->mMeshBox, &mEntities[i][j]->mMeshBox)) //Broad phase quick check
+					{
+						std::string str2(mEntities[i][j]->mLabel.begin() + 5, mEntities[i][j]->mLabel.end()); // Minus one or you get an Iterator past the end of the string 
+						SetItemDescription(str2);
+						mEntities[i][j]->mDead = true; Inventory::AddToInventory(str2);
+						mEntities[i].erase(mEntities[i].begin() + j);
+					}
 				}
 			}
 			if (mEntities[i][j]->mLabel.size() > 7)
@@ -149,7 +160,6 @@ void Player::CheckCollisions()
 							mEntities[i].erase(mEntities[i].begin() + j);
 						}
 					}
-
 				}
 			}
 
@@ -157,11 +167,16 @@ void Player::CheckCollisions()
 	}
 }
 
-void Player::SetItemDescription(int i)
+void Player::SetItemDescription(std::string item)
 {
-	mItemDescription = mText[i]; 
+	if (item == "beer"){ mItemDescription = mText[0]; }
+	else if (item == "pill"){ mItemDescription = mText[1]; }
+	else if (item == "moonshine"){ mItemDescription = mText[2]; }
+	else if (item == "apple"){ mItemDescription = mText[3]; }
+	 
 	mItemDescription->SetPosition(mSelf->mPosition.x-70.0f, mSelf->mPosition.y+60.0f, mSelf->mPosition.z);
 	mItemDescription->SetLife(false, 3.0f);
+	mItemDescription->SetGrowIn(2.5, true);
 }
 
 void Player::Applyforces(float dt)

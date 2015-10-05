@@ -3,6 +3,10 @@
 
 ID3D11ShaderResourceView* Inventory::mBG;
 ID3D11ShaderResourceView* Inventory::mBeer;
+ID3D11ShaderResourceView* Inventory::mPill;
+ID3D11ShaderResourceView* Inventory::mMoonshine;
+ID3D11ShaderResourceView* Inventory::mApple;
+
 ID3D11ShaderResourceView* Inventory::mEmpty;
 ID3D11Device* Inventory::mDevice;
 
@@ -46,7 +50,7 @@ Inventory::Inventory()
 	}
 
 	//ABILITIES
-	baseX = -800.0f;
+	baseX = -830.0f;
 	currX = baseX;
 	currY = 250.0f;
 	for (int i = 0; i < 10; i++)
@@ -105,10 +109,10 @@ void Inventory::UpdateStats()
 	std::string SP = std::to_string(Player::mMaxSpeed);
 	std::string JH = std::to_string(Player::mJumpHeight);
 
-	mTitles[2]->Rebuild("Lv " + LV + " ",	-400.0f, 400.0f,	-90.0f, 50.0f, 0, false); // TITLE2
-	mTitles[3]->Rebuild(IQ + " ",			-400.0f, 200.0f,	-90.0f, 50.0f, 0, false); // TITLE3
-	mTitles[4]->Rebuild(JH + " ",			-400.0f,   0.0f,	-90.0f, 50.0f, 0, false); // TITLE4
-	mTitles[5]->Rebuild(SP + " ",			-400.0f, -200.0f,	-90.0f, 50.0f, 0, false); // TITLE5
+	mTitles[2]->Rebuild("Lv " + LV + " ",	-460.0f, 400.0f,	-90.0f, 40.0f, 0, false); // TITLE2
+	mTitles[3]->Rebuild(IQ + " ",			-460.0f, 200.0f,	-90.0f, 40.0f, 0, false); // TITLE3
+	mTitles[4]->Rebuild(JH + " ",			-460.0f,   0.0f,	-90.0f, 40.0f, 0, false); // TITLE4
+	mTitles[5]->Rebuild(SP + " ",			-460.0f, -200.0f,	-90.0f, 40.0f, 0, false); // TITLE5
 }
 
 void Inventory::UpdateAbilitys(const Camera& cam, float dt)
@@ -161,7 +165,6 @@ void Inventory::Draw(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* c
 	}
 
 
-
 	//DRAW ALL TEXT AFTER ENTITYS
 	if (mItemDescription){ mItemDescription->DrawText2D(activeTech, context, pass, camera, ortho); }
 	for (int i = 0; i < mTitles.size(); i++)
@@ -189,25 +192,32 @@ void Inventory::DrawAbilitys(ID3DX11EffectTechnique** activeTech, ID3D11DeviceCo
 void Inventory::Init(ID3D11Device** device)
 {
 	mSlots = 18;
-	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/inventory.dds", 0, 0, &mBG, 0));
-	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/beer.dds", 0, 0, &mBeer, 0));
-	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/empty.dds", 0, 0, &mEmpty, 0));
+	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/inventory.dds",		0, 0, &mBG, 0));
+	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/beer.dds",			0, 0, &mBeer, 0));
+	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/moonshine.dds",		0, 0, &mMoonshine, 0));
+	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/apple.dds",			0, 0, &mApple, 0));
+	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/pill.dds",			0, 0, &mPill, 0));
+	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/empty.dds",			0, 0, &mEmpty, 0));
 	mDevice = *device;
 
 	Text* T = nullptr;
-	T = new Text("Inventory",  200.0f, 400.0f, -90.0f, 100.0f, 0, false);		mTitles.push_back(T);	// TITLE0
-	T = new Text("Abilities", -825.0f, 400.0f, -90.0f, 50.0f, 0, false);		mTitles.push_back(T);	// TITLE1
-	T = new Text(" ",			-400.0f, 400.0f, -90.0f, 50.0f, 0, false);		mTitles.push_back(T);	// TITLE2
-	T = new Text(" ",			-400.0f, 200.0f, -90.0f, 50.0f, 0, false);		mTitles.push_back(T);	// TITLE3
-	T = new Text(" ",			-400.0f, 0.0f, -90.0f, 50.0f, 0, false);		mTitles.push_back(T);	// TITLE4
-	T = new Text(" ",			-400.0f, -200.0f, -90.0f, 50.0f, 0, false);		mTitles.push_back(T);	// TITLE5
-	T = new Text("IQ? ",	  -400.0f,  300.0f, -90.0f, 50.0f, 1, false);		mTitles.push_back(T);	// TITLE6
-	T = new Text("Speed? ",	  -400.0f,  100.0f, -90.0f, 50.0f, 1, false);		mTitles.push_back(T);	// TITLE7
-	T = new Text("Jump? ",	  -400.0f, -100.0f, -90.0f, 50.0f, 1, false);		mTitles.push_back(T);	// TITLE8
+	T = new Text("Inventory",  200.0f, 400.0f, -90.0f, 80.0f, 0, false);		mTitles.push_back(T);	// TITLE0
+	T = new Text("Abilities", -845.0f, 350.0f, -90.0f, 30.0f, 0, false);		mTitles.push_back(T);	// TITLE1
+	T = new Text(" ",			-460.0f, 400.0f, -90.0f, 50.0f, 0, false);		mTitles.push_back(T);	// TITLE2
+	T = new Text(" ",			-460.0f, 200.0f, -90.0f, 50.0f, 0, false);		mTitles.push_back(T);	// TITLE3
+	T = new Text(" ",			-460.0f, 0.0f, -90.0f, 50.0f, 0, false);		mTitles.push_back(T);	// TITLE4
+	T = new Text(" ",			-460.0f, -200.0f, -90.0f, 50.0f, 0, false);		mTitles.push_back(T);	// TITLE5
+	T = new Text("IQ? ",	  -460.0f,  300.0f, -90.0f, 50.0f, 1, false);		mTitles.push_back(T);	// TITLE6
+	T = new Text("Speed? ",	  -460.0f,  100.0f, -90.0f, 50.0f, 1, false);		mTitles.push_back(T);	// TITLE7
+	T = new Text("Jump? ",	  -460.0f, -100.0f, -90.0f, 50.0f, 1, false);		mTitles.push_back(T);	// TITLE8
 
 
 	//MAKE TEXT DESCRIPTIONS
-	Text* t = new Text("Drink This Beer And you may or may not get smarter ...", -650, -400.0f, 90.0f, 50.0f, 0, false); mText.push_back(t);
+	Text* t = nullptr;
+	/*0*/t = new Text("Drink This Beer And you may or may not get smarter ...", -750, -400.0f, -100.0f, 50.0f, 0, false); mText.push_back(t);
+	/*1*/t = new Text("Mmm Pills Are Good ...", -750, -400.0f, -100.0f, 50.0f, 0, false); mText.push_back(t);
+	/*2*/t = new Text("Moonshine a day keeps the doctor away...", -750, -400.0f, -100.0f, 50.0f, 0, false); mText.push_back(t);
+	/*3*/t = new Text("Did this thing create gravity ? ...", -750, -400.0f, -100.0f, 50.0f, 0, false); mText.push_back(t);
 }
 
 
@@ -226,8 +236,8 @@ void Inventory::MakeInv(float x, float y, float size)
 void Inventory::MakeAbility(float x, float y, float size)
 {
 	Entity* E = new Entity(2, "ability", size, size);   E->SetPos(x, y, -90.0f); E->UseTexture(mBG);	E->reverseLook = true; mAbilitys.push_back(E);
-	Entity* B = new Entity(2, "empty", size, size);		B->SetPos(x, y, -90.0f); B->UseTexture(mEmpty); B->reverseLook = true; mAbilitys.push_back(B); mAbilityButtons.push_back(B);
-	mAbilityStrings.push_back("");
+	Entity* B = new Entity(2, "empty", size, size);		B->SetPos(x, y, -100.0f); B->UseTexture(mEmpty); B->reverseLook = true; mAbilitys.push_back(B); mAbilityButtons.push_back(B); mBattleButtons.push_back(B);
+	mAbilityStrings.push_back("beer");
 }
 
 bool Inventory::AddToInventory(std::string item)
@@ -251,6 +261,9 @@ bool Inventory::AddToAbilitys(std::string item)
 void Inventory::AssignItem(Entity* E, std::string item)
 {
 	if (item == "beer"){ E->UseTexture(mBeer); E->mLabel = "beer"; }
+	else if (item == "pill"){ E->UseTexture(mPill); E->mLabel = "pill"; }
+	else if (item == "moonshine"){ E->UseTexture(mMoonshine); E->mLabel = "moonshine"; }
+	else if (item == "apple"){ E->UseTexture(mApple); E->mLabel = "apple"; }
 	else if (item == "water"){ }
 	else{ E->UseTexture(mEmpty); }
 }
@@ -262,6 +275,23 @@ void Inventory::AssignAbility(Entity* E, std::string item)
 	else{ E->UseTexture(mEmpty); }
 }
 
+void Inventory::InventoryOn()
+{
+	//ITEMS
+	int ItemSpot = 0;
+	for (int i = 0; i < mItems.size(); i++)
+	{
+		mItems[i]->SetGrowIn(1.5, true);
+	}
+
+	//ABILITIES
+	for (int i = 0; i < mAbilitys.size(); i++)
+	{
+		mAbilitys[i]->SetGrowIn(1.5, true);
+	}
+	*StateMachine::pGameState = GameState::INVENTORY;
+}
+
 void Inventory::HoveringItem(int E)
 {
 	mItemButtons[E]->hovering = true;
@@ -270,29 +300,58 @@ void Inventory::HoveringItem(int E)
 
 void Inventory::HoveringAbility(int E)
 {
-	mAbilityButtons[E]->hovering = true;
-	SetDescription(mItemButtons[E]->mLabel);
+	
+	if (*StateMachine::pGameState == GameState::BATTLE)
+	{
+		mBattleButtons[E]->hovering = true;
+		SetAbilityDescription(mBattleButtons[E]->mLabel);
+	}
+	else
+	{
+		mAbilityButtons[E]->hovering = true;
+		SetAbilityDescription(mAbilityButtons[E]->mLabel);
+	}
 }
 
 void Inventory::NotHovering(int E)
 {
-	mItemButtons[E]->hovering = false;
+	if (*StateMachine::pGameState == GameState::BATTLE)
+	{
+		mBattleButtons[E]->hovering = false;
+	}
+	else
+	{
+		mItemButtons[E]->hovering = false;
+	}
 }
 
 void Inventory::NotHoveringAbility(int E)
 {
-	mAbilityButtons[E]->hovering = false;
+	if (*StateMachine::pGameState == GameState::BATTLE)
+	{
+		mBattleButtons[E]->hovering = false;
+	}
+	else
+	{
+		mAbilityButtons[E]->hovering = false;
+	}
 }
 
 void Inventory::BuildBattleAbilitys()
 {
+	for (int i = 0; i < mAbilitys.size(); i++)
+	{
+		mAbilitys[i]->SetGrowIn(1.5, true);
+	}
+
 	//Empty Battle Strings Before Use in Battle..
 	mBattleStrings.clear();
 
 	//Insert New Battle Strings
 	for (int i = 0; i < mAbilityStrings.size(); i++)
 	{
-		mBattleStrings.push_back(mAbilityStrings[i]);
+		std::string str = mAbilityStrings[i];
+		mBattleStrings.push_back(str);
 	}
 
 	//CLEAR OLD BATTLE BUTTONS 
@@ -314,6 +373,9 @@ void Inventory::SetDescription(std::string item)
 {
 	if (item == ""){ mItemDescription = nullptr; return; }
 	if (item == "beer"){ mItemDescription = mText[0]; }
+	if (item == "pill"){ mItemDescription = mText[1]; }
+	if (item == "moonshine"){ mItemDescription = mText[2]; }
+	if (item == "apple"){ mItemDescription = mText[3]; }
 }
 
 void Inventory::SetAbilityDescription(std::string item)
@@ -330,6 +392,9 @@ std::vector<Text*> Inventory::GetText()
 void Inventory::UseItem(int E)
 {
 	if (mItemButtons[E]->mLabel == "beer"){/*Beer Has Been Used*/mItemButtons[E]->mLabel = "empty"; }
+	if (mItemButtons[E]->mLabel == "pill"){/*Beer Has Been Used*/mItemButtons[E]->mLabel = "empty"; }
+	if (mItemButtons[E]->mLabel == "moonshine"){/*Beer Has Been Used*/mItemButtons[E]->mLabel = "empty"; }
+	if (mItemButtons[E]->mLabel == "apple"){/*Beer Has Been Used*/mItemButtons[E]->mLabel = "empty"; }
 
 	
 	mItemButtons[E]->UseTexture(mEmpty);
@@ -338,9 +403,8 @@ void Inventory::UseItem(int E)
 
 void Inventory::UseAbility(int E)
 {
-	if (mAbilityButtons[E]->mLabel == "beer"){/*Beer Has Been Used*/mItemButtons[E]->mLabel = "empty"; }
+	if (mBattleButtons[E]->mLabel == "beer"){/*Beer Has Been Used*/mBattleButtons[E]->mLabel = "empty"; }
 
-
-	mItemButtons[E]->UseTexture(mEmpty);
-	mItemStrings[E] = "";
+	mBattleButtons[E]->UseTexture(mEmpty);
+	mBattleStrings[E] = "";
 }

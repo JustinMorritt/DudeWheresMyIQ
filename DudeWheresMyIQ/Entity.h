@@ -11,6 +11,8 @@
 #include "SpriteAnimation.h"
 #include <iostream>
 
+//CURRENTLY around 600Bytes
+
 class Entity
 {
 public:
@@ -40,11 +42,19 @@ public:
 	void SetToGoUpAndDown(float mult,float height, bool updown);
 	void SetToFlip(float mult, bool flip);
 	void SetToRoll(float mult, bool roll);
+	void SetToOrbit(float mult, bool orbit);
 	void SetSideToSide(float mult, float dist, bool b);
 	void SetBackAndForth(float mult, float dist, bool b);
+	void SetPulse(float mult, float dist, bool b);
+	void SetGrowIn(float mult, bool b);
+	void SetGrowOut(float mult, bool b);
+	void GrowIn(float dt);
+	void GrowOut(float dt);
 	void GoUpDown(float dt);
 	void GoSideToSide(float dt);
 	void GoBackAndForth(float dt);
+	void Pulse(float dt);
+
 
 	// Strafe/Walk
 	void Strafe(float d);
@@ -61,7 +71,7 @@ public:
 	void SetOrbitPos(float x, float y, float z, float dt);
 
 	//Scale
-	void Scale(float scale);
+	void ScaleWhole(float scale);
 	void ScaleX(float scale);
 
 	void LookAt(FXMVECTOR pos, FXMVECTOR target, FXMVECTOR worldUp);
@@ -150,6 +160,15 @@ public:
 	bool  mRolling;
 	bool  mSideToSide;
 	bool  mBackAndForth;
+	bool mGrowIn;
+	bool mPulse;
+	bool mGrow;
+	bool mShrink;
+	bool mOrbit;
+	bool mGrowOut;
+	bool mGrowing;
+	bool mFlipTexture;
+	float mScale;
 	
 	std::string mLabel;
 

@@ -21,6 +21,7 @@ public:
 	static bool AddToAbilitys(std::string item);
 	static void AssignItem(Entity* E, std::string item);
 	static void AssignAbility(Entity* E, std::string item);
+	static void InventoryOn();
 	void HoveringItem(int E);
 	void HoveringAbility(int E);
 	void NotHovering(int E);
@@ -39,6 +40,9 @@ public:
 	static ID3D11ShaderResourceView* mBG;
 	static ID3D11ShaderResourceView* mEmpty;
 	static ID3D11ShaderResourceView* mBeer;
+	static ID3D11ShaderResourceView* mPill;
+	static ID3D11ShaderResourceView* mMoonshine;
+	static ID3D11ShaderResourceView* mApple;
 
 	//Then All The items ...
 

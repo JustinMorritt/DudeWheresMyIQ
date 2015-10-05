@@ -22,6 +22,8 @@ public:
 	void DrawText3D(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, float dt);
 	void DrawTextShad(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, const Camera& camera, XMFLOAT4X4 lightView, XMFLOAT4X4 lightProj);
 	void SetShadowTran(XMMATRIX& shad);
+	void SetGrowIn(float mult, bool on);
+	void SetGrowOut(float mult, bool on);
 	void SetPosition(float x, float y, float z);
 	void ShutDown();
 	void SetLife(bool b, float life);
@@ -29,6 +31,10 @@ public:
 	static ID3D11ShaderResourceView* mLetters;
 	static ID3D11ShaderResourceView* mBG1;
 	static ID3D11ShaderResourceView* mBG2;
+	static ID3D11ShaderResourceView* mBG3;
+	static ID3D11ShaderResourceView* mBG4;
+	static ID3D11ShaderResourceView* mBG5;
+	static ID3D11ShaderResourceView* mPost;
 
 	static ID3D11Device* mDevice;
 	float numLetters;

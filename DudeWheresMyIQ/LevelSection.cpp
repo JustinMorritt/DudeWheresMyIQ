@@ -1,7 +1,10 @@
 #include "LevelSection.h"
-
 ID3D11ShaderResourceView* LevelSection::mGrass;
 ID3D11ShaderResourceView* LevelSection::mBush;
+ID3D11ShaderResourceView* LevelSection::mEarth;
+ID3D11ShaderResourceView* LevelSection::mMoon;
+ID3D11ShaderResourceView* LevelSection::mBeachBall;
+
 ID3D11ShaderResourceView* LevelSection::mChick1;
 ID3D11ShaderResourceView* LevelSection::mChick2;
 ID3D11ShaderResourceView* LevelSection::mChick3;
@@ -29,7 +32,7 @@ LevelSection::LevelSection(float x, float y, float z, float size)
 	{
 		float rand = MathHelper::RandF();
 		rand > 0.3 ? MakeChunk(currX, currY, z, size*mult, size, size*mult) : MakeObstacle(currX, currY, z, size*mult, size, size*mult);
-		rand > 0.8 ? currX += size * mult*1.5 : currX += size * mult;  //MOVE NEXT AND RAND SPACING 
+		rand > 0.8 ? currX += size * mult*1.2 : currX += size * mult;  //MOVE NEXT AND RAND SPACING 
 		rand > 0.5f ? currY += size : currY -= size ;				   //UP AND DOWN
 		totalWidth += size; 
 	}
@@ -43,6 +46,9 @@ LevelSection::~LevelSection()
 
 void LevelSection::Init(ID3D11Device** device)
 {
+	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/earth.dds", 0, 0,				&mEarth,	0));
+	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/beachball.dds", 0, 0,			&mBeachBall,0));
+	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/moon.dds", 0, 0,				&mMoon,		0));
 	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/grass.dds", 0, 0,				&mGrass,	0));
 	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/bush.dds", 0, 0,				&mBush,		0));
 	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/Enemys/48chick1.dds", 0, 0,	&mChick1,	0));
@@ -99,19 +105,25 @@ void LevelSection::ShutDown()
 	if (mGrass){ mGrass->Release(); mGrass = 0; }
 }
 
-
-
 void LevelSection::MakeChunk(float x, float y, float z, float w, float h, float d)
 {
 	float rand = MathHelper::RandF();
 	Entity* E = new Entity(3, "ground", w, h, d); E->UseTexture(mGrass); E->mUseAABOnce = true; E->mUseAAB = true; E->SetPos(x, y, z);  mEntities.push_back(E);
 	if (rand > 0.5){ Entity* B = new Entity(2, "bush", 60.0f, 30.0f); B->UseTexture(mBush); B->SetPos(x + (MathHelper::RandF(-w / 2, w / 2)), y + h + 5.0f, z + (MathHelper::RandF(-d / 2, d / 2)));   mEntities.push_back(B); }
-	if (rand > 0.2){ Entity* B = new Entity(4, "beer", 30.0f, 25.0f, 1.0f); B->SetToSpin(MathHelper::RandF(1.0f,10.0f), true); B->UseTexture(Inventory::mBeer); B->SetPos(x + (MathHelper::RandF(-w / 2, w / 2)), y + h, z + (MathHelper::RandF(-d / 2, d / 2))); B->mUseAABOnce = true; B->mUseAAB = true;  mEntities.push_back(B); }
+	if (rand > 0.2){ Entity* B = new Entity(4, "item.beer", 30.0f, 25.0f, 1.0f);  B->UseTexture(Inventory::mBeer); B->SetPos(x + (MathHelper::RandF(-w / 2, w / 2)), y + h, z + (MathHelper::RandF(-d / 2, d / 2))); B->mUseAABOnce = true; B->mUseAAB = true;  mEntities.push_back(B); }
+	if (rand > 0.2){ Entity* B = new Entity(4, "item.pill", 25.0f, 25.0f, 1.0f);  B->UseTexture(Inventory::mPill); B->SetPos(x + (MathHelper::RandF(-w / 2, w / 2)), y + h+5.0f, z + (MathHelper::RandF(-d / 2, d / 2))); B->mUseAABOnce = true; B->mUseAAB = true;  mEntities.push_back(B); }
+	if (rand > 0.2){ Entity* B = new Entity(4, "item.moonshine", 25.0f, 30.0f, 1.0f);  B->UseTexture(Inventory::mMoonshine); B->SetPos(x + (MathHelper::RandF(-w / 2, w / 2)), y + h+5.0f, z + (MathHelper::RandF(-d / 2, d / 2))); B->mUseAABOnce = true; B->mUseAAB = true;  mEntities.push_back(B); }
+	if (rand > 0.2){ Entity* B = new Entity(4, "item.apple", 20.0f, 20.0f, 1.0f);  B->UseTexture(Inventory::mApple); B->SetPos(x + (MathHelper::RandF(-w / 2, w / 2)), y + h, z + (MathHelper::RandF(-d / 2, d / 2))); B->mUseAABOnce = true; B->mUseAAB = true;  mEntities.push_back(B); }
 	if (rand < 0.2){ MakeRandomEnemy(x, y, z, w, h, d); }
 }
 void LevelSection::MakeObstacle(float x, float y, float z, float w, float h, float d)
 {
-	float rand = MathHelper::RandF(0.0f,1.2f);
+
+
+	float rand = MathHelper::RandF(0.0f,1.5f);
+	rand > 1.4 ? EarthOrbit(x, y, z, w, h, d)			:
+	rand > 1.3 ? MovingBalls(x, y, z, w, h, d)			:
+	rand > 1.2 ? PulseBall(x, y, z, w, h, d)			:
 	rand > 1.1 ? MakeDoubleStairClimb(x, y, z, w, h, d)	:
 	rand > 1.0 ? MakeSideSpindal(x, y, z, w, h, d)		:
 	rand > 0.9 ? MakeSpindal(x, y, z, w, h, d)			:
@@ -152,8 +164,9 @@ void LevelSection::MakeSpinBlock(float x, float y, float z, float w, float h, fl
 }
 void LevelSection::MakeSpinBlock2(float x, float y, float z, float w, float h, float d)
 {
-	Entity* E = new Entity(3, "ground", w, h, d / 4); E->SetToSpin(1.0f, true);   E->UseTexture(mGrass); E->mUseAABOnce = true; E->mUseAAB = true; E->SetPos(x, y, z);  mEntities.push_back(E);
+	Entity* E = new Entity(3, "ground", w, h, d / 4);  E->UseTexture(mGrass); E->mUseAABOnce = true; E->mUseAAB = true; E->SetPos(x, y, z);  mEntities.push_back(E);
 	MathHelper::RandF() > 0.5 ? E->SetToFlip(1.0f, true) : E->SetToRoll(1.0f, true);
+	MathHelper::RandF() > 0.5 ? E->SetToSpin(1.0f, true) : E->SetToSpin(-1.0f, true);
 }
 void LevelSection::MakeUpDownBlock(float x, float y, float z, float w, float h, float d)
 {
@@ -171,7 +184,6 @@ void LevelSection::MakeSpinningStairs(float x, float y, float z, float w, float 
 		currRot += 0.2f;
 	}
 }
-
 void LevelSection::MakeDoubleStairClimb(float x, float y, float z, float w, float h, float d)
 {
 	Entity* E = nullptr;
@@ -196,7 +208,6 @@ void LevelSection::MakeDoubleStairClimb(float x, float y, float z, float w, floa
 	}
 	E = new Entity(4, "beer", 30.0f, 25.0f, 1.0f); E->SetToSpin(MathHelper::RandF(1.0f, 10.0f), true); E->UseTexture(Inventory::mBeer); E->SetPos(x, currY, z + w); E->mUseAABOnce = true; E->mUseAAB = true;  mEntities.push_back(E);
 }
-
 void LevelSection::MakeFlippingBlock(float x, float y, float z, float w, float h, float d)
 {
 	Entity* E = new Entity(3, "ground", w, h, d); E->SetToFlip(0.5f, true); E->UseTexture(mGrass); E->mUseAABOnce = true; E->mUseAAB = true; E->SetPos(x, y, z);  mEntities.push_back(E);
@@ -246,5 +257,29 @@ void LevelSection::MakeSideSpindal(float x, float y, float z, float w, float h, 
 	Entity* E2 = new Entity(3, "ground", w / 4, h , d ); E2->SetToFlip(1.0f, true); E2->UseTexture(mGrass); E2->mUseAABOnce = true; E2->mUseAAB = true; E2->SetPos(x, y + h*5.5, z);  mEntities.push_back(E2);
 	Entity* E3 = new Entity(3, "ground", w / 4, h , d ); E3->Pitch(XM_PI / 2); E3->SetToFlip(1.0f, true); E3->UseTexture(mGrass); E3->mUseAABOnce = true; E3->mUseAAB = true; E3->SetPos(x+2.0f, y + h*5.5, z);  mEntities.push_back(E3);
 }
-
+void LevelSection::PulseBall(float x, float y, float z, float w, float h, float d)
+{
+	Entity* E = new Entity(1, "ground", w/10, h, d); E->UseTexture(mBeachBall); E->SetPulse(1.0f, 2.5f, true); E->mUseAABOnce = true; E->mUseAAB = true; E->SetPos(x, y, z);  mEntities.push_back(E);
+	MathHelper::RandF() > 0.5 ? E->SetToFlip(1.0f, true) : E->SetToRoll(1.0f, true);
+	E->SetToSpin(1.0f, true);
+}
+void LevelSection::EarthOrbit(float x, float y, float z, float w, float h, float d)
+{
+	Entity* E = nullptr;
+	E = new Entity(1, "ground", w / 5, h, d);  E->UseTexture(mEarth);  E->SetToSpin(0.2, true); E->mUseAABOnce = true; E->mUseAAB = true; E->SetPos(x, y+20.0f, z);  mEntities.push_back(E);
+	E = new Entity(1, "ground", w / 12, h, d); E->UseTexture(mMoon);  E->SetToOrbit(0.5, true);  E->mUseAABOnce = true; E->mUseAAB = true; E->SetPos(x-100.0f, y+20.0f, z);  mEntities.push_back(E);
+}
+void LevelSection::MovingBalls(float x, float y, float z, float w, float h, float d)
+{
+	Entity* E = nullptr;
+	float currX = x - w / 2;
+	float currRot = 0.0f;
+	E = new Entity(3, "ground", w, h, d); E->UseTexture(mGrass); E->mUseAABOnce = true; E->mUseAAB = true; E->SetPos(x, y, z);  mEntities.push_back(E);//GROUND
+	E = new Entity(1, "ground", w / 10, h, d); E->UseTexture(mBeachBall); E->SetSideToSide(150.0f, MathHelper::RandF(100.0f, 200.0f), true); E->mUseAABOnce = true; E->mUseAAB = true; E->SetPos(currX, y + h*1.5, z); currX += h * 2; mEntities.push_back(E);
+	E = new Entity(1, "ground", w / 10, h, d); E->UseTexture(mBeachBall); E->SetSideToSide(150.0f, MathHelper::RandF(100.0f, 200.0f), true); E->mUseAABOnce = true; E->mUseAAB = true; E->SetPos(currX, y + h*1.5, z); currX += h * 2; mEntities.push_back(E);
+	E = new Entity(1, "ground", w / 10, h, d); E->UseTexture(mBeachBall); E->SetSideToSide(150.0f, MathHelper::RandF(100.0f, 200.0f), true); E->mUseAABOnce = true; E->mUseAAB = true; E->SetPos(currX, y + h*1.5, z); currX += h * 2; mEntities.push_back(E);
+	E = new Entity(1, "ground", w / 10, h, d); E->UseTexture(mBeachBall); E->SetSideToSide(150.0f, MathHelper::RandF(100.0f, 200.0f), true); E->mUseAABOnce = true; E->mUseAAB = true; E->SetPos(currX, y + h*1.5, z); currX += h * 2; mEntities.push_back(E);
+	E = new Entity(1, "ground", w / 10, h, d); E->UseTexture(mBeachBall); E->SetSideToSide(150.0f, MathHelper::RandF(100.0f, 200.0f), true); E->mUseAABOnce = true; E->mUseAAB = true; E->SetPos(currX, y + h*1.5, z); currX += h * 2; mEntities.push_back(E);
+	
+}
 

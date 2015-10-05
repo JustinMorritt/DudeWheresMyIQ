@@ -32,6 +32,9 @@ public:
 	void MakeMovingStairs2(float x, float y, float z, float w, float h, float d);
 	void MakeSpindal(float x, float y, float z, float w, float h, float d);
 	void MakeSideSpindal(float x, float y, float z, float w, float h, float d);
+	void PulseBall(float x, float y, float z, float w, float h, float d);
+	void EarthOrbit(float x, float y, float z, float w, float h, float d);
+	void MovingBalls(float x, float y, float z, float w, float h, float d);
 
 	void Draw(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, float dt, XMMATRIX& shadow);
 	void DrawShad(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, const Camera& camera, XMFLOAT4X4 lightView, XMFLOAT4X4 lightProj);
@@ -39,6 +42,9 @@ public:
 	
 	static ID3D11ShaderResourceView* mGrass;
 	static ID3D11ShaderResourceView* mBush;
+	static ID3D11ShaderResourceView* mEarth;
+	static ID3D11ShaderResourceView* mMoon;
+	static ID3D11ShaderResourceView* mBeachBall;
 
 	//ENEMYS
 	static ID3D11ShaderResourceView* mChick1;

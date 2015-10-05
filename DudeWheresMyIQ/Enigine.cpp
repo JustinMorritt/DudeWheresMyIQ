@@ -1,13 +1,8 @@
 #include "Engine.h"
-// Smart ItemS: newtons Cradle
-// TODO:  Inventory System / Ability / Level / Add Random Grass,Trees,Bush, On Grass BLocks / Movement blocks you can jump on and they move you
-// TODO:  Battle System Pops Up When You Bump into a dumbass ... make a dumb ass class (with abilitys/ iq) ... 
-// TODO:  SpeachBubble Background For Dynamic Text. 
 // TODO:  Set Up State Machine For Bonuses you have used.. As Program ticks around it will see that a bonus has been activated.
 // TODO:  IQ bar on left and scale by the height ... also have an IQ bar on the right during battle from an enemy dumb ass.
-// TODO:  Random Obstacles .. Sections of Entitys that 
 // TODO:  Fall Animation for main character
-// TODO:  Light position is not updating as you progress through the level ... need to move it as well
+
 
 Battle* Engine::mBattle;
 Engine::Engine(HINSTANCE hInstance)
@@ -180,6 +175,14 @@ bool Engine::Init()
 	{
 		BuildVertexAndIndexBuffer(&Battle::mTitleText[i]->mVB, &Battle::mTitleText[i]->mIB, Battle::mTitleText[i]->mText); //Titles
 	}
+	for (int i = 0; i < Battle::mDumbAssUsedText.size(); i++)
+	{
+		BuildVertexAndIndexBuffer(&Battle::mDumbAssUsedText[i]->mVB, &Battle::mDumbAssUsedText[i]->mIB, Battle::mDumbAssUsedText[i]->mText); //Titles
+	}
+	for (int i = 0; i < Battle::mAbilityUsedText.size(); i++)
+	{
+		BuildVertexAndIndexBuffer(&Battle::mAbilityUsedText[i]->mVB, &Battle::mAbilityUsedText[i]->mIB, Battle::mAbilityUsedText[i]->mText); //Titles
+	}
 
 
 	*StateMachine::pGameState	= GameState::MAINMENU;
@@ -246,7 +249,7 @@ void Engine::UpdateGame(float dt)
 		
 	
 
-	mPlayer->Update(mCam, dt);
+	mPlayer->Update(mCam, dt); if (mPlayer->mSelf->mPosition.y < -500){ Restart(); }
 	CamFollowPlayer();
 
 	
@@ -610,10 +613,10 @@ void Engine::InitAll()
 
 
 
-	Text* t = new Text("          Welcome! / Try not to get any Stupider! ", 0.0f, 90.0f, 90.0f, 20.0f, 0, true); mTexts.push_back(t);
+	Text* t = new Text("/Try not to get any Stupider!/", 0.0f, 90.0f, 60.0f, 10.0f, 2, true); mTexts.push_back(t);
 	BuildVertexAndIndexBuffer(&t->mVB, &t->mIB, t->mText);
 
-	Text* z = new Text("Buttons/B ..enters battle state/I ..Inventory /W S A D ..Movement/M O U S E ..Look /S P A C E ..Jump ", 0.0f, 250.0f, 90.0f, 20.0f, 0, true); mTexts.push_back(z);
+	Text* z = new Text("Buttons/B ..Leave Battle/I or Tab ..Inventory /WSAD ..Movement/MOUSE ..Look /SPACE or Mouse Click ..Jump ", 0.0f, 250.0f, 90.0f, 20.0f, 0, true); mTexts.push_back(z);
 	BuildVertexAndIndexBuffer(&z->mVB, &z->mIB, z->mText);
 	
 
@@ -1067,6 +1070,7 @@ void Engine::DrawLose()
 }
 void Engine::DrawBattle()
 {
+	DrawGameOn();
 	Effects::BasicFX->SetDirLights(mDirLights2);
 	Effects::BasicFX->SetEyePosW(mCam.GetPosition());
 
@@ -1191,15 +1195,13 @@ void Engine::OnKeyUP(WPARAM btnState)
 	case 0x44: mPlayer->GoFW  = false; mPlayer->SlFW  = true; break; // D
 	case 0x20: mPlayer->Jump(); break;								//SPACE
 	case 0x09:														//TAB KEY OR I
-	case 0x49:if (*StateMachine::pGameState == GameState::GAMEON || *StateMachine::pGameState == GameState::INVENTORY){ (*StateMachine::pGameState == GameState::INVENTORY) ? *StateMachine::pGameState = GameState::GAMEON : *StateMachine::pGameState = GameState::INVENTORY; } break; // I
+	case 0x49:if (*StateMachine::pGameState == GameState::GAMEON || *StateMachine::pGameState == GameState::INVENTORY){ (*StateMachine::pGameState == GameState::INVENTORY) ? *StateMachine::pGameState = GameState::GAMEON : Inventory::InventoryOn(); } break; // I
+	case 0x42:if (*StateMachine::pGameState == GameState::BATTLE){ *StateMachine::pGameState = GameState::GAMEON; } break; // B
 	}
 }
 void Engine::OnKeyDOWN(WPARAM btnState)
 {
-	switch (btnState)
-	{
 
-	}
 }
 void Engine::KeyboardHandler(float dt)
 {
@@ -1311,7 +1313,7 @@ void Engine::BtnsPaused(float x, float y, bool clicked)
 }
 void Engine::BtnsGameOn(float x, float y, bool clicked)
 {
-	//if (clicked){ SpawnProjectile(); }
+	if (clicked){ mPlayer->Jump(); }
 }
 void Engine::BtnsWin(float x, float y, bool clicked)
 {
@@ -1382,33 +1384,39 @@ void Engine::BtnsInventory(float x, float y, bool clicked)
 		}
 		else{ mInventory->NotHovering(i); }
 	}
+	//ABILITIES
+	for (int i = 0; i < Inventory::mAbilityButtons.size(); i++)
+	{
+		if (InButton2D(x, y, Inventory::mAbilityButtons[i]))
+		{
+			test = true;
+			mInventory->HoveringAbility(i);
+			if (clicked)
+			{
+				//NOTHING
+			}
+		}
+		else{ mInventory->NotHoveringAbility(i); }
+	}
 	if (!test){ mInventory->SetDescription(""); }
 }
 void Engine::BtnsBattle(float x, float y, bool clicked)
 {
-// 	if (InButton2D(x, y, mQuitButt))
-// 	{
-// 		mQuitButt->hovering = true;
-// 		if (clicked)
-// 		{
-// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-// 			mWalkCamMode = false;
-// 			*StateMachine::pGameState = GameState::MAINMENU;
-// 			ResetCamMainMenu(); ClearVectors();
-// 		}
-// 	}
-// 	else{ mQuitButt->hovering = false; }
-// 
-// 	if (InButton2D(x, y, mRestartButt))
-// 	{
-// 		mRestartButt->hovering = true;
-// 		if (clicked)
-// 		{
-// 			if (*StateMachine::pSoundState == SoundState::SOUNDON){ mSound.PlaySound(1); }
-// 			*StateMachine::pGameState = GameState::GAMEON; ClearVectors(); ResetCamInGame();
-// 		}
-// 	}
-// 	else{ mRestartButt->hovering = false; }
+	bool test = false;
+	for (int i = 0; i < Inventory::mBattleButtons.size(); i++)
+	{
+		if (InButton2D(x, y, Inventory::mBattleButtons[i]))
+		{
+			test = true;
+			mInventory->HoveringAbility(i);
+			if (clicked)
+			{
+				if (*StateMachine::pBattleState == BattleState::PLAYERTURN){ mBattle->UsedAbility(Inventory::mBattleButtons[i]->mLabel); mInventory->UseAbility(i); }
+			}
+		}
+		else{ mInventory->NotHoveringAbility(i); }
+	}
+	if (!test){ mInventory->SetDescription(""); }
 }
 bool Engine::InButton3D(float x, float y, Entity* button)
 {
