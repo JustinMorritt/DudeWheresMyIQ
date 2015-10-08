@@ -114,8 +114,11 @@ public:
 	void Music();
 	void SoundFX();
 	void AboutBack();
+	void FreeCam();
+	void LockCam();
 	void Quit();
 	void Restart();
+	void NextLevel();
 
 	//COLLISION
 	bool CamOnPickUp(Entity* pickup);
@@ -190,6 +193,8 @@ private:
 	int speedBonusTime;
 	int waitToClickTime;
 	int mMoveSpeed;
+	int mCurrLevel;
+	bool mFreeCam;
 
 // 	ID3D11ShaderResourceView* mFlareTexSRV;
 // 	ID3D11ShaderResourceView* mRainTexSRV;
@@ -222,10 +227,6 @@ private:
 
 	XMMATRIX mOrthoWorld;
 };
-
-
-
-
 
 
 #endif // Engine_h__

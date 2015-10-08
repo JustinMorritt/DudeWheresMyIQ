@@ -15,8 +15,8 @@ ID3D11Device* Text::mDevice;
 Text::Text(std::string text, float x, float y, float z, float size, int BG, bool ThreeD) : mIB(0), mVB(0), numLetters(39.0f), mOrigPos(x, y, z), mDead(false)
 {
 	Build(text, x, y, z, size, BG, ThreeD);
+	Engine::BuildVertexAndIndexBuffer(&mVB, &mIB, mText);
 }
-
 
 void Text::Build(std::string text, float x, float y, float z, float size, int BG, bool ThreeD)
 {
@@ -45,13 +45,13 @@ void Text::Build(std::string text, float x, float y, float z, float size, int BG
 	if (BG == 2){ Entity* E = new Entity(3, "text", 10.0f, textHeight * 3 + size, 10.0f); E->UseTexture(mPost); E->SetPos(x + ((finalWidth / 2) - (size / 2)), y - textHeight, z + 10.0f); mText.push_back(E); }
 
 	//SET UP TEXT BACKGROUND
-	Entity* E = new Entity(4, "text", finalWidth + size, textHeight + size);
+	Entity* E = new Entity(4, "BG", finalWidth + size, textHeight + size);
 	E->SetPos(x + ((finalWidth / 2) - (size / 2)), y - ((textHeight / 2) - (size / 2)), z);
 	ThreeD ? mText.push_back(E) : mText.insert(mText.begin(), E);
 	switch (BG)
 	{
-	case 0:	E->UseTexture(mBG1); break;
-	case 1: E->UseTexture(mBG2); break;
+	case 0:	E->UseTexture(mBG1);  break;
+	case 1: E->UseTexture(mBG2);  break;
 	case 2: E->UseTexture(mBG3);  break;
 	case 3: E->UseTexture(mBG4);  break;
 	case 4: E->UseTexture(mBG5);  break;
@@ -60,9 +60,11 @@ void Text::Build(std::string text, float x, float y, float z, float size, int BG
 
 void Text::Rebuild(std::string text, float x, float y, float z, float size, int BG, bool ThreeD)
 {
+	ReleaseCOM(mVB);
+	ReleaseCOM(mIB);
 	SafeVecEmpty(mText);
 	Build(text, x, y, z, size, BG, ThreeD);
-	Engine::BuildVertexAndIndexBuffer(&mIB, &mVB, mText);
+	Engine::BuildVertexAndIndexBuffer(&mVB, &mIB, mText);
 }
 
 Text::~Text()
@@ -174,7 +176,6 @@ void Text::MakeLetter(char letter, float x, float y, float z, float size)
 	E->mBasicTexTrans = true;
 	E->origTexScale = { 1.0f /numLetters, 1.0f, 1.0f };
 }
-
 
 void Text::DrawText2D(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, XMMATRIX& ortho)
 {

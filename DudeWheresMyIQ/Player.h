@@ -22,6 +22,7 @@ public:
 	void InsertCollisionItems(std::vector<Entity*> entities);
 	void EmptyCollisionItems();
 	void CheckCollisions();
+	void IQChange(float iq);
 	void SetItemDescription(std::string item);
 	void Applyforces(float dt);
 	void SetAnimation();
@@ -33,11 +34,13 @@ public:
 	static float mIQ;
 	static float mMaxSpeed;
 	static float mJumpHeight;
-	float mAccel;
+	static float mAccel;
 	XMFLOAT3 mVelocity;
 	
 	//GO's ANd SLOWS  FW:forward BW:Backward SL:slow
 	bool GoFW, GoBW, GoIn, GoOut, SlFW, SlBW, SlIn, SlOut, onGround;
+
+	bool mBeatLevel;
 
 	//COLLISION ITEMS
 	std::vector<std::vector<Entity*>> mEntities;

@@ -10,13 +10,14 @@
 #include "xnacollision.h"
 #include "SpriteAnimation.h"
 #include <iostream>
+#include "renderStates.h"
 
 //CURRENTLY around 600Bytes
 
 class Entity
 {
 public:
-	//TYPES 0:grid 1:sphere 2:URSquare 3:Box 4:FR/B Squares
+	//TYPES 0:grid 1:sphere 2:URSquare 3:Box 4:FR/B Squares 5:Cylider 6:2TexCube
 	Entity(int type, std::string label, float width, float height, float depth = 0.0f);
 	~Entity();
 	void SetPos(float x, float y, float z);
@@ -45,12 +46,15 @@ public:
 	void SetToOrbit(float mult, bool orbit);
 	void SetSideToSide(float mult, float dist, bool b);
 	void SetBackAndForth(float mult, float dist, bool b);
+	void SetToSquish(float mult, float dist, bool x, bool y, bool z);
 	void SetPulse(float mult, float dist, bool b);
 	void SetGrowIn(float mult, bool b);
 	void SetGrowOut(float mult, bool b);
+	void SetTextureRotate(float mult);
 	void GrowIn(float dt);
 	void GrowOut(float dt);
 	void GoUpDown(float dt);
+	void Squish(float dt);
 	void GoSideToSide(float dt);
 	void GoBackAndForth(float dt);
 	void Pulse(float dt);
@@ -73,6 +77,8 @@ public:
 	//Scale
 	void ScaleWhole(float scale);
 	void ScaleX(float scale);
+	void ScaleY(float scale);
+	void ScaleZ(float scale);
 
 	void LookAt(FXMVECTOR pos, FXMVECTOR target, FXMVECTOR worldUp);
 	void LookAt(const XMFLOAT3& pos, const XMFLOAT3& target, const XMFLOAT3& up);
@@ -113,6 +119,7 @@ public:
 
 	int mWidth;
 	int mHeight;
+	int mDepth;
 	float mTexWidth;
 	float mTexHeight;
 
@@ -168,6 +175,11 @@ public:
 	bool mGrowOut;
 	bool mGrowing;
 	bool mFlipTexture;
+	bool mTexRotate;
+	bool mBackFaceCull;
+	bool mSquishX;
+	bool mSquishY;
+	bool mSquishZ;
 	float mScale;
 	
 	std::string mLabel;

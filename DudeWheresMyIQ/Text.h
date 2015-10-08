@@ -11,6 +11,7 @@ class Engine;
 class Text
 {
 public:
+	//0:cloud 1:bluebg 2:Sign 3:speech
 	Text(std::string text, float x, float y, float z, float size, int BG, bool ThreeD);
 	void Build(std::string text, float x, float y, float z, float size, int BG, bool ThreeD);
 	void Rebuild(std::string text, float x, float y, float z, float size, int BG, bool ThreeD);

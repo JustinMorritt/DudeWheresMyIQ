@@ -46,6 +46,7 @@ public:
 	/// Creates a box centered at the origin with the given dimensions.
 	///</summary>
 	void CreateBox(float width, float height, float depth, MeshData& meshData);
+	void CreateBox2Tex(float width, float height, float depth, MeshData& meshData);
 	void CreateFrontandBackFace(float width, float height, float depth, MeshData& meshData);
 
 	void CreateUprightSquare(float width, float height, MeshData& meshData);

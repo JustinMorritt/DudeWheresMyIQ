@@ -19,6 +19,7 @@ Engine::Engine(HINSTANCE hInstance)
 	spawnBugTime(0),
 	spawnMushTime(0),
 	speedBonusTime(0),
+	mCurrLevel(1),
 	mMoveSpeed(500),
 	tickTimer(0.0f),
 	bossTimer(0.0f),
@@ -31,7 +32,8 @@ Engine::Engine(HINSTANCE hInstance)
 	fullyLoaded(false),
 	toRandSpot(false),
 	toCam(false),
-	exitable(false)
+	exitable(false),
+	mFreeCam(false)
 {
 	mMainWndCaption = L"Dude Wheres My IQ?";
 	mEnable4xMsaa = false;
@@ -98,10 +100,7 @@ Engine::Engine(HINSTANCE hInstance)
 	mShadowMat.Diffuse = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.5f);
 	mShadowMat.Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 16.0f);
 
-	// Estimate the scene bounding sphere manually since we know how the scene was constructed.
-	// The grid is the "widest object" with a width of 20 and depth of 30.0f, and centered at
-	// the world space origin.  In general, you need to loop over every world space vertex
-	// position and compute the bounding sphere.
+
 	mSceneBounds.Center = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	mSceneBounds.Radius = 1000.0f;
 
@@ -144,45 +143,17 @@ bool Engine::Init()
 
 	InitAll();
 
-	mSky	= new Sky(md3dDevice, L"Textures/ArstaBridge.dds", 5000.0f);
+	mSky	= new Sky(md3dDevice, L"Textures/Meadow.dds", 5000.0f);
 	mSmap	= new ShadowMap(md3dDevice, SMapSize, SMapSize);
 
 	//BUILD PLAYER
 	mPlayer = new Player(&md3dDevice);
-	std::vector<Entity*> tempVec; tempVec.push_back(mPlayer->mSelf);
-	BuildVertexAndIndexBuffer(&mPlayer->mVB, &mPlayer->mIB, tempVec);
 	mPlayer->InsertCollisionItems(mLevel->mEntities); //INSERT LEVEL
-	for (int i = 0; i < mPlayer->mText.size(); i++)
-	{
-		BuildVertexAndIndexBuffer(&mPlayer->mText[i]->mVB, &mPlayer->mText[i]->mIB, mPlayer->mText[i]->mText); //Descriptions
-	}
+
 
 	//BUILD INVENTORY
 	mInventory = new Inventory();
-	BuildVertexAndIndexBuffer(&mInventory->mVB, &mInventory->mIB, mInventory->mItems);							// Inventory
-	BuildVertexAndIndexBuffer(&mInventory->mVB2, &mInventory->mIB2, mInventory->mAbilitys);						// Inventory
-	for (int i = 0; i < mInventory->GetText().size(); i++)
-	{
-		BuildVertexAndIndexBuffer(&mInventory->GetText()[i]->mVB, &mInventory->GetText()[i]->mIB, mInventory->GetText()[i]->mText); //Descriptions
-	}
-	for (int i = 0; i < mInventory->mTitles.size(); i++)
-	{
-		BuildVertexAndIndexBuffer(&mInventory->mTitles[i]->mVB, &mInventory->mTitles[i]->mIB, mInventory->mTitles[i]->mText); //TITLES
-	}
 
-	//BUILD BATTLE STATIC ITEMS
-	for (int i = 0; i < Battle::mTitleText.size(); i++)
-	{
-		BuildVertexAndIndexBuffer(&Battle::mTitleText[i]->mVB, &Battle::mTitleText[i]->mIB, Battle::mTitleText[i]->mText); //Titles
-	}
-	for (int i = 0; i < Battle::mDumbAssUsedText.size(); i++)
-	{
-		BuildVertexAndIndexBuffer(&Battle::mDumbAssUsedText[i]->mVB, &Battle::mDumbAssUsedText[i]->mIB, Battle::mDumbAssUsedText[i]->mText); //Titles
-	}
-	for (int i = 0; i < Battle::mAbilityUsedText.size(); i++)
-	{
-		BuildVertexAndIndexBuffer(&Battle::mAbilityUsedText[i]->mVB, &Battle::mAbilityUsedText[i]->mIB, Battle::mAbilityUsedText[i]->mText); //Titles
-	}
 
 
 	*StateMachine::pGameState	= GameState::MAINMENU;
@@ -238,7 +209,10 @@ void Engine::UpdateMainMenu(float dt)
 void Engine::UpdateGame(float dt)
 {
 	mSceneBounds.Center.x = mCam.GetPosition().x;
-	//(*StateMachine::pGameState == GameState::GAMEON) ? mCursorOn = false : mCursorOn = true;
+
+	mCursorOn = false;
+	if (*StateMachine::pGameState == GameState::PAUSED)mCursorOn = true;
+
 	BuildShadowTransform();
 
 	for (int i = 0; i < mPaused.size(); i++)
@@ -247,64 +221,38 @@ void Engine::UpdateGame(float dt)
 	}
 	mLevel->Update(mCam, dt);
 		
-	
-
-	mPlayer->Update(mCam, dt); if (mPlayer->mSelf->mPosition.y < -500){ Restart(); }
+	mPlayer->Update(mCam, dt); 
+	if (mPlayer->mSelf->mPosition.y < -500){ Restart(); mPlayer->IQChange(-20.0f); }
+	if (mPlayer->mBeatLevel){ NextLevel(); }
 	CamFollowPlayer();
 
-	
 	//TIMER STUFF / SPAWN RATES   *Spawn Before Update Or Youll Get a Flicker Later On Of it Not Translated Yet*
 	tickTimer += dt;
 	if (tickTimer >= difficultyTimer)
 	{
 		if (*StateMachine::pGameState == GameState::GAMEON)
 		{
-
 			if (*StateMachine::pMusicState == MusicState::MUSICON){ if (!mSound.PlayingMusic(2)){ mSound.StreamMusic(2); }
 			if (mSound.MusicPaused(2)){ mSound.PauseMusic(false,2); }}
-
-
 		}
-
-// 		if (*StateMachine::pGameState == GameState::BOSSFIGHT)
-// 		{
-// 
-// 			if (*StateMachine::pMusicState == MusicState::MUSICON){ if (!mSound.PlayingMusic(3)){ mSound.StreamMusic(3); }
-// 			if (mSound.MusicPaused(3)){ mSound.PauseMusic(false, 3); }
-// 			}
-// 
-// 
-// 			spawnBugTime++;
-// 			if (spawnBugTime == 1){ SpawnGhost(); spawnBugTime = 0; }
-// 		}
-	
-		if (speedBonusTime > 0){ speedBonusTime--;	mMoveSpeed = 1000;	if (speedBonusTime == 0){ mMoveSpeed = 500; } }
-
 		if (waitToClickTime > 0){ waitToClickTime--; }
-		
-
 		tickTimer = 0.0f;
 	}
-
-
-// 	if (GetAsyncKeyState('T') & 0x8000)
-// 		mInvader->Walk(100.0f*dt);
-// 	if (GetAsyncKeyState('H') & 0x8000)
-// 		mInvader->Yaw(dt);
-// 	if (GetAsyncKeyState('F') & 0x8000)
-// 		mInvader->Yaw(-dt);
-// 	if (GetAsyncKeyState('J') & 0x8000)
-// 		mInvader->Walk(-100.0f*dt);
-
+	for (int i = 0; i < mTexts.size(); i++)
+	{
+		mTexts[i]->Update(mCam, dt);
+	}
 }
 void Engine::UpdateBattle(float dt)
 {
+	mCursorOn = true;
 	if (!mBattle){ NewBattle(); }
 	CamFollowPlayer();
 	mBattle->Update(mCam, dt);
 }
 void Engine::UpdateInventory(float dt)
 {
+	mCursorOn = true;
 	CamFollowPlayer();
 	mInventory->Update(mCam, mTimer.DeltaTime());
 }
@@ -349,8 +297,9 @@ void Engine::ResetCamInGame()
 {
 	mCam.ResetCam();
 	mCam.SetPosition(0.0f, 20.0f, -400.0f);
-	//mCam.Pitch(XM_PI / 2);
-	mWalkCamMode = true;
+	mCam.Yaw(XM_PI / 8);
+	mCam.Pitch(XM_PI / 12);
+	//mWalkCamMode = false;
 }
 void Engine::IncProgress(float dt)
 {
@@ -423,7 +372,7 @@ void Engine::ClearVectors()
 }
 void Engine::CamFollowPlayer()
 {
-	mCam.SetPosition(mPlayer->mSelf->mPosition.x, mPlayer->mSelf->mPosition.y + 100.0f, mCam.GetPosition().z);
+	mCam.SetPosition(mPlayer->mSelf->mPosition.x, mPlayer->mSelf->mPosition.y + 150.0f, mCam.GetPosition().z);
 }
 
 
@@ -606,36 +555,18 @@ void Engine::InitAll()
 	mQuitButt->SetPos(700.0f, 100.0f, -90.0f);
 	mQuitButt->Pitch(XM_PI / 4);
 
-
-
-
 	BuildVertexAndIndexBuffer(&mShapesVB, &mShapesIB, mUI);
 
 
-
 	Text* t = new Text("/Try not to get any Stupider!/", 0.0f, 90.0f, 60.0f, 10.0f, 2, true); mTexts.push_back(t);
-	BuildVertexAndIndexBuffer(&t->mVB, &t->mIB, t->mText);
+	//BuildVertexAndIndexBuffer(&t->mVB, &t->mIB, t->mText);
 
-	Text* z = new Text("Buttons/B ..Leave Battle/I or Tab ..Inventory /WSAD ..Movement/MOUSE ..Look /SPACE or Mouse Click ..Jump ", 0.0f, 250.0f, 90.0f, 20.0f, 0, true); mTexts.push_back(z);
-	BuildVertexAndIndexBuffer(&z->mVB, &z->mIB, z->mText);
+	Text* z = new Text("Buttons/F1... FreeCam On or Off/B ..Leave Battle/I or Tab ..Inventory /WSAD ..Movement/MOUSE ..Look /SPACE or Mouse Click ..Jump ", 0.0f, 250.0f, 90.0f, 20.0f, 0, true); mTexts.push_back(z);
+	//BuildVertexAndIndexBuffer(&z->mVB, &z->mIB, z->mText);
 	
 
 	mLevel = new LevelSection(0.0f, 0.0f, 0.0f, 20.0f);
 	BuildVertexAndIndexBuffer(&mLevel->mVB, &mLevel->mIB, mLevel->mEntities);
-
-	
-	
-	
-
-
-
-
-
-
-
-
-
-
 
 	//mSound.StreamMusic(1);
 }
@@ -1146,7 +1077,7 @@ void Engine::OnMouseMove(WPARAM btnState, int x, int y)
 		case GameState::BATTLE:		BtnsBattle(x, y, false);		break;
 		}
 	}
-	if (*StateMachine::pGameState == GameState::GAMEON)
+	if (*StateMachine::pGameState == GameState::GAMEON && mFreeCam)
 	{
 		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - mLastMousePos.x));
 		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - mLastMousePos.y));
@@ -1163,7 +1094,7 @@ void Engine::OnMouseMove(WPARAM btnState, int x, int y)
 	mLastMousePos.y = y;
 
 	//Mouse Wrap around
-	if (*StateMachine::pGameState == GameState::GAMEON)
+	if (*StateMachine::pGameState == GameState::GAMEON && mFreeCam)
 	{
 		if (x <= 3)
 		{
@@ -1195,8 +1126,9 @@ void Engine::OnKeyUP(WPARAM btnState)
 	case 0x44: mPlayer->GoFW  = false; mPlayer->SlFW  = true; break; // D
 	case 0x20: mPlayer->Jump(); break;								//SPACE
 	case 0x09:														//TAB KEY OR I
-	case 0x49:if (*StateMachine::pGameState == GameState::GAMEON || *StateMachine::pGameState == GameState::INVENTORY){ (*StateMachine::pGameState == GameState::INVENTORY) ? *StateMachine::pGameState = GameState::GAMEON : Inventory::InventoryOn(); } break; // I
+	case 0x49:if (*StateMachine::pGameState == GameState::GAMEON || *StateMachine::pGameState == GameState::INVENTORY){ (*StateMachine::pGameState == GameState::INVENTORY) ? *StateMachine::pGameState = GameState::GAMEON : mInventory->InventoryOn(); } break; // I
 	case 0x42:if (*StateMachine::pGameState == GameState::BATTLE){ *StateMachine::pGameState = GameState::GAMEON; } break; // B
+	case 0x70: mFreeCam ? LockCam() : FreeCam();   break;
 	}
 }
 void Engine::OnKeyDOWN(WPARAM btnState)
@@ -1283,6 +1215,15 @@ void Engine::KeyboardHandler(float dt)
 	// 		mFire.Reset();
 	// 		mRain.Reset();
 	// 	}
+}
+void Engine::FreeCam()
+{
+	mFreeCam = true;
+}
+void Engine::LockCam()
+{
+	mFreeCam = false;
+	ResetCamInGame();
 }
 
 
@@ -1542,6 +1483,22 @@ void Engine::Restart()
 	ResetPlayer();
 	//ResetCamInGame();
 }
+void Engine::NextLevel()
+{
+	mCurrLevel++;
+	RebuildLevel();
+	ResetPlayer();
+	std::string lev = std::to_string(mCurrLevel);
+	std::string halflev1, halflev;
+	halflev = std::to_string(mCurrLevel / 2);
+	if ((mCurrLevel / 2) + (mCurrLevel / 2) < mCurrLevel){ halflev1 = std::to_string(mCurrLevel/2+1); }
+	else{ halflev1 = std::to_string(mCurrLevel / 2);}
+
+	mPlayer->mBeatLevel = false;
+	mTexts[0]->Rebuild("/" + halflev + " plus " + halflev1 + " is Level " + lev + " Nice Work!/", 0.0f, 90.0f, 60.0f, 10.0f, 2, true);
+	if (mTexts.size() > 1){ delete mTexts[1]; mTexts[1] = nullptr; mTexts.erase(mTexts.begin() + 1); }
+}
+
 
 //SPAWNERS 
 void Engine::SpawnBug()

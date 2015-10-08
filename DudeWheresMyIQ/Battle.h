@@ -46,6 +46,7 @@ public:
 	static Text* mAbilityUsed;
 	static Text* mDumbyUsed;
 	static Text* mTitle;
+	static Text* mLeaveMsg;
 
 	static int mWaitTimer;
 	int mWaitAndAssign;

@@ -1,4 +1,4 @@
-//***************************************************************************************
+﻿//***************************************************************************************
 // d3dApp.cpp by Frank Luna (C) 2011 All Rights Reserved.
 //***************************************************************************************
 
@@ -366,7 +366,7 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 bool D3DApp::InitMainWindow()
 {
 	int msg;
-	msg = MessageBox(0, L"Controls =   Move(WASD)    Engage(E)    Pause(P) \n\n\n\t                Full Screen?  ", L"Dude Wheres My IQ?", MB_YESNO);
+	msg = MessageBox(0, L"Full Screen?", L"Dude Wheres My IQ?", MB_YESNO);
 	if (msg == 6){ mFullScreen = true; }
 	if (msg == 7){ mFullScreen = false; }
 	//mFullScreen = true;

@@ -7,34 +7,45 @@ int Player::mLevel;
 float Player::mIQ;
 float Player::mMaxSpeed;
 float Player::mJumpHeight;
-
+float Player::mAccel;
 
 Player::Player(ID3D11Device** device) : mDevice(*device),
-GoFW(false), GoBW(false), GoIn(false), GoOut(false), SlFW(false), SlBW(false), SlIn(false), SlOut(false), onGround(false),
- mVelocity(0.0f, 0.0f, 0.0f), mAccel(180.0f), mItemDescription(0)
+GoFW(false), GoBW(false), GoIn(false), GoOut(false), SlFW(false), SlBW(false), SlIn(false), SlOut(false), onGround(false), mBeatLevel(false),
+ mVelocity(0.0f, 0.0f, 0.0f), mItemDescription(0)
 {
-
-
-	mSelf = new Entity(2, "player", 80.0f, 80.0f);
+	mSelf = new Entity(2, "player", 60.0f, 80.0f);
 	mSelf->LoadTexture(*device, L"Textures/Guy/guy.dds");
 	mSelf->SetUpAnimation(24, 8, 30, 0.9f);
 	mSelf->reverseLook = true;
 	mSelf->mUseAAB = true;
 	ResetPlayerPos();
 
-	mMaxSpeed = 100.0f;
-	mLevel = 1;
-	mIQ = 110.0f;
+	//DEFAULTS
+	mMaxSpeed	= 100.0f;
+	mLevel		= 1;
+	mIQ			= 110.0f;
 	mJumpHeight = 200.0f;
+	mAccel		= 180.0f;
 
 	//MAKE TEXT DESCRIPTIONS
 	Text* t = nullptr;
-	/*0*/t = new Text(" mmm Beer ../",					mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
-	/*1*/t = new Text(" Yummy Random Pill ../",			mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
-	/*2*/t = new Text(" This will grow chest hair!/",	mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
-	/*3*/t = new Text(" This aint meat!/",				mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
-}
+	/*0*/t = new Text(" mmm Beer ../",							mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
+	/*1*/t = new Text(" Yummy Random Pill ../",					mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
+	/*2*/t = new Text(" This will grow chest hair!/",			mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
+	/*3*/t = new Text(" This aint Meat!/",						mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
+	/*4*/t = new Text(" This looks a bit tough!/",				mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
+	/*5*/t = new Text(" Thought i smelt/something fishy!/",		mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
+	/*6*/t = new Text(" Teach a dummy to fish!/",				mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
+	/*7*/t = new Text(" Brightest thing around here.../",		mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
+	/*8*/t = new Text("I Learned how to read/in grade first../",mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
+	/*9*/t = new Text("Baak baak .. me speak chicken!/",		mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
+	/*10*/t = new Text("My mom use to put these/on my head alot../",mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
+	/*11*/t = new Text("Me learn to make Fire!../",				mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
+	/*12*/t = new Text("Wish these tools would/work on my brain!/",	mSelf->mPosition.x, mSelf->mPosition.y, mSelf->mPosition.z, 10.0f, 1, true); mText.push_back(t);
 
+	std::vector<Entity*> tempVec; tempVec.push_back(mSelf);
+	Engine::BuildVertexAndIndexBuffer(&mVB, &mIB, tempVec);
+}
 
 Player::~Player()
 {
@@ -162,17 +173,38 @@ void Player::CheckCollisions()
 					}
 				}
 			}
-
+			if (mEntities[i][j]->mLabel == "portal")
+			{
+				if (XNA::IntersectAxisAlignedBoxAxisAlignedBox(&mSelf->mMeshBox, &mEntities[i][j]->mMeshBox)) //Broad phase quick check
+				{
+					mBeatLevel = true;
+				}
+			}
 		}
 	}
 }
 
+void Player::IQChange(float iq)
+{
+	mIQ += iq;
+	if (mIQ < 0.0f){ mIQ = 0.0f; }
+}
+
 void Player::SetItemDescription(std::string item)
 {
-	if (item == "beer"){ mItemDescription = mText[0]; }
-	else if (item == "pill"){ mItemDescription = mText[1]; }
-	else if (item == "moonshine"){ mItemDescription = mText[2]; }
-	else if (item == "apple"){ mItemDescription = mText[3]; }
+	if (item == "beer"){				mItemDescription = mText[0]; }
+	else if (item == "pill"){			mItemDescription = mText[1]; }
+	else if (item == "moonshine"){		mItemDescription = mText[2]; }
+	else if (item == "apple"){			mItemDescription = mText[3]; }
+	else if (item == "rubix"){			mItemDescription = mText[4]; }
+	else if (item == "fish"){			mItemDescription = mText[5]; }
+	else if (item == "fishrod"){		mItemDescription = mText[6]; }
+	else if (item == "light"){			mItemDescription = mText[7]; }
+	else if (item == "book"){			mItemDescription = mText[8]; }
+	else if (item == "chicken"){		mItemDescription = mText[9]; }
+	else if (item == "bandaid"){		mItemDescription = mText[10]; }
+	else if (item == "fire"){			mItemDescription = mText[11]; }
+	else if (item == "tools"){			mItemDescription = mText[12]; }
 	 
 	mItemDescription->SetPosition(mSelf->mPosition.x-70.0f, mSelf->mPosition.y+60.0f, mSelf->mPosition.z);
 	mItemDescription->SetLife(false, 3.0f);

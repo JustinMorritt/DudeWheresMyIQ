@@ -21,6 +21,9 @@ mTexWidth(0.0f),
 mTexHeight(0.0f),
 mUpDown(false),
 mGrowing(false),
+mSquishX(false),
+mSquishY(false),
+mSquishZ(false),
 mOrigY(0.0f),
 mOrigX(0.0f),
 mOrigZ(0.0f),
@@ -29,6 +32,7 @@ mHeightToGo(0.0f),
 mScale(1.0f),
 mWidth(width),
 mHeight(height),
+mDepth(depth),
 hovering(false),
 useTexTrans(false),
 progressBar(false),
@@ -44,6 +48,7 @@ mUseAnimation(false),
 mUseAAB(false),
 mUseAABOnce(false),
 mGoUp(true),
+mBackFaceCull(true),
 mGoDown(false),
 mSideToSide(false),
 mPulse(false),
@@ -59,6 +64,7 @@ mGrow(true),
 mShrink(false),
 mGrowIn(false),
 mFlipTexture(false),
+mTexRotate(false),
 mLabel(label)
 {
 	//SET MATERIAL
@@ -74,11 +80,13 @@ mLabel(label)
 
 	switch (type)
 	{
-	case 0: geoGen.CreateGrid(width, height, 2, 2, mGrid);	  break;
+	case 0: geoGen.CreateGrid(width, height, 2, 2, mGrid);					break;
 	case 1: geoGen.CreateSphere(width, height, height, mGrid);/*height is slice count .. width for radius*/ break;
-	case 2: geoGen.CreateUprightSquare(width, height, mGrid); break;
-	case 3: geoGen.CreateBox(width, height, depth, mGrid);    break;
-	case 4: geoGen.CreateFrontandBackFace(width, height, depth, mGrid);    break;
+	case 2: geoGen.CreateUprightSquare(width, height, mGrid);				break;
+	case 3: geoGen.CreateBox(width, height, depth, mGrid);					break;
+	case 4: geoGen.CreateFrontandBackFace(width, height, depth, mGrid);		break;
+	case 5: geoGen.CreateCylinder(width, depth, height, 15, 2, mGrid);		break;
+	case 6: geoGen.CreateBox2Tex(width, height, depth, mGrid);				break;
 	}
 
 	mIndexCount = mGrid.Indices.size();
@@ -180,15 +188,21 @@ void Entity::Update(const Camera& camera, float dt)
 		XMStoreFloat4x4(&mWorld, scaling * M);
 	}
 
-	if (progressBar)
-	{
-		ScaleX(currProgress);
-	}
 
 	//GROWING MOVEMENTS
 	if (mPulse)	{ Pulse(dt); }
 	if (mGrowIn){ GrowIn(dt); }
 	if (mGrowOut){ GrowOut(dt); }
+	if (mSquishX || mSquishY || mSquishZ){ Squish(dt); 
+	if (mSquishX){  ScaleX(currProgress); }
+	if (mSquishY){  ScaleY(currProgress); }
+	if (mSquishZ){  ScaleZ(currProgress); }}
+
+
+	if (progressBar)
+	{
+		ScaleX(currProgress);
+	}
 
 	if (billboard)
 	{
@@ -263,7 +277,7 @@ void Entity::Draw(ID3DX11EffectTechnique* activeTech, ID3D11DeviceContext* conte
 		activeTech->GetPassByIndex(pass)->Apply(0, context);
 	}
 
-
+	mBackFaceCull ? context->RSSetState(0) : context->RSSetState(RenderStates::NoCullRS);
 
 	context->DrawIndexed(mIndexCount, mIndexOffset, mVertexOffset);
 }
@@ -533,9 +547,7 @@ void Entity::Pitch(float angle)
 void Entity::Yaw(float angle)
 {
 	// Rotate right and look vector about the up vector.
-
 	XMMATRIX R = XMMatrixRotationAxis(XMLoadFloat3(&mUp), angle);
-
 	XMStoreFloat3(&mRight, XMVector3TransformNormal(XMLoadFloat3(&mRight), R));
 	XMStoreFloat3(&mLook, XMVector3TransformNormal(XMLoadFloat3(&mLook), R));
 }
@@ -601,6 +613,22 @@ void Entity::ScaleX(float scale)
 	//Progress gets offset on the X depending on the currProgress
 	XMMATRIX trans = XMMatrixTranslation(mWorld.m[3][0]-(mWidth/2 - (mWidth/2*currProgress)), mWorld.m[3][1], mWorld.m[3][2]); // ORIGINAL TRANSLATION
 	XMMATRIX scaling = XMMatrixScaling(scale, 1.0f, 1.0f);
+	XMStoreFloat4x4(&mWorld, scaling * trans); //Scaled Then sent Back To Original Position;
+}
+
+void Entity::ScaleY(float scale)
+{
+	//Progress gets offset on the X depending on the currProgress
+	XMMATRIX trans = XMMatrixTranslation(mWorld.m[3][0], mWorld.m[3][1] - (mHeight / 2 - (mHeight / 2 * currProgress)), mWorld.m[3][2]); // ORIGINAL TRANSLATION
+	XMMATRIX scaling = XMMatrixScaling(1.0f, scale, 1.0f);
+	XMStoreFloat4x4(&mWorld, scaling * trans); //Scaled Then sent Back To Original Position;
+}
+
+void Entity::ScaleZ(float scale)
+{
+	//Progress gets offset on the X depending on the currProgress
+	XMMATRIX trans = XMMatrixTranslation(mWorld.m[3][0], mWorld.m[3][1], mWorld.m[3][2] - (mDepth / 2 - (mDepth / 2 * currProgress))); // ORIGINAL TRANSLATION
+	XMMATRIX scaling = XMMatrixScaling(1.0f, 1.0f, scale);
 	XMStoreFloat4x4(&mWorld, scaling * trans); //Scaled Then sent Back To Original Position;
 }
 
@@ -702,6 +730,16 @@ void Entity::SetBackAndForth(float mult, float dist, bool b)
 	mBackAndForth = b;
 }
 
+void Entity::SetToSquish(float mult, float dist, bool x, bool y, bool z)//dist out of a 100 Normalized.
+{
+	mSquishX = x;
+	mSquishY = y;
+	mSquishZ = z;
+	currProgress = 1.0f;
+	mHeightToGo = dist;
+	movementMult = mult;
+}
+
 void Entity::SetPulse(float mult, float dist, bool b)
 {
 	mHeightToGo = dist;
@@ -722,6 +760,12 @@ void Entity::SetGrowOut(float mult, bool b)
 	mGrowOut = b;
 	movementMult = mult;
 	mGrowing = true;
+}
+
+void Entity::SetTextureRotate(float mult)
+{
+	mTexRotate = true;
+	mSpinMult = mult;
 }
 
 void Entity::GrowIn(float dt)
@@ -749,6 +793,20 @@ void Entity::GoUpDown(float dt)
 	{
 		Jump(-dt*movementMult);
 		if (mPosition.y < mOrigY - mHeightToGo){ mGoUp = true; mGoDown = false; }
+	}
+}
+
+void Entity::Squish(float dt)
+{
+	if (mGoUp)
+	{
+		currProgress += dt * movementMult;
+		if (currProgress > 1.0){ mGoUp = false; mGoDown = true; }
+	}
+	if (mGoDown)
+	{
+		currProgress -= dt * movementMult;
+		if (currProgress < mHeightToGo){ currProgress = 0.1f; mGoUp = true; mGoDown = false; }
 	}
 }
 

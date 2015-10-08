@@ -16,6 +16,8 @@ public:
 	static void Init(ID3D11Device** device);
 	void Update(const Camera& cam, float dt);
 	void MakeChunk(float x, float y, float z, float w, float h, float d);
+	void MakeGround(float x, float y, float z, float w, float h, float d);
+	void RandomItem(float x, float y, float z, float w, float h, float d, bool Abs);
 	void MakeObstacle(float x, float y, float z, float w, float h, float d);
 	void MakeRandomEnemy(float x, float y, float z, float w, float h, float d);
 
@@ -35,6 +37,30 @@ public:
 	void PulseBall(float x, float y, float z, float w, float h, float d);
 	void EarthOrbit(float x, float y, float z, float w, float h, float d);
 	void MovingBalls(float x, float y, float z, float w, float h, float d);
+	void RandomTwister(float x, float y, float z, float w, float h, float d);
+	void SkinnyRollBlock(float x, float y, float z, float w, float h, float d);
+	void SkinnyRollBlocks(float x, float y, float z, float w, float h, float d);
+	void SkinnyFlipBlock(float x, float y, float z, float w, float h, float d);
+	void SquishBlockX(float x, float y, float z, float w, float h, float d);
+	void SquishBlockZ(float x, float y, float z, float w, float h, float d);
+	void SquishBlockY(float x, float y, float z, float w, float h, float d);
+	void EndPortal(float x, float y, float z, float w, float h, float d);
+
+	//ITEMS
+	void MakeBeer(float x, float y, float z, float w, float h, float d, bool AbsPos);
+	void MakeMoonshine(float x, float y, float z, float w, float h, float d, bool AbsPos);
+	void MakePill(float x, float y, float z, float w, float h, float d, bool AbsPos);
+	void MakeApple(float x, float y, float z, float w, float h, float d, bool AbsPos);
+	void MakeBush(float x, float y, float z, float w, float h, float d, bool AbsPos);
+	void MakeRubix(float x, float y, float z, float w, float h, float d, bool AbsPos);
+	void MakeFish(float x, float y, float z, float w, float h, float d, bool AbsPos);
+	void MakeFishRod(float x, float y, float z, float w, float h, float d, bool AbsPos);
+	void MakeBook(float x, float y, float z, float w, float h, float d, bool AbsPos);
+	void MakeLight(float x, float y, float z, float w, float h, float d, bool AbsPos);
+	void MakeChicken(float x, float y, float z, float w, float h, float d, bool AbsPos);
+	void MakeBandaid(float x, float y, float z, float w, float h, float d, bool AbsPos);
+	void MakeFire(float x, float y, float z, float w, float h, float d, bool AbsPos);
+	void MakeTools(float x, float y, float z, float w, float h, float d, bool AbsPos);
 
 	void Draw(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, UINT pass, const Camera& camera, float dt, XMMATRIX& shadow);
 	void DrawShad(ID3DX11EffectTechnique** activeTech, ID3D11DeviceContext* context, const Camera& camera, XMFLOAT4X4 lightView, XMFLOAT4X4 lightProj);
@@ -45,6 +71,14 @@ public:
 	static ID3D11ShaderResourceView* mEarth;
 	static ID3D11ShaderResourceView* mMoon;
 	static ID3D11ShaderResourceView* mBeachBall;
+	static ID3D11ShaderResourceView* mCow;
+	static ID3D11ShaderResourceView* mTwister;
+	static ID3D11ShaderResourceView* mPortal;
+	static ID3D11ShaderResourceView* mDeadChicken;
+	static ID3D11ShaderResourceView* mLog;
+	static ID3D11ShaderResourceView* mGlassBlock;
+	static ID3D11ShaderResourceView* mAcordian;
+
 
 	//ENEMYS
 	static ID3D11ShaderResourceView* mChick1;

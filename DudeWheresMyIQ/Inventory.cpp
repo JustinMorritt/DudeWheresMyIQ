@@ -1,13 +1,24 @@
 #include "Inventory.h"
 #include "Player.h"
+#include "Engine.h"
 
 ID3D11ShaderResourceView* Inventory::mBG;
 ID3D11ShaderResourceView* Inventory::mBeer;
 ID3D11ShaderResourceView* Inventory::mPill;
 ID3D11ShaderResourceView* Inventory::mMoonshine;
 ID3D11ShaderResourceView* Inventory::mApple;
+ID3D11ShaderResourceView* Inventory::mRubix;
+ID3D11ShaderResourceView* Inventory::mFish;
+ID3D11ShaderResourceView* Inventory::mFishRod;
+ID3D11ShaderResourceView* Inventory::mLight;
+ID3D11ShaderResourceView* Inventory::mBook;
+ID3D11ShaderResourceView* Inventory::mChicken;
+ID3D11ShaderResourceView* Inventory::mBandaid;
+ID3D11ShaderResourceView* Inventory::mFire;
+ID3D11ShaderResourceView* Inventory::mTools;
 
 ID3D11ShaderResourceView* Inventory::mEmpty;
+
 ID3D11Device* Inventory::mDevice;
 
 ID3D11Buffer* Inventory::mVB2;
@@ -33,7 +44,7 @@ Text* Inventory::mItemDescription;
 
 int Inventory::mSlots;
 
-Inventory::Inventory()
+Inventory::Inventory() : mVB(0), mIB(0)
 {
 	UpdateStats();
 	float size = 150.0f;
@@ -59,7 +70,8 @@ Inventory::Inventory()
 		MakeAbility(currX, currY, size / 1.8);
 		currX += size / 1.4f;
 	}
-
+	Engine::BuildVertexAndIndexBuffer(&mVB, &mIB, mItems);			// Inventory
+	Engine::BuildVertexAndIndexBuffer(&mVB2, &mIB2, mAbilitys);		// Abilities
 }
 
 Inventory::~Inventory()
@@ -96,7 +108,7 @@ void Inventory::Update(const Camera& cam, float dt)
 	{
 		if (mAbilitys[i]->mLabel != "ability")
 		{
-			AssignAbility(mAbilitys[i], mAbilityStrings[AbSpot]); AbSpot++;
+			AssignItem(mAbilitys[i], mAbilityStrings[AbSpot]); AbSpot++;
 		}
 		mAbilitys[i]->Update(cam, dt);
 	}
@@ -111,8 +123,8 @@ void Inventory::UpdateStats()
 
 	mTitles[2]->Rebuild("Lv " + LV + " ",	-460.0f, 400.0f,	-90.0f, 40.0f, 0, false); // TITLE2
 	mTitles[3]->Rebuild(IQ + " ",			-460.0f, 200.0f,	-90.0f, 40.0f, 0, false); // TITLE3
-	mTitles[4]->Rebuild(JH + " ",			-460.0f,   0.0f,	-90.0f, 40.0f, 0, false); // TITLE4
-	mTitles[5]->Rebuild(SP + " ",			-460.0f, -200.0f,	-90.0f, 40.0f, 0, false); // TITLE5
+	mTitles[4]->Rebuild(SP + " ",			-460.0f,   0.0f,	-90.0f, 40.0f, 0, false); // TITLE4
+	mTitles[5]->Rebuild(JH + " ",			-460.0f, -200.0f,	-90.0f, 40.0f, 0, false); // TITLE5
 }
 
 void Inventory::UpdateAbilitys(const Camera& cam, float dt)
@@ -122,6 +134,7 @@ void Inventory::UpdateAbilitys(const Camera& cam, float dt)
 	{
 		mText[i]->Update(cam, dt);
 	}
+
 	//TITLES
 	for (int i = 0; i < mTitles.size(); i++)
 	{
@@ -134,7 +147,7 @@ void Inventory::UpdateAbilitys(const Camera& cam, float dt)
 	{
 		if (mAbilitys[i]->mLabel != "ability")
 		{
-			AssignAbility(mAbilitys[i], mBattleStrings[AbSpot]); AbSpot++;
+			AssignItem(mAbilitys[i], mBattleStrings[AbSpot]); AbSpot++;
 		}
 		mAbilitys[i]->Update(cam, dt);
 	}
@@ -198,28 +211,71 @@ void Inventory::Init(ID3D11Device** device)
 	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/apple.dds",			0, 0, &mApple, 0));
 	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/pill.dds",			0, 0, &mPill, 0));
 	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/empty.dds",			0, 0, &mEmpty, 0));
+	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/book.dds",			0, 0, &mBook, 0));
+	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/rubix.dds",			0, 0, &mRubix, 0));
+	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/lightbulb.dds",		0, 0, &mLight, 0));
+	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/fishing.dds",			0, 0, &mFishRod, 0));
+	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/fish.dds",			0, 0, &mFish, 0));
+	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/chicken.dds",			0, 0, &mChicken, 0));
+	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/bandaid.dds",			0, 0, &mBandaid, 0));
+	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/fire.dds",			0, 0, &mFire, 0));
+	HR(D3DX11CreateShaderResourceViewFromFile(*device, L"Textures/tools.dds",			0, 0, &mTools, 0));
 	mDevice = *device;
 
 	Text* T = nullptr;
 	T = new Text("Inventory",  200.0f, 400.0f, -90.0f, 80.0f, 0, false);		mTitles.push_back(T);	// TITLE0
 	T = new Text("Abilities", -845.0f, 350.0f, -90.0f, 30.0f, 0, false);		mTitles.push_back(T);	// TITLE1
-	T = new Text(" ",			-460.0f, 400.0f, -90.0f, 50.0f, 0, false);		mTitles.push_back(T);	// TITLE2
-	T = new Text(" ",			-460.0f, 200.0f, -90.0f, 50.0f, 0, false);		mTitles.push_back(T);	// TITLE3
-	T = new Text(" ",			-460.0f, 0.0f, -90.0f, 50.0f, 0, false);		mTitles.push_back(T);	// TITLE4
-	T = new Text(" ",			-460.0f, -200.0f, -90.0f, 50.0f, 0, false);		mTitles.push_back(T);	// TITLE5
+	T = new Text("test",		-460.0f, 400.0f, -90.0f, 50.0f, 0, false);		mTitles.push_back(T);	// TITLE2
+	T = new Text("test",		-460.0f, 200.0f, -90.0f, 50.0f, 0, false);		mTitles.push_back(T);	// TITLE3
+	T = new Text("test",		-460.0f, 0.0f, -90.0f, 50.0f, 0, false);		mTitles.push_back(T);	// TITLE4
+	T = new Text("test",		-460.0f, -200.0f, -90.0f, 50.0f, 0, false);		mTitles.push_back(T);	// TITLE5
 	T = new Text("IQ? ",	  -460.0f,  300.0f, -90.0f, 50.0f, 1, false);		mTitles.push_back(T);	// TITLE6
 	T = new Text("Speed? ",	  -460.0f,  100.0f, -90.0f, 50.0f, 1, false);		mTitles.push_back(T);	// TITLE7
 	T = new Text("Jump? ",	  -460.0f, -100.0f, -90.0f, 50.0f, 1, false);		mTitles.push_back(T);	// TITLE8
 
 
-	//MAKE TEXT DESCRIPTIONS
+	//MAKE TEXT DESCRIPTIONS FOR ITEMS
 	Text* t = nullptr;
-	/*0*/t = new Text("Drink This Beer And you may or may not get smarter ...", -750, -400.0f, -100.0f, 50.0f, 0, false); mText.push_back(t);
-	/*1*/t = new Text("Mmm Pills Are Good ...", -750, -400.0f, -100.0f, 50.0f, 0, false); mText.push_back(t);
-	/*2*/t = new Text("Moonshine a day keeps the doctor away...", -750, -400.0f, -100.0f, 50.0f, 0, false); mText.push_back(t);
-	/*3*/t = new Text("Did this thing create gravity ? ...", -750, -400.0f, -100.0f, 50.0f, 0, false); mText.push_back(t);
+	/*0*/t = new Text("Drink This Beer And you may or may not get smarter ...",												-750, -400.0f, -100.0f, 50.0f, 0, false);	mText.push_back(t);
+	/*1*/t = new Text("Mmm Pills Are Good .../lower iq for speed and jump?",												-750, -400.0f, -100.0f, 50.0f, 0, false);	mText.push_back(t);
+	/*2*/t = new Text("Moonshine a day keeps the doctor away.../This could make you really dumb!",							-750, -400.0f, -100.0f, 50.0f, 0, false);	mText.push_back(t);
+	/*3*/t = new Text("Did this thing create gravity ? .../increase Iq by 1ish.",											-750, -400.0f, -100.0f, 50.0f, 0, false);	mText.push_back(t);
+	/*4*/t = new Text("Thomas Edison was one smart fellow! not me though../increase Iq by 2ish.",							-750, -400.0f, -100.0f, 50.0f, 0, false);	mText.push_back(t);
+	/*5*/t = new Text("Tasty fish will give you mad hops!/increase Iq by 2ish and Jump by 3ish.",							-750, -400.0f, -100.0f, 50.0f, 0, false);	mText.push_back(t);
+	/*6*/t = new Text("Never heard any of this mcs music?/increase Iq by 3ish.",											-750, -400.0f, -100.0f, 50.0f, 0, false);	mText.push_back(t);
+	/*7*/t = new Text("Solve one of these puppies and you have patience../increase Iq by 4ish..But may slow you down.",		-750, -400.0f, -100.0f, 50.0f, 0, false);	mText.push_back(t);
+	/*8*/t = new Text("Teach a man to fish and he wont eat as many big macs./increase Iq by 4ish..But may slow you down.",	-750, -400.0f, -100.0f, 50.0f, 0, false);	mText.push_back(t);
+	/*9*/t = new Text("Chickens Lay some tasty thingies./increase Iq by 4ish..But may slow you down.",						-750, -400.0f, -100.0f, 50.0f, 0, false);	mText.push_back(t);
+	/*10*/t = new Text("Bandaids keep ur booboo from oozing liquids ./increase Iq by 4ish..But may slow you down.",			-750, -400.0f, -100.0f, 50.0f, 0, false);	mText.push_back(t);
+	/*11*/t = new Text("Man learn fire ... man take over world!/increase Iq by 4ish..But may slow you down.",				-750, -400.0f, -100.0f, 50.0f, 0, false);	mText.push_back(t);
+	/*12*/t = new Text("Learn how to fix things.. or break them worse..",													-750, -400.0f, -100.0f, 50.0f, 0, false);	mText.push_back(t);
+
+	//TEXT DESCRIPTIONS FOR ABILITYS 
+	/*13*/t = new Text("Teach them a valuable fix that/ could change their lives forever!", -750, -400.0f, -100.0f, 40.0f, 0, false);		mText.push_back(t);
+	/*14*/t = new Text("You could use this to catch fish .../ or grenades!",				-750, -400.0f, -100.0f, 40.0f, 0, false);		mText.push_back(t);
+	/*14*/t = new Text("If you scratch your head for/long enough this could happen...",				-750, -400.0f, -100.0f, 40.0f, 0, false);		mText.push_back(t);
 }
 
+void Inventory::UseItem(int E)
+{
+	if (mItemButtons[E]->mLabel == "beer"){				AddToIQ(MathHelper::RandF(-5.0f, 5.0f));	mItemButtons[E]->mLabel = "empty"; }
+	else if (mItemButtons[E]->mLabel == "pill"){		AddToIQ(MathHelper::RandF(-5.0f, 0.0f));	AddToJump(MathHelper::RandF(5.0f, 10.0f)); AddToSpeed(MathHelper::RandF(5.0f, 10.0f));	mItemButtons[E]->mLabel = "empty"; }
+	else if (mItemButtons[E]->mLabel == "moonshine"){	AddToIQ(MathHelper::RandF(1.0f, -10.0f));	mItemButtons[E]->mLabel = "empty"; }
+	else if (mItemButtons[E]->mLabel == "apple"){		AddToIQ(MathHelper::RandF(0.0f, 2.0f));		mItemButtons[E]->mLabel = "empty"; }
+	else if (mItemButtons[E]->mLabel == "light"){		AddToIQ(MathHelper::RandF(1.0f, 3.0f));		mItemButtons[E]->mLabel = "empty"; }
+	else if (mItemButtons[E]->mLabel == "fish"){		AddToIQ(MathHelper::RandF(1.0f, 3.0f));		AddToJump(MathHelper::RandF(2.0f, 5.0f));		mItemButtons[E]->mLabel = "empty"; }
+	else if (mItemButtons[E]->mLabel == "book"){		AddToIQ(MathHelper::RandF(2.0f, 4.0f));														mItemButtons[E]->mLabel = "empty"; }
+	else if (mItemButtons[E]->mLabel == "rubix"){		AddToIQ(MathHelper::RandF(2.0f, 5.0f));		AddToSpeed(MathHelper::RandF(-2.0f, -5.0f));	mItemButtons[E]->mLabel = "empty"; }
+	else if (mItemButtons[E]->mLabel == "fishrod"){		AddToAbilitys("fishrod");					AddToIQ(MathHelper::RandF(2.0f, 5.0f));			AddToSpeed(MathHelper::RandF(-2.0f, -5.0f));	mItemButtons[E]->mLabel = "empty"; }
+	else if (mItemButtons[E]->mLabel == "chicken"){		AddToIQ(MathHelper::RandF(2.0f, 5.0f));		AddToSpeed(MathHelper::RandF(-2.0f, -5.0f));	mItemButtons[E]->mLabel = "empty"; }
+	else if (mItemButtons[E]->mLabel == "bandaid"){		AddToIQ(MathHelper::RandF(2.0f, 5.0f));		AddToSpeed(MathHelper::RandF(-2.0f, -5.0f));	mItemButtons[E]->mLabel = "empty"; }
+	else if (mItemButtons[E]->mLabel == "fire"){		AddToAbilitys("fire");						AddToIQ(MathHelper::RandF(2.0f, 5.0f));		AddToSpeed(MathHelper::RandF(-2.0f, -5.0f));	mItemButtons[E]->mLabel = "empty"; }
+	else if (mItemButtons[E]->mLabel == "tools"){		AddToAbilitys("tools");						mItemButtons[E]->mLabel = "empty"; }
+
+	UpdateStats();
+	mItemButtons[E]->UseTexture(mEmpty);
+	mItemStrings[E] = "";
+}
 
 std::vector<Entity*> Inventory::GetItems()
 {
@@ -237,7 +293,7 @@ void Inventory::MakeAbility(float x, float y, float size)
 {
 	Entity* E = new Entity(2, "ability", size, size);   E->SetPos(x, y, -90.0f); E->UseTexture(mBG);	E->reverseLook = true; mAbilitys.push_back(E);
 	Entity* B = new Entity(2, "empty", size, size);		B->SetPos(x, y, -100.0f); B->UseTexture(mEmpty); B->reverseLook = true; mAbilitys.push_back(B); mAbilityButtons.push_back(B); mBattleButtons.push_back(B);
-	mAbilityStrings.push_back("beer");
+	mAbilityStrings.push_back("");
 }
 
 bool Inventory::AddToInventory(std::string item)
@@ -253,6 +309,7 @@ bool Inventory::AddToAbilitys(std::string item)
 {
 	for (int i = 0; i < mAbilityStrings.size(); i++)
 	{
+		if (mAbilityStrings[i] == item){ return true; }
 		if (mAbilityStrings[i] == ""){ mAbilityStrings[i] = item; return true; }
 	}
 	return false;
@@ -260,23 +317,25 @@ bool Inventory::AddToAbilitys(std::string item)
 
 void Inventory::AssignItem(Entity* E, std::string item)
 {
-	if (item == "beer"){ E->UseTexture(mBeer); E->mLabel = "beer"; }
-	else if (item == "pill"){ E->UseTexture(mPill); E->mLabel = "pill"; }
-	else if (item == "moonshine"){ E->UseTexture(mMoonshine); E->mLabel = "moonshine"; }
-	else if (item == "apple"){ E->UseTexture(mApple); E->mLabel = "apple"; }
-	else if (item == "water"){ }
-	else{ E->UseTexture(mEmpty); }
-}
-
-void Inventory::AssignAbility(Entity* E, std::string item)
-{
-	if (item == "beer"){ E->UseTexture(mBeer); E->mLabel = "beer"; }
-	else if (item == "water"){}
+	if (item == "beer"){					E->UseTexture(mBeer);				E->mLabel = "beer"; }
+	else if (item == "pill"){				E->UseTexture(mPill);				E->mLabel = "pill"; }
+	else if (item == "moonshine"){			E->UseTexture(mMoonshine);			E->mLabel = "moonshine"; }
+	else if (item == "apple"){				E->UseTexture(mApple);				E->mLabel = "apple"; }
+	else if (item == "light"){				E->UseTexture(mLight);				E->mLabel = "light"; }
+	else if (item == "fish"){				E->UseTexture(mFish);				E->mLabel = "fish"; }
+	else if (item == "book"){				E->UseTexture(mBook);				E->mLabel = "book"; }
+	else if (item == "rubix"){				E->UseTexture(mRubix);				E->mLabel = "rubix"; }
+	else if (item == "fishrod"){			E->UseTexture(mFishRod);			E->mLabel = "fishrod"; }
+	else if (item == "chicken"){			E->UseTexture(mChicken);			E->mLabel = "chicken"; }
+	else if (item == "bandaid"){			E->UseTexture(mBandaid);			E->mLabel = "bandaid"; }
+	else if (item == "fire"){				E->UseTexture(mFire);				E->mLabel = "fire"; }
+	else if (item == "tools"){				E->UseTexture(mTools);				E->mLabel = "tools"; }
 	else{ E->UseTexture(mEmpty); }
 }
 
 void Inventory::InventoryOn()
 {
+	UpdateStats();
 	//ITEMS
 	int ItemSpot = 0;
 	for (int i = 0; i < mItems.size(); i++)
@@ -323,6 +382,23 @@ void Inventory::NotHovering(int E)
 	{
 		mItemButtons[E]->hovering = false;
 	}
+}
+
+void Inventory::AddToIQ(float num)
+{
+	Player::mIQ += num;
+	if (Player::mIQ > 140.0f){ Player::mIQ = 140.0f; }
+	if (Player::mIQ < 0.0f){	Player::mIQ = 0.0f; }
+}
+
+void Inventory::AddToJump(float num)
+{
+	Player::mJumpHeight += num;
+}
+
+void Inventory::AddToSpeed(float num)
+{
+	Player::mMaxSpeed += num;
 }
 
 void Inventory::NotHoveringAbility(int E)
@@ -372,16 +448,38 @@ void Inventory::BuildBattleAbilitys()
 void Inventory::SetDescription(std::string item)
 {
 	if (item == ""){ mItemDescription = nullptr; return; }
-	if (item == "beer"){ mItemDescription = mText[0]; }
-	if (item == "pill"){ mItemDescription = mText[1]; }
-	if (item == "moonshine"){ mItemDescription = mText[2]; }
-	if (item == "apple"){ mItemDescription = mText[3]; }
+	else if (item == "beer"){	mItemDescription		= mText[0]; }
+	else if(item == "pill"){ mItemDescription			= mText[1]; }
+	else if(item == "moonshine"){ mItemDescription		= mText[2]; }
+	else if(item == "apple"){ mItemDescription			= mText[3]; }
+	else if(item == "light"){ mItemDescription			= mText[4]; }
+	else if(item == "fish"){ mItemDescription			= mText[5]; }
+	else if(item == "book"){ mItemDescription			= mText[6]; }
+	else if(item == "rubix"){ mItemDescription			= mText[7]; }
+	else if(item == "fishrod"){ mItemDescription		= mText[8]; }
+	else if(item == "chicken"){ mItemDescription		= mText[9]; }
+	else if(item == "bandaid"){ mItemDescription		= mText[10]; }
+	else if(item == "fire"){	mItemDescription		= mText[11]; }
+	else if(item == "tools"){	mItemDescription		= mText[12]; }
+
 }
 
 void Inventory::SetAbilityDescription(std::string item)
 {
 	if (item == ""){ mItemDescription = nullptr; return; }
-	if (item == "beer"){ mItemDescription = mText[0]; } //CHANGE THESE UP DEPENDING ON ABILITY NAME
+	if (item == "tools"){	mItemDescription = mText[13]; } //CHANGE THESE UP DEPENDING ON ABILITY NAME
+	if (item == "fishrod"){ mItemDescription = mText[14]; }
+	if (item == "fire"){	mItemDescription = mText[15]; }
+}
+
+int Inventory::NumAbilitys()
+{
+	int num = 0;
+	for (int i = 0; i < mBattleStrings.size(); i++)
+	{
+		if (mBattleStrings[i] != ""){ num++; }
+	}
+	return num;
 }
 
 std::vector<Text*> Inventory::GetText()
@@ -389,22 +487,9 @@ std::vector<Text*> Inventory::GetText()
 	return mText;
 }
 
-void Inventory::UseItem(int E)
-{
-	if (mItemButtons[E]->mLabel == "beer"){/*Beer Has Been Used*/mItemButtons[E]->mLabel = "empty"; }
-	if (mItemButtons[E]->mLabel == "pill"){/*Beer Has Been Used*/mItemButtons[E]->mLabel = "empty"; }
-	if (mItemButtons[E]->mLabel == "moonshine"){/*Beer Has Been Used*/mItemButtons[E]->mLabel = "empty"; }
-	if (mItemButtons[E]->mLabel == "apple"){/*Beer Has Been Used*/mItemButtons[E]->mLabel = "empty"; }
-
-	
-	mItemButtons[E]->UseTexture(mEmpty);
-	mItemStrings[E] = "";
-}
-
 void Inventory::UseAbility(int E)
 {
-	if (mBattleButtons[E]->mLabel == "beer"){/*Beer Has Been Used*/mBattleButtons[E]->mLabel = "empty"; }
-
+	mBattleButtons[E]->mLabel = "empty"; 
 	mBattleButtons[E]->UseTexture(mEmpty);
 	mBattleStrings[E] = "";
 }

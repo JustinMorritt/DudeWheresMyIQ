@@ -225,6 +225,14 @@ void Camera::Pitch(float angle)
 
 }
 
+void Camera::Yaw(float angle)
+{
+	// Rotate right and look vector about the up vector.
+	XMMATRIX R = XMMatrixRotationAxis(XMLoadFloat3(&mUp), angle);
+	XMStoreFloat3(&mRight, XMVector3TransformNormal(XMLoadFloat3(&mRight), R));
+	XMStoreFloat3(&mLook, XMVector3TransformNormal(XMLoadFloat3(&mLook), R));
+}
+
 void Camera::Roll(float angle)
 {
 	//Rotate Up and Right on Look Vector

@@ -4,6 +4,7 @@
 #include "Text.h"
 
 class Player;
+class Engine;
 //TODO: Make BG image for inventory with the grid system and a default item block... this will be a button
 //Each individual Button Depending on What is in The inventory will have that as its texture.
 class Inventory
@@ -20,15 +21,18 @@ public:
 	static bool AddToInventory(std::string item);
 	static bool AddToAbilitys(std::string item);
 	static void AssignItem(Entity* E, std::string item);
-	static void AssignAbility(Entity* E, std::string item);
-	static void InventoryOn();
+	void InventoryOn();
 	void HoveringItem(int E);
 	void HoveringAbility(int E);
 	void NotHovering(int E);
+	void AddToIQ(float num);
+	void AddToJump(float num);
+	void AddToSpeed(float num);
 	void NotHoveringAbility(int E);
 	static void BuildBattleAbilitys();
 	void SetDescription(std::string item);
 	void SetAbilityDescription(std::string item);
+	static int NumAbilitys();
 	std::vector<Text*> GetText();
 	void UseItem(int E);
 	void UseAbility(int E);
@@ -43,6 +47,15 @@ public:
 	static ID3D11ShaderResourceView* mPill;
 	static ID3D11ShaderResourceView* mMoonshine;
 	static ID3D11ShaderResourceView* mApple;
+	static ID3D11ShaderResourceView* mRubix;
+	static ID3D11ShaderResourceView* mFish;
+	static ID3D11ShaderResourceView* mFishRod;
+	static ID3D11ShaderResourceView* mLight;
+	static ID3D11ShaderResourceView* mBook;
+	static ID3D11ShaderResourceView* mChicken;
+	static ID3D11ShaderResourceView* mBandaid;
+	static ID3D11ShaderResourceView* mFire;
+	static ID3D11ShaderResourceView* mTools;
 
 	//Then All The items ...
 
